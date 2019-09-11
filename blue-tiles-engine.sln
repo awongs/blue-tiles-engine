@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "blue-tiles-engine", "blue-tiles-engine\blue-tiles-engine.vcxproj", "{674C1E13-B401-46AF-9FA9-33247B8BC850}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{674C1E13-B401-46AF-9FA9-33247B8BC850}.Debug|x64.ActiveCfg = Debug|x64
+		{674C1E13-B401-46AF-9FA9-33247B8BC850}.Debug|x64.Build.0 = Debug|x64
+		{674C1E13-B401-46AF-9FA9-33247B8BC850}.Debug|x86.ActiveCfg = Debug|Win32
+		{674C1E13-B401-46AF-9FA9-33247B8BC850}.Debug|x86.Build.0 = Debug|Win32
+		{674C1E13-B401-46AF-9FA9-33247B8BC850}.Release|x64.ActiveCfg = Release|x64
+		{674C1E13-B401-46AF-9FA9-33247B8BC850}.Release|x64.Build.0 = Release|x64
+		{674C1E13-B401-46AF-9FA9-33247B8BC850}.Release|x86.ActiveCfg = Release|Win32
+		{674C1E13-B401-46AF-9FA9-33247B8BC850}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0D2D5E89-6AAE-4489-AC9B-F182087569BE}
+	EndGlobalSection
+EndGlobal
