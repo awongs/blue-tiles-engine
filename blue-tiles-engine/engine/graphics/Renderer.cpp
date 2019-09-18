@@ -108,12 +108,7 @@ void Renderer::SetupShaders()
 }
 
 void Renderer::SetupBuffers()
-{
-	
-
-	GLenum statusCode;
-
-	
+{		
 	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
 	// Bind the Vertex Array Object first, then bind and set Vertex Buffers and attribute pointers
