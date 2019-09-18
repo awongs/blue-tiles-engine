@@ -8,6 +8,8 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 	DebugLog::Info("Generating buffers...\n");
 	SetupBuffers();
 
+	shaderManager = new ShaderManager();
+
 	DebugLog::Info("Creating shader program...\n");
 	SetupShaders();
 
@@ -24,82 +26,19 @@ Renderer::~Renderer()
 
 void Renderer::SetupShaders()
 {
-	// compile status code
-	GLint statusCode;
-	char buffer[512];
+	GLuint vertexShader;
+	GLuint fragmentShader;
+	GLuint shaderProgram;
 
-	// Vertex shader
-	DebugLog::Info("Compiling vertex shader");
+	vertexShader = shaderManager->CompileShader(vertexSource);
 
-	// create shader object
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShader = shaderManager->CompileShader(fragmentSource);
 
-	// compile vertex shader
-	glShaderSource(vertexShader, 1, &vertexSource, NULL);
-	glCompileShader(vertexShader);
+	shaderProgram = shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
-	// get status code
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &statusCode);
-
-	if (statusCode == GL_FALSE)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, buffer);
-		DebugLog::Error(buffer);
-	}
-	else
-	{
-		DebugLog::Info("Successfully compiled vertex shader\n");
-	}
-
-	// Fragment Shader
-	DebugLog::Info("Compiling fragment shader");
-
-	// create shader object
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-	// compile fragment shader
-	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-	glCompileShader(fragmentShader);
-
-	// get status code
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &statusCode);
-
-	if (statusCode == GL_FALSE)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, buffer);
-		DebugLog::Error(buffer);
-	}
-	else
-	{
-		DebugLog::Info("Successfully compiled fragment shader\n");
-	}
-
-	// combine shader into a program
-	DebugLog::Info("Combning and linking shader program");
-
-	// create shader program instance
-	shaderProgram = glCreateProgram();
-
-	// attach shaders
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
+	shaderManager->UseShaderProgram(shaderProgram);
 
 	glBindFragDataLocation(shaderProgram, 0, "outColor");
-
-	glLinkProgram(shaderProgram);
-	glUseProgram(shaderProgram);
-
-	// error code
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &statusCode);
-	if (statusCode == GL_FALSE)
-	{
-		glGetProgramInfoLog(shaderProgram, sizeof(buffer), NULL, buffer);
-		DebugLog::Error(buffer);
-	}
-	else
-	{
-		DebugLog::Info("Successfully combined and linked shader program\n");
-	}
 
 	// vertex data layout
 	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
@@ -131,7 +70,6 @@ void Renderer::Render()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Draw functions
-	glUseProgram(shaderProgram);
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 9);
 	glBindVertexArray(0);

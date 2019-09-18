@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 
 #include "../debugbt/DebugLog.h"
+#include "ShaderManager.h"
 
 /*
 	This renders the game engine.
@@ -28,11 +29,7 @@ private:
 
 	SDL_GLContext* context;
 
-	GLuint vertexShader;
-
-	GLuint fragmentShader;
-
-	GLuint shaderProgram;
+	ShaderManager* shaderManager;
 
 	GLuint vbo;
 
