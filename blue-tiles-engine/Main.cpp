@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include "engine/GameEngine.h"
+
 int main()
 {
 	// Initialize SDL.
@@ -32,6 +34,8 @@ int main()
 			std::endl;
 		return 1;
 	}
+
+	GameEngine* engine = new GameEngine();
 
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
