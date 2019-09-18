@@ -17,10 +17,12 @@ int main()
 		return 1;
 	}
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 	// Create the window.
 	SDL_Window *window{ nullptr };
@@ -55,8 +57,6 @@ int main()
 
 		if (windowEvent.type == SDL_KEYUP &&
 			windowEvent.key.keysym.sym == SDLK_ESCAPE) break;
-
-		SDL_GL_SwapWindow(window);
 
 		engine->Update();
 

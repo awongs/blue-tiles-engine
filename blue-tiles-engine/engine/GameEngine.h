@@ -39,4 +39,6 @@ private:
 
 	SDL_GLContext targetContext;
 
+	SDL_Window* window;
+
 };

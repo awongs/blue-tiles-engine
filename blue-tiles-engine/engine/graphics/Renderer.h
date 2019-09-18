@@ -32,6 +32,8 @@ private:
 
 	GLuint fragmentShader;
 
+	GLuint shaderProgram;
+
 	GLuint vbo;
 
 	// Shader code
