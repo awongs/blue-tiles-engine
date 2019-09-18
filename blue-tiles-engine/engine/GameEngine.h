@@ -1,6 +1,9 @@
 #pragma once
 
+#include <sdl2/SDL.h>
+
 #include "debugbt/DebugLog.h"
+#include "graphics/Renderer.h"
 
 /*
 	The main game engine class
@@ -13,7 +16,7 @@ public:
 	/*
 		Game Engine constructor that ask for anything it needs for it to function properly
 	*/
-	GameEngine();
+	GameEngine(SDL_Window* targetWindow);
 
 	/*
 		Destroys and cleans up the engine.
@@ -29,6 +32,8 @@ public:
 		Main game draw loop
 	*/
 	void Draw();
+
+	Renderer* renderer;
 
 private:
 

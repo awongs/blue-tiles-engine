@@ -35,13 +35,28 @@ int main()
 		return 1;
 	}
 
-	GameEngine* engine = new GameEngine();
+	// create game engine
+	GameEngine* engine = new GameEngine(window);
+
+	SDL_Event windowEvent;
 
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
 	{
+		if (SDL_PollEvent(&windowEvent))
+		{
+			if (windowEvent.type == SDL_QUIT) break;
+		}
 
+		SDL_GL_SwapWindow(window);
+
+		engine->Update();
+
+		engine->Draw();
 	}
+
+	delete engine;
+	engine = NULL;
 
 	// Clean up SDL.
 	SDL_DestroyWindow(window);

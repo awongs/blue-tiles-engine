@@ -19,6 +19,9 @@
     <Filter Include="Source Files\engine\debugbt">
       <UniqueIdentifier>{138b137f-9d33-4bac-9f99-a4193b878afd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\graphics">
+      <UniqueIdentifier>{4bc5ec90-6ede-4e9b-9f7c-3a84e62d00ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -33,6 +36,9 @@
     <ClCompile Include="engine\debugbt\DebugLog.cpp">
       <Filter>Source Files\engine\debugbt</Filter>
     </ClCompile>
+    <ClCompile Include="engine\graphics\Renderer.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -40,6 +46,9 @@
     </ClInclude>
     <ClInclude Include="engine\debugbt\DebugLog.h">
       <Filter>Source Files\engine\debugbt</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Renderer.h">
+      <Filter>Source Files\engine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
