@@ -36,6 +36,12 @@ private:
 
 	GLuint vbo;
 
+	GLuint vao;
+
+	GLfloat vertices[9] = { 0.0f, -0.5f, 0.0f,
+					   -0.5f, 0.5f, 0.0f,
+						0.5f, 0.5f, 0.0f };
+
 	// Shader code
 	const char* vertexSource = R"glsl(
 		#version 150 core

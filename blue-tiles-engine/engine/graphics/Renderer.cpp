@@ -109,31 +109,24 @@ void Renderer::SetupShaders()
 
 void Renderer::SetupBuffers()
 {
-	GLfloat vertices[] = {
-	 0.0f,  0.5f, // Vertex 1 (X, Y)
-	 0.5f, -0.5f, // Vertex 2 (X, Y)
-	-0.5f, -0.5f  // Vertex 3 (X, Y)
-	};
+	
 
 	GLenum statusCode;
 
-	// Generate 1 buffer
+	
+	glGenVertexArrays(1, &vao);
 	glGenBuffers(1, &vbo);
+	// Bind the Vertex Array Object first, then bind and set Vertex Buffers and attribute pointers
+	glBindVertexArray(vao);
 
-	statusCode = glGetError();
-	if (statusCode != 0) DebugLog::Error("Failed to generate buffers! " + std::to_string(statusCode));
-	
-	// bind buffer to gpu
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-	statusCode = glGetError();
-	if (statusCode != 0) DebugLog::Error("Failed to bind buffers! " + std::to_string(statusCode));
-	
-	// copy vertices
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	statusCode = glGetError();
-	if (statusCode != 0) DebugLog::Error("Failed to code to buffers! " + std::to_string(statusCode));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0); // ?
+	glBindVertexArray(0);
 }
 
 void Renderer::Render()
@@ -142,7 +135,11 @@ void Renderer::Render()
 	glClearColor(0.75f, 1.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	// Draw functions
+	glUseProgram(shaderProgram);
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLES, 0, 9);
+	glBindVertexArray(0);
 }
 
 void Renderer::Display()
