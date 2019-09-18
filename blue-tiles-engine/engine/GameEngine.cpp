@@ -4,13 +4,23 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 {
 	DebugLog::Info("Engine initialization starting...");
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	// create context
+	targetContext = SDL_GL_CreateContext(targetWindow);
+	if (targetContext == NULL)
+	{
+		DebugLog::Error("Failed to create context");
+	}
+	else
+	{
+		DebugLog::Info("Created context");
+	}
 
-	SDL_GLContext targetContext = SDL_GL_CreateContext(targetWindow);
-	DebugLog::Info("Created context");
+	// Load OpenGL functions glad SDL
+	gladLoadGLLoader(SDL_GL_GetProcAddress);
+
+	GLint vpWidth, vpHeight;
+	SDL_GL_GetDrawableSize(targetWindow, &vpWidth, &vpHeight);
+	glViewport(0, 0, vpWidth, vpHeight);
 
 	renderer = new Renderer(&targetContext);
 

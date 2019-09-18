@@ -37,4 +37,6 @@ public:
 
 private:
 
+	SDL_GLContext targetContext;
+
 };
