@@ -1,4 +1,4 @@
-#pragma once
+	#pragma once
 
 #include <sdl2\SDL.h>
 #include <glad/glad.h>
@@ -40,15 +40,26 @@ private:
 	ShaderManager* shaderManager;
 
 	// ID to the vertex buffer object
-	GLuint vbo;
+	GLuint vertexBufferObjectID;
 
 	// ID to the vertex array object
-	GLuint vao;
+	GLuint vertexAttributeObjectID;
+
+	// ID to the indices buffer object
+	GLuint indicesBufferObjectID;
 
 	// place holder triangle vertices
-	GLfloat vertices[9] = { 0.0f, -0.5f, 0.0f,
-					   -0.5f, 0.5f, 0.0f,
-						0.5f, 0.5f, 0.0f };
+
+	GLfloat vertices[12] = {
+		 0.5f,  0.5f, 0.0f,  // top right
+		 0.5f, -0.5f, 0.0f,  // bottom right
+		-0.5f, -0.5f, 0.0f,  // bottom left
+		-0.5f,  0.5f, 0.0f   // top left 
+	};
+	unsigned int indices[6] = {  // note that we start from 0!
+		0, 1, 3,  // first Triangle
+		1, 2, 3   // second Triangle
+	};
 
 	// place holder Shader code
 	const char* vertexSource = R"glsl(
