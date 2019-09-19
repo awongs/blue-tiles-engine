@@ -6,7 +6,7 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	DebugLog::Info("Engine initialization starting...");
 
 	// create context
-	targetContext = SDL_GL_CreateContext(window);
+	SDL_GLContext targetContext = SDL_GL_CreateContext(window);
 	if (targetContext == NULL)
 	{
 		DebugLog::Error("Failed to create context");

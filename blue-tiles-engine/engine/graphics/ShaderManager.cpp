@@ -3,11 +3,14 @@
 ShaderManager::ShaderManager()
 {
 	errorBuffer = new char[512];
-	programs = std::vector<GLuint>();
+	programsCreated = std::vector<GLuint>();
+	shadersCreated = std::vector<GLuint>();
 }
 
 ShaderManager::~ShaderManager()
 {
+	// TODO delete compiled shaders
+
 	// TODO delete shader programs
 }
 
@@ -35,6 +38,8 @@ GLuint ShaderManager::CompileShader(const char* shaderCode)
 	{
 		DebugLog::Info("Successfully compiled shader (" + std::to_string(shader) + ")");
 	}
+
+	shadersCreated.push_back(shader);
 
 	return shader;
 }
@@ -76,9 +81,9 @@ void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 
 	bool hasProgram = false;
 
-	for (int i = 0; i < programs.size() ; i++)
+	for (int i = 0; i < programsCreated.size() ; i++)
 	{
-		if (programs[i] == shaderProgramID)
+		if (programsCreated[i] == shaderProgramID)
 		{
 			hasProgram = true;
 			break;
@@ -87,6 +92,6 @@ void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 
 	if (!hasProgram)
 	{
-		programs.push_back(shaderProgramID);
+		programsCreated.push_back(shaderProgramID);
 	}
 }
