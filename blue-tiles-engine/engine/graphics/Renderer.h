@@ -36,7 +36,7 @@ private:
 	// SDL context for the render target
 	SDL_GLContext* context;
 
-	// pointer to a shader manager
+	// Pointer to a shader manager
 	ShaderManager* shaderManager;
 
 	// ID to the vertex buffer object

@@ -18,7 +18,7 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 
 Renderer::~Renderer()
 {
-	// Cleanup context
+	// cleanup context
 	SDL_GL_DeleteContext(context);
 
 	glDeleteBuffers(1, &vertexBufferObjectID);
@@ -26,6 +26,7 @@ Renderer::~Renderer()
 
 void Renderer::SetupShaders()
 {
+	// id of shader programs
 	GLuint vertexShader;
 	GLuint fragmentShader;
 	GLuint shaderProgram;
@@ -54,7 +55,7 @@ void Renderer::SetupBuffers()
 	glGenBuffers(1, &indicesBufferObjectID);
 
 
-	// Bind the Vertex Array Object first, then bind and set Vertex Buffers and attribute pointers
+	// bind the Vertex Array Object first, then bind and set Vertex Buffers and attribute pointers
 	glBindVertexArray(vertexAttributeObjectID);
 
 	// copy vertex data to vertex buffer
@@ -64,7 +65,7 @@ void Renderer::SetupBuffers()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBufferObjectID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	// Declare that position is at index 0 of attribs for VAO
+	// beclare that position is at index 0 of attribs for VAO
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
@@ -76,11 +77,11 @@ void Renderer::SetupBuffers()
 
 void Renderer::Render()
 {
-	// Clearing screen
+	// clearing screen
 	glClearColor(0.75f, 1.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// Draw functions
+	// draw functions
 	glBindVertexArray(vertexAttributeObjectID);
 	glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 }

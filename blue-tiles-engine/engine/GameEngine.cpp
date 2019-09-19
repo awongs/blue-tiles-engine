@@ -16,7 +16,7 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 		DebugLog::Info("Created context");
 	}
 
-	// Load OpenGL functions glad SDL
+	// load OpenGL functions glad SDL
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
 	GLint vpWidth, vpHeight;
