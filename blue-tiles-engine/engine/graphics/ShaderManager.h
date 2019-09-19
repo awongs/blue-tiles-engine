@@ -17,7 +17,7 @@ public:
 	~ShaderManager();
 
 	// Compiles a shader from the given shader code
-	GLuint CompileShader(const char* shaderCode);
+	GLuint CompileShader(GLuint shaderType, const char* shaderCode);
 
 	// Creates and links up a shader program with two shaders
 	GLuint CreateShaderProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
@@ -35,8 +35,5 @@ private:
 
 	// The current ID of the shader program being used
 	GLuint currentProgram;
-
-	// 512 char error buffer used to store error messages when doing shader stuff
-	char* errorBuffer;
 
 };

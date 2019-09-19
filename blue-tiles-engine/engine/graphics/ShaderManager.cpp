@@ -2,7 +2,6 @@
 
 ShaderManager::ShaderManager()
 {
-	errorBuffer = new char[512];
 	programsCreated = std::vector<GLuint>();
 	shadersCreated = std::vector<GLuint>();
 }
@@ -14,13 +13,14 @@ ShaderManager::~ShaderManager()
 	// TODO delete shader programs
 }
 
-GLuint ShaderManager::CompileShader(const char* shaderCode)
+GLuint ShaderManager::CompileShader(GLuint shaderType, const char* shaderCode)
 {
 	// compile status code
 	GLint statusCode;
+	char errorBuffer[512];
 
 	// create shader object
-	GLuint shader = glCreateShader(GL_VERTEX_SHADER);
+	GLuint shader = glCreateShader(shaderType);
 
 	// compile vertex shader
 	glShaderSource(shader, 1, &shaderCode, NULL);
@@ -29,8 +29,9 @@ GLuint ShaderManager::CompileShader(const char* shaderCode)
 	// get status code
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &statusCode);
 
-	if (statusCode == GL_FALSE)
+	if (statusCode != GL_TRUE)
 	{
+		DebugLog::Error("Compile Error Code: " + std::to_string(statusCode));
 		glGetShaderInfoLog(shader, sizeof(errorBuffer), NULL, errorBuffer);
 		DebugLog::Error(errorBuffer);
 	}
@@ -48,6 +49,7 @@ GLuint ShaderManager::CreateShaderProgram(GLuint vertexShaderID, GLuint fragment
 {
 	// compile status code
 	GLint statusCode;
+	char errorBuffer[512];
 
 	GLuint shaderProgram = glCreateProgram();
 
@@ -60,8 +62,9 @@ GLuint ShaderManager::CreateShaderProgram(GLuint vertexShaderID, GLuint fragment
 
 	// error code
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &statusCode);
-	if (statusCode == GL_FALSE)
+	if (statusCode != GL_TRUE)
 	{
+		DebugLog::Error("Linker Error Code: " + std::to_string(statusCode));
 		glGetProgramInfoLog(shaderProgram, sizeof(errorBuffer), NULL, errorBuffer);
 		DebugLog::Error(errorBuffer);
 	}

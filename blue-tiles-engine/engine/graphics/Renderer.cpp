@@ -30,18 +30,18 @@ void Renderer::SetupShaders()
 	GLuint fragmentShader;
 	GLuint shaderProgram;
 
-	vertexShader = shaderManager->CompileShader(vertexSource);
+	vertexShader = shaderManager->CompileShader(GL_VERTEX_SHADER, vertexSource);
 
-	fragmentShader = shaderManager->CompileShader(fragmentSource);
+	fragmentShader = shaderManager->CompileShader(GL_FRAGMENT_SHADER, fragmentSource);
 
 	shaderProgram = shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
 	shaderManager->UseShaderProgram(shaderProgram);
 
-	glBindFragDataLocation(shaderProgram, 0, "outColor");
+	glBindFragDataLocation(shaderProgram, 0, "FragColor");
 
 	// vertex data layout
-	GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+	GLint posAttrib = glGetAttribLocation(shaderProgram, "aPos");
 	glEnableVertexAttribArray(posAttrib);
 	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
 }

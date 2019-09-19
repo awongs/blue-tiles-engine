@@ -40,7 +40,7 @@
       <Filter>Source Files\engine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="engine\graphics\ShaderManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\engine\graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
