@@ -4,7 +4,8 @@
 #include <glad/glad.h>
 
 #include "../debugbt/DebugLog.h"
-#include "ShaderManager.h"
+
+class ShaderManager;
 
 /*
 	This renders the game engine.

@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "ShaderManager.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)

@@ -3,7 +3,8 @@
 #include <sdl2/SDL.h>
 
 #include "debugbt/DebugLog.h"
-#include "graphics/Renderer.h"
+
+class Renderer;
 
 /*
 	The main game engine class
