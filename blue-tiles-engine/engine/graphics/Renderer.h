@@ -34,42 +34,42 @@ public:
 private:
 
 	// SDL context for the render target
-	SDL_GLContext* context;
+	SDL_GLContext* m_context;
 
 	// Pointer to a shader manager
-	ShaderManager* shaderManager;
+	ShaderManager* m_shaderManager;
 
 	// ID to the vertex buffer object
-	GLuint vertexBufferObjectID;
+	GLuint m_vertexBufferObjectID;
 
 	// ID to the vertex array object
-	GLuint vertexAttributeObjectID;
+	GLuint m_vertexAttributeObjectID;
 
 	// ID to the indices buffer object
-	GLuint indicesBufferObjectID;
+	GLuint m_indicesBufferObjectID;
 
 	// place holder triangle vertices
 
-	GLfloat vertices[12] = {
+	GLfloat m_vertices[12] = {
 		 0.5f,  0.5f, 0.0f,  // top right
 		 0.5f, -0.5f, 0.0f,  // bottom right
 		-0.5f, -0.5f, 0.0f,  // bottom left
 		-0.5f,  0.5f, 0.0f   // top left 
 	};
-	unsigned int indices[6] = {  // note that we start from 0!
+	unsigned int m_indices[6] = {  // note that we start from 0!
 		0, 1, 3,  // first Triangle
 		1, 2, 3   // second Triangle
 	};
 
 	// place holder Shader code
-	const char* vertexSource = "#version 330 core\n"
+	const char* m_vertexSource = "#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
 		"void main()\n"
 		"{\n"
 		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 		"}\0";
 
-	const char* fragmentSource = "#version 330 core\n"
+	const char* m_fragmentSource = "#version 330 core\n"
 		"out vec4 FragColor;\n"
 		"void main()\n"
 		"{\n"

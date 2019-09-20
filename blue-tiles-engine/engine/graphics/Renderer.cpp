@@ -1,14 +1,14 @@
 #include "Renderer.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
-	: context(targetContext)
+	: m_context(targetContext)
 {
 	DebugLog::Info("Renderer initialization starting...\n");
 
 	DebugLog::Info("Generating buffers...\n");
 	SetupBuffers();
 
-	shaderManager = new ShaderManager();
+	m_shaderManager = new ShaderManager();
 
 	DebugLog::Info("Creating shader program...\n");
 	SetupShaders();
@@ -19,9 +19,9 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 Renderer::~Renderer()
 {
 	// cleanup context
-	SDL_GL_DeleteContext(context);
+	SDL_GL_DeleteContext(m_context);
 
-	glDeleteBuffers(1, &vertexBufferObjectID);
+	glDeleteBuffers(1, &m_vertexBufferObjectID);
 }
 
 void Renderer::SetupShaders()
@@ -31,13 +31,13 @@ void Renderer::SetupShaders()
 	GLuint fragmentShader;
 	GLuint shaderProgram;
 
-	vertexShader = shaderManager->CompileShader(GL_VERTEX_SHADER, vertexSource);
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, m_vertexSource);
 
-	fragmentShader = shaderManager->CompileShader(GL_FRAGMENT_SHADER, fragmentSource);
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, m_fragmentSource);
 
-	shaderProgram = shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
+	shaderProgram = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
-	shaderManager->UseShaderProgram(shaderProgram);
+	m_shaderManager->UseShaderProgram(shaderProgram);
 
 	glBindFragDataLocation(shaderProgram, 0, "FragColor");
 
@@ -50,20 +50,20 @@ void Renderer::SetupShaders()
 void Renderer::SetupBuffers()
 {		
 	// generate buffers
-	glGenVertexArrays(1, &vertexAttributeObjectID);
-	glGenBuffers(1, &vertexBufferObjectID);
-	glGenBuffers(1, &indicesBufferObjectID);
+	glGenVertexArrays(1, &m_vertexAttributeObjectID);
+	glGenBuffers(1, &m_vertexBufferObjectID);
+	glGenBuffers(1, &m_indicesBufferObjectID);
 
 
 	// bind the Vertex Array Object first, then bind and set Vertex Buffers and attribute pointers
-	glBindVertexArray(vertexAttributeObjectID);
+	glBindVertexArray(m_vertexAttributeObjectID);
 
 	// copy vertex data to vertex buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObjectID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObjectID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBufferObjectID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesBufferObjectID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
 
 	// declare that position is at index 0 of attribs for VAO
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
@@ -82,8 +82,8 @@ void Renderer::Render()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// draw functions
-	glBindVertexArray(vertexAttributeObjectID);
-	glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(m_vertexAttributeObjectID);
+	glDrawElements(GL_TRIANGLES, sizeof(m_indices), GL_UNSIGNED_INT, 0);
 }
 
 void Renderer::Display()

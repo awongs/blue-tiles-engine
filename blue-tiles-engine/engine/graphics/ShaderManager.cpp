@@ -2,8 +2,8 @@
 
 ShaderManager::ShaderManager()
 {
-	programsCreated = std::vector<GLuint>();
-	shadersCreated = std::vector<GLuint>();
+	m_programsCreated = std::vector<GLuint>();
+	m_shadersCreated = std::vector<GLuint>();
 }
 
 ShaderManager::~ShaderManager()
@@ -40,7 +40,7 @@ GLuint ShaderManager::CompileShader(GLuint shaderType, const char* shaderCode)
 		DebugLog::Info("Successfully compiled shader (" + std::to_string(shader) + ")");
 	}
 
-	shadersCreated.push_back(shader);
+	m_shadersCreated.push_back(shader);
 
 	return shader;
 }
@@ -80,13 +80,13 @@ GLuint ShaderManager::CreateShaderProgram(GLuint vertexShaderID, GLuint fragment
 void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 {
 	glUseProgram(shaderProgramID);
-	currentProgram = shaderProgramID;
+	m_currentProgram = shaderProgramID;
 
 	bool hasProgram = false;
 
-	for (int i = 0; i < programsCreated.size() ; i++)
+	for (int i = 0; i < m_programsCreated.size() ; i++)
 	{
-		if (programsCreated[i] == shaderProgramID)
+		if (m_programsCreated[i] == shaderProgramID)
 		{
 			hasProgram = true;
 			break;
@@ -95,6 +95,6 @@ void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 
 	if (!hasProgram)
 	{
-		programsCreated.push_back(shaderProgramID);
+		m_programsCreated.push_back(shaderProgramID);
 	}
 }

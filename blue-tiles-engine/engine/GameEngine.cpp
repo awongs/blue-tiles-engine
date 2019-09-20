@@ -1,12 +1,12 @@
 #include "GameEngine.h"
 
 GameEngine::GameEngine(SDL_Window* targetWindow)
-	: window(targetWindow)
+	: m_window(targetWindow)
 {
 	DebugLog::Info("Engine initialization starting...");
 
 	// create context
-	SDL_GLContext targetContext = SDL_GL_CreateContext(window);
+	SDL_GLContext targetContext = SDL_GL_CreateContext(m_window);
 	if (targetContext == NULL)
 	{
 		DebugLog::Error("Failed to create context");
@@ -20,7 +20,7 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	gladLoadGLLoader(SDL_GL_GetProcAddress);
 
 	GLint vpWidth, vpHeight;
-	SDL_GL_GetDrawableSize(window, &vpWidth, &vpHeight);
+	SDL_GL_GetDrawableSize(m_window, &vpWidth, &vpHeight);
 	glViewport(0, 0, vpWidth, vpHeight);
 
 	renderer = new Renderer(&targetContext);
@@ -44,5 +44,5 @@ void GameEngine::Draw()
 	renderer->Display();
 
 	// swap buffer
-	SDL_GL_SwapWindow(window);
+	SDL_GL_SwapWindow(m_window);
 }

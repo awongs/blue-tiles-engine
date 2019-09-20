@@ -31,6 +31,6 @@ public:
 private:
 
 	// Pointer to a window
-	SDL_Window* window;
+	SDL_Window* m_window;
 
 };

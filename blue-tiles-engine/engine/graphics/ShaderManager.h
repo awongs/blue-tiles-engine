@@ -28,12 +28,12 @@ public:
 private:
 
 	// List of shaders that was compiled by this shader manager
-	std::vector<GLuint> shadersCreated;
+	std::vector<GLuint> m_shadersCreated;
 
 	// List of shader programs created and linked by thise shader manager
-	std::vector<GLuint> programsCreated;
+	std::vector<GLuint> m_programsCreated;
 
 	// The current ID of the shader program being used
-	GLuint currentProgram;
+	GLuint m_currentProgram;
 
 };
