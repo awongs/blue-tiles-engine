@@ -6,21 +6,22 @@
 
 namespace filemanager
 {
-	std::string LoadFile(std::string filePath)
+	std::string LoadFile(const std::string filePath)
 	{
 		// Setup streams for reading the file
-		std::ifstream fileStream;
+		std::ifstream inputStream;
 		std::stringstream stringBuffer;
 
 		// Try to open the file
-		fileStream.open(filePath);
-
-		if (fileStream.is_open())
+		inputStream.open(filePath);
+		if (inputStream.is_open())
 		{
 			DebugLog::Info("Successfully loaded " + filePath);
 
 			// Read all file contents into the string buffer
-			stringBuffer << fileStream.rdbuf();
+			stringBuffer << inputStream.rdbuf();
+			inputStream.close();
+
 			return stringBuffer.str();
 		}
 		else
@@ -31,6 +32,24 @@ namespace filemanager
 			return std::string();
 		}
 	}
+	void AppendFile(const std::string filePath, const std::string content)
+	{
+		// Setup stream for opening the file
+		std::ofstream outputStream;
+
+		// Try to open the file
+		outputStream.open(filePath, std::ios_base::app);
+		if (outputStream.is_open())
+		{
+			DebugLog::Info("Successfully opened " + filePath);
+
+			// Append content to the file
+			outputStream << content << std::endl;
+			outputStream.close();
+		}
+		else
+		{
+			DebugLog::Error("Failed to open " + filePath);
+		}
+	}
 }
-
-
