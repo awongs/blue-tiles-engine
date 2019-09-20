@@ -65,7 +65,7 @@ void Renderer::SetupBuffers()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBufferObjectID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	// beclare that position is at index 0 of attribs for VAO
+	// declare that position is at index 0 of attribs for VAO
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
