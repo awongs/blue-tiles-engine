@@ -2,8 +2,6 @@
 
 #include <sdl2/SDL.h>
 
-#include "debugbt/DebugLog.h"
-
 class Renderer;
 
 /*

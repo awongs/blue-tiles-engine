@@ -1,8 +1,6 @@
 #pragma once
 
 #include <glad/glad.h>
-
-#include "../debugbt/DebugLog.h";
 #include <vector>
 
 class ShaderManager

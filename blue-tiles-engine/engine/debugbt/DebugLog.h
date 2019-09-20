@@ -5,12 +5,11 @@
 
 using namespace std;
 
-static class DebugLog
+namespace DebugLog
 {
 
-public:
-	static void Info(string infoMsg);
+void Info(string infoMsg);
 
-	static void Error(string errorMsg);
+void Error(string errorMsg);
 
 };

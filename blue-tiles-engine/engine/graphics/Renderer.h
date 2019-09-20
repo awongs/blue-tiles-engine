@@ -3,8 +3,6 @@
 #include <sdl2\SDL.h>
 #include <glad/glad.h>
 
-#include "../debugbt/DebugLog.h"
-
 class ShaderManager;
 
 /*

@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include "ShaderManager.h"
 
+#include "../debugbt/DebugLog.h"
+
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
 {

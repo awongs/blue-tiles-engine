@@ -2,13 +2,15 @@
 #include <iostream>
 
 
-
-void DebugLog::Info(string infoMsg)
+namespace DebugLog
 {
-	cout << infoMsg << endl;
-}
+	void Info(string infoMsg)
+	{
+		cout << infoMsg << endl;
+	}
 
-void DebugLog::Error(string errorMsg)
-{
-	cerr << errorMsg << endl;
+	void Error(string errorMsg)
+	{
+		cerr << errorMsg << endl;
+	}
 }

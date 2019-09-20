@@ -1,6 +1,8 @@
 #include "GameEngine.h"
 #include "graphics/Renderer.h"
 
+#include "debugbt/DebugLog.h"
+
 GameEngine::GameEngine(SDL_Window* targetWindow)
 	: m_window(targetWindow)
 {

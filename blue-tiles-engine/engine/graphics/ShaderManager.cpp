@@ -1,5 +1,7 @@
 #include "ShaderManager.h"
 
+#include "../debugbt/DebugLog.h"
+
 ShaderManager::ShaderManager()
 {
 	m_programsCreated = std::vector<GLuint>();
