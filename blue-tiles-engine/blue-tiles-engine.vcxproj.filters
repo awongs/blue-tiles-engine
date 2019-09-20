@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{8ea0e063-64a5-4976-8b92-d6e52e8fac3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\debugbt">
+      <UniqueIdentifier>{138b137f-9d33-4bac-9f99-a4193b878afd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\graphics">
+      <UniqueIdentifier>{4bc5ec90-6ede-4e9b-9f7c-3a84e62d00ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -21,5 +30,31 @@
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\GameEngine.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\debugbt\DebugLog.cpp">
+      <Filter>Source Files\engine\debugbt</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\Renderer.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\ShaderManager.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine\GameEngine.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\debugbt\DebugLog.h">
+      <Filter>Source Files\engine\debugbt</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Renderer.h">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\ShaderManager.h">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

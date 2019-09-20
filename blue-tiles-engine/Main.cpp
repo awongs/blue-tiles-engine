@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include "engine/GameEngine.h"
+
 int main()
 {
 	// Initialize SDL.
@@ -14,6 +16,13 @@ int main()
 			std::endl;
 		return 1;
 	}
+
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 	// Create the window.
 	SDL_Window *window{ nullptr };
@@ -33,11 +42,32 @@ int main()
 		return 1;
 	}
 
+	// create game engine
+	GameEngine* engine = new GameEngine(window);
+
+	SDL_Event windowEvent;
+
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
 	{
+		if (SDL_PollEvent(&windowEvent))
+		{
+			if (windowEvent.type == SDL_QUIT) break;
+		}
 
+		if (windowEvent.type == SDL_KEYUP &&
+			windowEvent.key.keysym.sym == SDLK_ESCAPE) break;
+
+		engine->Update();
+
+		engine->Draw();
 	}
+
+	std::cout << "End of engine life." << std::endl;
+
+	// destroy engine
+	delete engine;
+	engine = NULL;
 
 	// Clean up SDL.
 	SDL_DestroyWindow(window);

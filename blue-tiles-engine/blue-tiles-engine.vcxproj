@@ -144,8 +144,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\debugbt\DebugLog.cpp" />
+    <ClCompile Include="engine\GameEngine.cpp" />
+    <ClCompile Include="engine\graphics\Renderer.cpp" />
+    <ClCompile Include="engine\graphics\ShaderManager.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine\debugbt\DebugLog.h" />
+    <ClInclude Include="engine\GameEngine.h" />
+    <ClInclude Include="engine\graphics\Renderer.h" />
+    <ClInclude Include="engine\graphics\ShaderManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
