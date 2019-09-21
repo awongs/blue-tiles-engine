@@ -42,6 +42,9 @@
     <ClCompile Include="engine\graphics\ShaderManager.cpp">
       <Filter>Source Files\engine\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -55,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="engine\graphics\ShaderManager.h">
       <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Source Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
