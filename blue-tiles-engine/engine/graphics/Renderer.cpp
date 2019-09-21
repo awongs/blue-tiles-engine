@@ -2,6 +2,7 @@
 #include "ShaderManager.h"
 
 #include "../debugbt/DebugLog.h"
+#include "../../util/FileManager.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
@@ -34,9 +35,13 @@ void Renderer::SetupShaders()
 	GLuint fragmentShader;
 	GLuint shaderProgram;
 
-	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, m_vertexSource);
+	// Load shader files into strings
+	std::string vertexSource = filemanager::LoadFile("engine/graphics/shaders/VertexShader.glsl");
+	std::string fragmentSource = filemanager::LoadFile("engine/graphics/shaders/FragmentShader.glsl");
 
-	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, m_fragmentSource);
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, vertexSource.c_str());
+
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, fragmentSource.c_str());
 
 	shaderProgram = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
