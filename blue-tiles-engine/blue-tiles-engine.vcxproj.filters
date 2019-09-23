@@ -28,6 +28,9 @@
     <Filter Include="Source Files\engine\graphics\shaders">
       <UniqueIdentifier>{2226b07d-1429-4278-86b8-2afe507aa4f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\input">
+      <UniqueIdentifier>{1d16b429-6d49-4663-9f06-cf0422fb0ea1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -51,6 +54,9 @@
     <ClCompile Include="util\FileManager.cpp">
       <Filter>Source Files\util</Filter>
     </ClCompile>
+    <ClCompile Include="engine\input\Input.cpp">
+      <Filter>Source Files\engine\input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -67,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="util\FileManager.h">
       <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\input\Input.h">
+      <Filter>Source Files\engine\input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
