@@ -6,6 +6,8 @@
 #include <iostream>
 
 #include "engine/GameEngine.h"
+#include "engine/input/Input.h"
+#include "engine/debugbt/DebugLog.h"
 
 int main()
 {
@@ -45,6 +47,9 @@ int main()
 	// create game engine
 	GameEngine* engine = new GameEngine(window);
 
+	// Create the input manager.
+	Input *input{ new Input() };
+
 	SDL_Event windowEvent;
 
 	// Empty loop to prevent the window from closing immediately.
@@ -53,10 +58,30 @@ int main()
 		if (SDL_PollEvent(&windowEvent))
 		{
 			if (windowEvent.type == SDL_QUIT) break;
+
+			// Update the inputs.
+			input->HandleInput(windowEvent);
 		}
 
-		if (windowEvent.type == SDL_KEYUP &&
-			windowEvent.key.keysym.sym == SDLK_ESCAPE) break;
+		// Quit the game with cancel key.
+		if (input->IsKeyDown(Input::INPUT_CANCEL))
+			break;
+
+		// TODO: Input testing. Remove this later.
+		if (input->IsKeyDown(Input::INPUT_UP))
+			DebugLog::Info("Up key pressed.");
+		if (input->IsKeyDown(Input::INPUT_DOWN))
+			DebugLog::Info("Down key pressed.");
+		if (input->IsKeyDown(Input::INPUT_LEFT))
+			DebugLog::Info("Left key pressed.");
+		if (input->IsKeyDown(Input::INPUT_RIGHT))
+			DebugLog::Info("Right key pressed.");
+		if (input->IsMouseButtonDown(SDL_BUTTON_LEFT))
+			DebugLog::Info("Left mouse button pressed.");
+		if (input->IsMouseButtonDown(SDL_BUTTON_RIGHT))
+			DebugLog::Info("Right mouse button pressed.");
+		if (input->IsMouseButtonDown(SDL_BUTTON_MIDDLE))
+			DebugLog::Info("Middle mouse button pressed.");
 
 		engine->Update();
 
@@ -64,6 +89,10 @@ int main()
 	}
 
 	std::cout << "End of engine life." << std::endl;
+
+	// Delete the input manager.
+	delete input;
+	input = nullptr;
 
 	// destroy engine
 	delete engine;
