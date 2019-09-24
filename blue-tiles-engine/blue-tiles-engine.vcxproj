@@ -146,6 +146,7 @@
   <ItemGroup>
     <ClCompile Include="engine\debugbt\DebugLog.cpp" />
     <ClCompile Include="engine\GameEngine.cpp" />
+    <ClCompile Include="engine\graphics\Camera.cpp" />
     <ClCompile Include="engine\graphics\Renderer.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
@@ -156,6 +157,7 @@
   <ItemGroup>
     <ClInclude Include="engine\debugbt\DebugLog.h" />
     <ClInclude Include="engine\GameEngine.h" />
+    <ClInclude Include="engine\graphics\Camera.h" />
     <ClInclude Include="engine\graphics\Renderer.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
     <ClInclude Include="engine\input\Input.h" />

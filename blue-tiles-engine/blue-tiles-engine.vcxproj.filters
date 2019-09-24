@@ -57,6 +57,9 @@
     <ClCompile Include="engine\input\Input.cpp">
       <Filter>Source Files\engine\input</Filter>
     </ClCompile>
+    <ClCompile Include="engine\graphics\Camera.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -76,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="engine\input\Input.h">
       <Filter>Source Files\engine\input</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Camera.h">
+      <Filter>Source Files\engine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
