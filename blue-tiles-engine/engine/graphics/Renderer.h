@@ -1,6 +1,6 @@
 	#pragma once
 
-#include <sdl2\SDL.h>
+#include <sdl2/SDL.h>
 #include <glad/glad.h>
 
 class ShaderManager;

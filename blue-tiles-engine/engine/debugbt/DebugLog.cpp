@@ -16,7 +16,12 @@ namespace DebugLog
 		struct tm local;
 		SDL_memset(buffer, 0, sizeof(buffer));
 		copy = timestamp;
-		localtime_s(&local, &copy);
+#ifdef __linux__ 
+	localtime_r(&copy, &local);
+#elif defined(_WIN64)
+	localtime_s(&local, &copy);
+
+#endif
 		strftime(buffer, sizeof(buffer), "%x %X", &local);
 
 		return buffer;
