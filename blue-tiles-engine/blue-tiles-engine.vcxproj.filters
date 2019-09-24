@@ -51,6 +51,9 @@
     <ClCompile Include="util\FileManager.cpp">
       <Filter>Source Files\util</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -67,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="util\FileManager.h">
       <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Source Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
