@@ -2,6 +2,11 @@
 
 #include <glad/glad.h>
 #include <vector>
+#include <memory>
+
+#include "Shader.h"
+
+class Shader;
 
 class ShaderManager
 {
@@ -23,15 +28,17 @@ public:
 	// Selects the shader to be used for rendering
 	void UseShaderProgram(GLuint shaderProgramID);
 
+	// Accessor for the current shader.
+	std::weak_ptr<Shader> GetCurrentShader();
+
 private:
 
 	// List of shaders that was compiled by this shader manager
 	std::vector<GLuint> m_shadersCreated;
 
 	// List of shader programs created and linked by thise shader manager
-	std::vector<GLuint> m_programsCreated;
+	std::vector<std::shared_ptr<Shader>> m_programsCreated;
 
 	// The current ID of the shader program being used
-	GLuint m_currentProgram;
-
+	std::weak_ptr<Shader> m_currentShader;
 };

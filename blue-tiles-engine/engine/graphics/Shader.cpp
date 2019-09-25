@@ -15,7 +15,12 @@ Shader::~Shader()
 	glDeleteShader(m_programHandle);
 }
 
-void Shader::SetUniform1f(std::string name, float value)
+GLuint Shader::GetProgramHandle()
+{
+	return m_programHandle;
+}
+
+void Shader::SetUniform1f(const std::string name, const float value) const
 {
 	int id = glGetUniformLocation(m_programHandle, name.c_str());
 
@@ -30,7 +35,7 @@ void Shader::SetUniform1f(std::string name, float value)
 	}
 }
 
-void Shader::SetUniform2f(std::string name, glm::vec2 values)
+void Shader::SetUniform2f(const std::string name, const glm::vec2 values) const
 {
 	int id = glGetUniformLocation(m_programHandle, name.c_str());
 
@@ -45,7 +50,7 @@ void Shader::SetUniform2f(std::string name, glm::vec2 values)
 	}
 }
 
-void Shader::SetUniform3f(std::string name, glm::vec3 values)
+void Shader::SetUniform3f(const std::string name, const glm::vec3 values) const
 {
 	int id = glGetUniformLocation(m_programHandle, name.c_str());
 
@@ -60,7 +65,7 @@ void Shader::SetUniform3f(std::string name, glm::vec3 values)
 	}
 }
 
-void Shader::SetUniform4f(std::string name, glm::vec4 values)
+void Shader::SetUniform4f(const std::string name, const glm::vec4 values) const
 {
 	int id = glGetUniformLocation(m_programHandle, name.c_str());
 
@@ -75,7 +80,7 @@ void Shader::SetUniform4f(std::string name, glm::vec4 values)
 	}
 }
 
-void Shader::SetUniformMatrix4fv(std::string name, glm::mat4& matrix)
+void Shader::SetUniformMatrix4fv(const std::string name, const glm::mat4& matrix) const
 {
 	int id = glGetUniformLocation(m_programHandle, name.c_str());
 

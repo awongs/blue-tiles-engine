@@ -148,6 +148,7 @@
     <ClCompile Include="engine\GameEngine.cpp" />
     <ClCompile Include="engine\graphics\Camera.cpp" />
     <ClCompile Include="engine\graphics\Renderer.cpp" />
+    <ClCompile Include="engine\graphics\Shader.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
     <ClCompile Include="glad.c" />
@@ -159,6 +160,7 @@
     <ClInclude Include="engine\GameEngine.h" />
     <ClInclude Include="engine\graphics\Camera.h" />
     <ClInclude Include="engine\graphics\Renderer.h" />
+    <ClInclude Include="engine\graphics\Shader.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
     <ClInclude Include="engine\input\Input.h" />
     <ClInclude Include="util\FileManager.h" />
