@@ -148,12 +148,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Behaviour.cpp" />
+    <ClCompile Include="engine\Behaviour.cpp" />
     <ClCompile Include="engine\debugbt\DebugLog.cpp" />
     <ClCompile Include="engine\GameEngine.cpp" />
+    <ClCompile Include="engine\GameObject.cpp" />
     <ClCompile Include="engine\graphics\Renderer.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
-    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
     <ClCompile Include="engine\sound\Sound.cpp" />
     <ClCompile Include="engine\sound\SoundManager.cpp" />
@@ -162,12 +162,12 @@
     <ClCompile Include="util\FileManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Behaviour.h" />
+    <ClInclude Include="engine\Behaviour.h" />
     <ClInclude Include="engine\debugbt\DebugLog.h" />
     <ClInclude Include="engine\GameEngine.h" />
+    <ClInclude Include="engine\GameObject.h" />
     <ClInclude Include="engine\graphics\Renderer.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="engine\input\Input.h" />
     <ClInclude Include="engine\sound\Sound.h" />
     <ClInclude Include="engine\sound\SoundManager.h" />

@@ -60,16 +60,17 @@
     <ClCompile Include="engine\input\Input.cpp">
       <Filter>Source Files\engine\input</Filter>
     </ClCompile>
-    <ClCompile Include="Behaviour.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files\engine</Filter>
     <ClCompile Include="engine\sound\Sound.cpp">
       <Filter>Source Files\engine\sound</Filter>
     </ClCompile>
     <ClCompile Include="engine\sound\SoundManager.cpp">
       <Filter>Source Files\engine\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\Behaviour.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameObject.cpp">
+      <Filter>Source Files\engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -91,16 +92,17 @@
     <ClInclude Include="engine\input\Input.h">
       <Filter>Source Files\engine\input</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Source Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Behaviour.h">
-      <Filter>Source Files\engine</Filter>
     <ClInclude Include="engine\sound\Sound.h">
       <Filter>Source Files\engine\sound</Filter>
     </ClInclude>
     <ClInclude Include="engine\sound\SoundManager.h">
       <Filter>Source Files\engine\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Behaviour.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\GameObject.h">
+      <Filter>Source Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
