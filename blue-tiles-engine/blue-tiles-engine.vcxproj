@@ -108,7 +108,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,6 +149,8 @@
     <ClCompile Include="engine\graphics\Renderer.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
+    <ClCompile Include="engine\sound\Sound.cpp" />
+    <ClCompile Include="engine\sound\SoundManager.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="util\FileManager.cpp" />
@@ -159,6 +161,8 @@
     <ClInclude Include="engine\graphics\Renderer.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
     <ClInclude Include="engine\input\Input.h" />
+    <ClInclude Include="engine\sound\Sound.h" />
+    <ClInclude Include="engine\sound\SoundManager.h" />
     <ClInclude Include="util\FileManager.h" />
   </ItemGroup>
   <ItemGroup>
