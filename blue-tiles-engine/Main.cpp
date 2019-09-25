@@ -59,7 +59,7 @@ int main()
 
 	SDL_Event windowEvent;
 	Sound *sound { new Sound()};
-	const char* path = "../Assets/sound-assets/Alert.mp3";
+	const string path = "../Assets/sound-assets/Alert.mp3";
 	sound->addMusic(path);
 	
 	if((Mix_PlayMusic(sound->m_music, -1))!=0) {

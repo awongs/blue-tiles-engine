@@ -36,7 +36,7 @@ public:
         return *this;
     }
 
-    bool addMusic(const char *music);
+    bool addMusic(const std::string &music);
 private:
     //Pointer of type Mix_Music used to play music
     
