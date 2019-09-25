@@ -40,8 +40,8 @@ private:
 	// Calculates and sets the view matrix.
 	void CalculateViewMatrix();
 
-	// Calculates and sets the projection matrix.
-	void CalculateProjectionMatrix();
+	// Calculates and sets the projection matrix to a perspective view.
+	void CalculatePerspectiveView();
 
 	// Field of view.
 	float m_fov = 60.0f;
