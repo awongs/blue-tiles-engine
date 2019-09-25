@@ -41,6 +41,8 @@ public:
 
 	// Handles messages
 	virtual bool HandleMessage(std::string message, BehaviourType type);
+
+	Behaviour* GetBehaviour(BehaviourType type);
 private:
-	std::list<std::unique_ptr<Behaviour>> m_Behaviours;
+	std::vector<std::unique_ptr<Behaviour>> m_Behaviours;
 };

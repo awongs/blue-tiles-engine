@@ -51,25 +51,19 @@ void GameObject::Draw()
 
 }
 
-/*std::unique_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)
+Behaviour* GameObject::GetBehaviour(BehaviourType type)
 {
-	if(std::find_if(m_Behaviours.front, m_Behaviours.end, std::bind(TypeComparison, std::placeholders::_1, type) == m_Behaviours.end))
+	for (auto& behaviour : m_Behaviours)
 	{
-		return NULL;
+		if (behaviour->type == type)
+		{
+			return behaviour.get();
+		}
 	}
-	auto found = std::find_if(m_Behaviours.front, m_Behaviours.end, std::bind(TypeComparison, std::placeholders::_1, type));
-	return found;
-}*/
+	return nullptr;
+}
 
 bool GameObject::HandleMessage(std::string message, BehaviourType type)
 {
 	return false;
 }
-
-/*bool TypeComparison(Behaviour& behaviour, BehaviourType type)
-{
-	if (behaviour.type == type)
-		return true;
-	else
-		return false;
-}*/
