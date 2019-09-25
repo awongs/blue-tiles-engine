@@ -9,3 +9,18 @@ Behaviour::~Behaviour()
 {
 
 }
+
+void Behaviour::Update()
+{
+
+}
+
+void Behaviour::Draw()
+{
+
+}
+
+bool Behaviour::HandleMessage(std::string message)
+{
+	return false;
+}

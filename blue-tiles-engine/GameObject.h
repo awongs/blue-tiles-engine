@@ -3,17 +3,19 @@
 #include <string>
 #include <list>
 #include <memory>
+#include <iterator>
 #include <glm/glm.hpp>
+#include <vector>
 #include "Behaviour.h"
 
 class GameObject
 {
 
 public: 
-	GameObject(const std::list<std::unique_ptr<Behaviour>> behaviours);
-	GameObject(const std::list<std::unique_ptr<Behaviour>> behaviours, glm::vec3 pos);
-	GameObject(const std::list<std::unique_ptr<Behaviour>> behaviours, glm::vec3 pos, glm::vec3 rot);
-	GameObject(const std::list<std::unique_ptr<Behaviour>> behaviours, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca);
+	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours);
+	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos);
+	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot);
+	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca);
 	~GameObject();
 
 	// id of GameObject

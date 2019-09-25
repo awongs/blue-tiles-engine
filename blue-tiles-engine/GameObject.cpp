@@ -2,25 +2,35 @@
 #include <algorithm>
 #include <functional>
 
-GameObject::GameObject(const std::list<std::unique_ptr<Behaviour>> behaviours)
+GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours)
 {
-	m_Behaviours.merge(behaviours);
+	id = -1;
+	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
+	position = glm::vec3(0, 0, 0);
+	rotation = glm::vec3(0, 0, 0);
+	scale = glm::vec3(1, 1, 1);
 }
 
-GameObject::GameObject(const std::list<std::unique_ptr<Behaviour>> behaviours, glm::vec3 pos)
+GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos)
 {
-	m_Behaviours = behaviours;
+	id = -1;
+	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
 	position = pos;
+	rotation = glm::vec3(0, 0, 0);
+	scale = glm::vec3(1, 1, 1);
 }
-GameObject::GameObject(const std::list<std::unique_ptr<Behaviour>> behaviours, glm::vec3 pos, glm::vec3 rot)
+GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot)
 {
-	m_Behaviours = behaviours;
+	id = -1;
+	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
 	position = pos;
 	rotation = rot;
+	scale = glm::vec3(1, 1, 1);
 }
-GameObject::GameObject(const std::list<std::unique_ptr<Behaviour>> behaviours, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
+GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
 {
-	m_Behaviours = behaviours;
+	id = -1;
+	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
 	position = pos;
 	rotation = rot;
 	scale = sca;
