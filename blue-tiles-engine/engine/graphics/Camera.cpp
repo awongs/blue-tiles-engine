@@ -11,6 +11,9 @@ Camera::Camera()
 	, m_viewMatrix()
 	, m_projectionMatrix()
 {
+	// Initial matrix values
+	CalculateViewMatrix();
+	CalculatePerspectiveView();
 }
 
 Camera::~Camera()
@@ -28,24 +31,28 @@ Camera* Camera::GetInstance()
 	return m_instance;
 }
 
-void Camera::SetPosition(glm::vec3 position)
+void Camera::SetPosition(const glm::vec3 position)
 {
 	m_position = position;
+	CalculateViewMatrix();
 }
 
-void Camera::SetOrientation(glm::vec3 orientation)
+void Camera::SetOrientation(const glm::vec3 orientation)
 {
 	m_orientation = orientation;
+	CalculateViewMatrix();
 }
 
-void Camera::Translate(glm::vec3 translation)
+void Camera::Translate(const glm::vec3 translation)
 {
 	m_position += translation;
+	CalculateViewMatrix();
 }
 
-void Camera::Rotate(glm::vec3 rotation)
+void Camera::Rotate(const glm::vec3 rotation)
 {
 	m_orientation += rotation;
+	CalculateViewMatrix();
 }
 
 glm::vec3 Camera::GetPosition() const
@@ -56,6 +63,16 @@ glm::vec3 Camera::GetPosition() const
 glm::vec3 Camera::GetOrientation() const
 {
 	return m_orientation;
+}
+
+glm::mat4 Camera::GetViewMatrix() const
+{
+	return m_viewMatrix;
+}
+
+glm::mat4 Camera::GetProjectionMatrix() const
+{
+	return m_projectionMatrix;
 }
 
 void Camera::CalculateViewMatrix()
@@ -81,5 +98,5 @@ void Camera::CalculateViewMatrix()
 void Camera::CalculatePerspectiveView()
 {
 	// TODO: Make aspect ratio not hard coded
-	m_projectionMatrix = glm::perspective(m_fov, 4.0f / 3.0f, 1.0f, 400.0f);
+	m_projectionMatrix = glm::perspective(m_fov, 4.0f / 3.0f, 0.0f, 400.0f);
 }

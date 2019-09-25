@@ -13,22 +13,28 @@ public:
 	static Camera* GetInstance();
 
 	// Sets the position to an input vec3.
-	void SetPosition(glm::vec3 position);
+	void SetPosition(const glm::vec3 position);
 
 	// Sets the orientation to an input vec3.
-	void SetOrientation(glm::vec3 orientation);
+	void SetOrientation(const glm::vec3 orientation);
 
 	// Performs a translation by the input vec3.
-	void Translate(glm::vec3 translation);
+	void Translate(const glm::vec3 translation);
 
 	// Performs a rotation by the input vec3.
-	void Rotate(glm::vec3 rotation);
+	void Rotate(const glm::vec3 rotation);
 
 	// Position accessor.
 	glm::vec3 GetPosition() const;
 	
 	// Orientation accessor.
 	glm::vec3 GetOrientation() const;
+
+	// View matrix accessor.
+	glm::mat4 GetViewMatrix() const;
+
+	// Projection matrix accessor.
+	glm::mat4 GetProjectionMatrix() const;
 
 private:
 	// Constructor.
