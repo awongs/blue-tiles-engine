@@ -118,10 +118,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="engine\graphics\shaders\VertexShader.glsl">
+    <None Include="engine\graphics\shaders\VertexShader.vsh">
       <Filter>Source Files\engine\graphics\shaders</Filter>
     </None>
-    <None Include="engine\graphics\shaders\FragmentShader.glsl">
+    <None Include="engine\graphics\shaders\FragmentShader.fsh">
       <Filter>Source Files\engine\graphics\shaders</Filter>
     </None>
   </ItemGroup>

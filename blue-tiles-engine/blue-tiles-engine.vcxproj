@@ -178,8 +178,8 @@
     <ClInclude Include="util\FileManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="engine\graphics\shaders\FragmentShader.glsl" />
-    <None Include="engine\graphics\shaders\VertexShader.glsl" />
+    <None Include="engine\graphics\shaders\FragmentShader.fsh" />
+    <None Include="engine\graphics\shaders\VertexShader.vsh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

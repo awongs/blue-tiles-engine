@@ -11,7 +11,11 @@ public:
 	Shader(GLuint programHandle);
 
 	// Destructor.
-	~Shader();
+	virtual ~Shader();
+
+	// Prevent copying.
+	Shader(const Shader& other) = delete;
+	Shader& operator=(const Shader& other) = delete;
 
 	// Accessor for program handle.
 	GLuint GetProgramHandle() const;
@@ -34,7 +38,4 @@ public:
 private:
 	// The program number of the compiled shader.
 	GLuint m_programHandle;
-
-	// Prevent copy construction.
-	Shader(const Shader& other);
 };
