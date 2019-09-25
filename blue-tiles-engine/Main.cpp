@@ -58,12 +58,12 @@ int main()
 	Input *input{ new Input() };
 
 	SDL_Event windowEvent;
-	Sound *sound { new Sound()};
+	Sound *sound {new Sound()};
 	const string path = "../Assets/sound-assets/Alert.mp3";
 	sound->addMusic(path);
 	
-	if((Mix_PlayMusic(sound->m_music, -1))!=0) {
-		std::cout<<"Failed \n";
+	if((Mix_PlayMusic(sound->getMusic(), -1))!=0) {
+		DebugLog::Error("Failed");
 	}
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
