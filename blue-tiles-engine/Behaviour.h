@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 
+// Available Behaviour Types
 enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource };
 
 class Behaviour
@@ -10,6 +11,8 @@ public:
 
 	~Behaviour();
 
+
+	// Behaviour's type
 	BehaviourType type;
 
 	// Update

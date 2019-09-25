@@ -5,13 +5,24 @@
 GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours)
 {
 	id = -1;
+	name = "GameObject";
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
 	position = glm::vec3(0, 0, 0);
 	rotation = glm::vec3(0, 0, 0);
 	scale = glm::vec3(1, 1, 1);
 }
 
-GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos)
+GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n)
+{
+	id = -1;
+	name = n;
+	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
+	position = glm::vec3(0, 0, 0);
+	rotation = glm::vec3(0, 0, 0);
+	scale = glm::vec3(1, 1, 1);
+}
+
+GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos)
 {
 	id = -1;
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
@@ -19,7 +30,7 @@ GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm:
 	rotation = glm::vec3(0, 0, 0);
 	scale = glm::vec3(1, 1, 1);
 }
-GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot)
+GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos, glm::vec3 rot)
 {
 	id = -1;
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
@@ -27,7 +38,7 @@ GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm:
 	rotation = rot;
 	scale = glm::vec3(1, 1, 1);
 }
-GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
+GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
 {
 	id = -1;
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));

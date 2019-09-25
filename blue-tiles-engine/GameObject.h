@@ -12,10 +12,22 @@ class GameObject
 {
 
 public: 
+	// Constructor only behaviour
 	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours);
-	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos);
-	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot);
-	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca);
+
+	// Constructor behaviours + name
+	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n);
+
+	// Constructor behaviours + name + position
+	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos);
+
+	// Constructor behaviours + name + position + rotation
+	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos, glm::vec3 rot);
+
+	// Constructor behaviours + name + position + rotation + scale
+	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca);
+
+	// Deconstructor
 	~GameObject();
 
 	// id of GameObject
@@ -30,9 +42,6 @@ public:
 
 	glm::vec3 scale;
 
-	// Gets the behaviour of type behaviourType
-	/*std::unique_ptr<Behaviour> GetBehaviour(BehaviourType type);*/
-
 	// Update
 	virtual void Update();
 
@@ -42,6 +51,7 @@ public:
 	// Handles messages
 	virtual bool HandleMessage(std::string message, BehaviourType type);
 
+	// Gets behaviour of BehaviourType; Returns nullptr if doesn't exist
 	Behaviour* GetBehaviour(BehaviourType type);
 private:
 	std::vector<std::unique_ptr<Behaviour>> m_Behaviours;
