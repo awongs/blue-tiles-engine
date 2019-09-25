@@ -66,6 +66,12 @@
     <ClCompile Include="engine\sound\SoundManager.cpp">
       <Filter>Source Files\engine\sound</Filter>
     </ClCompile>
+    <ClCompile Include="engine\Behaviour.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameObject.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -91,6 +97,12 @@
     </ClInclude>
     <ClInclude Include="engine\sound\SoundManager.h">
       <Filter>Source Files\engine\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Behaviour.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\GameObject.h">
+      <Filter>Source Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
