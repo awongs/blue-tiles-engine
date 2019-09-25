@@ -1,29 +1,89 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="engine\debugbt\DebugLog.cpp" />
-    <ClCompile Include="engine\GameEngine.cpp" />
-    <ClCompile Include="engine\graphics\Renderer.cpp" />
-    <ClCompile Include="engine\graphics\ShaderManager.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="engine\input\Input.cpp" />
-    <ClCompile Include="glad.c" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="util\FileManager.cpp" />
-    <ClCompile Include="Behaviour.cpp" />
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier> 
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{8ea0e063-64a5-4976-8b92-d6e52e8fac3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\debugbt">
+      <UniqueIdentifier>{138b137f-9d33-4bac-9f99-a4193b878afd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\graphics">
+      <UniqueIdentifier>{4bc5ec90-6ede-4e9b-9f7c-3a84e62d00ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{d57af584-dd06-4a6d-a35a-6779e261ecf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\graphics\shaders">
+      <UniqueIdentifier>{2226b07d-1429-4278-86b8-2afe507aa4f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\input">
+      <UniqueIdentifier>{1d16b429-6d49-4663-9f06-cf0422fb0ea1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\debugbt\DebugLog.h" />
-    <ClInclude Include="engine\GameEngine.h" />
-    <ClInclude Include="engine\graphics\Renderer.h" />
-    <ClInclude Include="engine\graphics\ShaderManager.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="engine\input\Input.h" />
-    <ClInclude Include="util\FileManager.h" />
-    <ClInclude Include="Behaviour.h" />
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameEngine.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\debugbt\DebugLog.cpp">
+      <Filter>Source Files\engine\debugbt</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\Renderer.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\ShaderManager.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="util\FileManager.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\input\Input.cpp">
+      <Filter>Source Files\engine\input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="engine\graphics\shaders\FragmentShader.glsl" />
-    <None Include="engine\graphics\shaders\VertexShader.glsl" />
+    <ClInclude Include="engine\GameEngine.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\debugbt\DebugLog.h">
+      <Filter>Source Files\engine\debugbt</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Renderer.h">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\ShaderManager.h">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="util\FileManager.h">
+      <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\input\Input.h">
+      <Filter>Source Files\engine\input</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="engine\graphics\shaders\VertexShader.glsl">
+      <Filter>Source Files\engine\graphics\shaders</Filter>
+    </None>
+    <None Include="engine\graphics\shaders\FragmentShader.glsl">
+      <Filter>Source Files\engine\graphics\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
