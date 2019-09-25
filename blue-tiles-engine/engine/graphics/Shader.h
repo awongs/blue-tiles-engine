@@ -13,7 +13,8 @@ public:
 	// Destructor.
 	~Shader();
 
-	GLuint GetProgramHandle();
+	// Accessor for program handle.
+	GLuint GetProgramHandle() const;
 	
 	// Sets a uniform float value in the shader.
 	void SetUniform1f(const std::string name, const float value) const;

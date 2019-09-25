@@ -15,7 +15,7 @@ Shader::~Shader()
 	glDeleteShader(m_programHandle);
 }
 
-GLuint Shader::GetProgramHandle()
+GLuint Shader::GetProgramHandle() const
 {
 	return m_programHandle;
 }
