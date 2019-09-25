@@ -60,6 +60,12 @@
     <ClCompile Include="engine\input\Input.cpp">
       <Filter>Source Files\engine\input</Filter>
     </ClCompile>
+    <ClCompile Include="engine\graphics\Camera.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\Shader.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
     <ClCompile Include="engine\sound\Sound.cpp">
       <Filter>Source Files\engine\sound</Filter>
     </ClCompile>
@@ -92,6 +98,12 @@
     <ClInclude Include="engine\input\Input.h">
       <Filter>Source Files\engine\input</Filter>
     </ClInclude>
+    <ClInclude Include="engine\graphics\Camera.h">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Shader.h">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
     <ClInclude Include="engine\sound\Sound.h">
       <Filter>Source Files\engine\sound</Filter>
     </ClInclude>
@@ -106,10 +118,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="engine\graphics\shaders\VertexShader.glsl">
+    <None Include="engine\graphics\shaders\VertexShader.vsh">
       <Filter>Source Files\engine\graphics\shaders</Filter>
     </None>
-    <None Include="engine\graphics\shaders\FragmentShader.glsl">
+    <None Include="engine\graphics\shaders\FragmentShader.fsh">
       <Filter>Source Files\engine\graphics\shaders</Filter>
     </None>
   </ItemGroup>
