@@ -29,7 +29,24 @@ public:
 
 private:
 
+	// Updates the FPS counter
+	void UpdateFPSCounter();
+
 	// Pointer to a window
 	SDL_Window* m_window;
 
+	// Delta time between frames in seconds
+	float m_deltaTime;
+
+	// Milliseconds of the frame since the application was started
+	Uint32 m_lastFrameTime;
+
+	// Counter in milliseconds for updating the frame rate
+	Uint32 m_frameRateUpdateCounter;
+
+	// Counts the number of frames 
+	int m_frameCounter;
+
+	// Number of frames per second
+	int m_frameRate;
 };

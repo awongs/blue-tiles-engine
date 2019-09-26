@@ -1,7 +1,11 @@
+#include <memory>
+
 #include "Renderer.h"
 #include "ShaderManager.h"
 
 #include "../debugbt/DebugLog.h"
+#include "../../util/FileManager.h"
+#include "Camera.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
@@ -34,9 +38,13 @@ void Renderer::SetupShaders()
 	GLuint fragmentShader;
 	GLuint shaderProgram;
 
-	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, m_vertexSource);
+	// Load shader files into strings
+	std::string vertexSource = filemanager::LoadFile("engine/graphics/shaders/VertexShader.vsh");
+	std::string fragmentSource = filemanager::LoadFile("engine/graphics/shaders/FragmentShader.fsh");
 
-	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, m_fragmentSource);
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, vertexSource.c_str());
+
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, fragmentSource.c_str());
 
 	shaderProgram = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
@@ -83,6 +91,24 @@ void Renderer::Render()
 	// clearing screen
 	glClearColor(0.75f, 1.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	std::shared_ptr<Shader> currentShader = m_shaderManager->GetCurrentShader().lock();
+
+	// Make sure that the shader isn't null
+	if (currentShader == nullptr)
+	{
+		DebugLog::Error("Pointer to current shader is null in render loop");
+	}
+
+	// MVP matrices, TODO: Model matrix is identity for now
+	glm::mat4 modelMatrix = glm::mat4(1);
+	glm::mat4 viewMatrix = Camera::GetInstance()->GetViewMatrix();
+	glm::mat4 projectionMatrix = Camera::GetInstance()->GetProjectionMatrix();
+
+	// Set matrices in shader
+	currentShader->SetUniformMatrix4fv("model", modelMatrix);
+	currentShader->SetUniformMatrix4fv("view", viewMatrix);
+	currentShader->SetUniformMatrix4fv("projection", projectionMatrix);
 
 	// draw functions
 	glBindVertexArray(m_vertexAttributeObjectID);

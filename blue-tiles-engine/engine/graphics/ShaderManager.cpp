@@ -4,7 +4,7 @@
 
 ShaderManager::ShaderManager()
 {
-	m_programsCreated = std::vector<GLuint>();
+	m_programsCreated = std::vector<std::shared_ptr<Shader>>();
 	m_shadersCreated = std::vector<GLuint>();
 }
 
@@ -82,13 +82,22 @@ GLuint ShaderManager::CreateShaderProgram(GLuint vertexShaderID, GLuint fragment
 void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 {
 	glUseProgram(shaderProgramID);
-	m_currentProgram = shaderProgramID;
+
+	// Find the compiled shader
+	for (const std::shared_ptr<Shader>& shader : m_programsCreated)
+	{
+		if (shader->GetProgramHandle() == shaderProgramID)
+		{
+			// Set current shader
+			m_currentShader = shader;
+		}
+	}
 
 	bool hasProgram = false;
 
 	for (int i = 0; i < m_programsCreated.size() ; i++)
 	{
-		if (m_programsCreated[i] == shaderProgramID)
+		if (m_programsCreated[i]->GetProgramHandle() == shaderProgramID)
 		{
 			hasProgram = true;
 			break;
@@ -97,6 +106,13 @@ void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 
 	if (!hasProgram)
 	{
-		m_programsCreated.push_back(shaderProgramID);
+		std::shared_ptr<Shader> newShader = std::make_shared<Shader>(shaderProgramID);
+		m_programsCreated.push_back(newShader);
+		m_currentShader = newShader;
 	}
+}
+
+std::weak_ptr<Shader> ShaderManager::GetCurrentShader()
+{
+	return m_currentShader;
 }
