@@ -3,7 +3,7 @@
 #include <list>
 #include <memory>
 
-#include "engine/GameObject.h"
+#include "GameObject.h"
 
 class Scene
 {

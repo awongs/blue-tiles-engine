@@ -157,11 +157,11 @@
     <ClCompile Include="engine\graphics\Shader.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
+    <ClCompile Include="engine\Scene.cpp" />
     <ClCompile Include="engine\sound\Sound.cpp" />
     <ClCompile Include="engine\sound\SoundManager.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="util\FileManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,10 +174,10 @@
     <ClInclude Include="engine\graphics\Shader.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
     <ClInclude Include="engine\input\Input.h" />
+    <ClInclude Include="engine\Scene.h" />
     <ClInclude Include="engine\sound\Sound.h" />
     <ClInclude Include="engine\sound\SoundManager.h" />
     <ClInclude Include="util\FileManager.h" />
-    <ClInclude Include="Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="engine\graphics\shaders\FragmentShader.fsh" />
