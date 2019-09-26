@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="engine\behaviours\Behaviour.cpp" />
+    <ClCompile Include="engine\behaviours\MeshRenderer.cpp" />
     <ClCompile Include="engine\debugbt\DebugLog.cpp" />
     <ClCompile Include="engine\GameEngine.cpp" />
     <ClCompile Include="engine\graphics\Camera.cpp" />
@@ -166,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\behaviours\Behaviour.h" />
+    <ClInclude Include="engine\behaviours\MeshRenderer.h" />
     <ClInclude Include="engine\debugbt\DebugLog.h" />
     <ClInclude Include="engine\GameEngine.h" />
     <ClInclude Include="engine\graphics\Camera.h" />
