@@ -6,7 +6,7 @@
 #include <iterator>
 #include <glm/glm.hpp>
 #include <vector>
-#include "Behaviour.h"
+#include "behaviours/Behaviour.h"
 
 class GameObject
 {
