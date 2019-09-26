@@ -1,51 +1,28 @@
 #include "Scene.h"
 
-#include "engine/debugbt/DebugLog.h"
-
-Scene::Scene()
+Scene::Scene(std::list<std::unique_ptr<GameObject>>& worldGameObjects, std::list<std::unique_ptr<GameObject>>& screenGameObjects)
 {
-
-}
-
-
-Scene::Scene(const std::list<std::unique_ptr<GameObject>>& worldGameObjects, const std::list<std::unique_ptr<GameObject>>& screenGameObjects)
-{
-	m_worldGameObjects = worldGameObjects;
-	m_screenGameObjects = screenGameObjects;
+	std::move(begin(worldGameObjects), end(worldGameObjects), std::inserter(m_worldGameObjects, end(m_worldGameObjects)));
+	std::move(begin(screenGameObjects), end(screenGameObjects), std::inserter(m_screenGameObjects, end(m_screenGameObjects)));
 }
 
 Scene::~Scene()
 {
-	for (auto&& worldObj : m_worldGameObjects)
-		worldObj.reset(); // deletes the raw pointer
-	m_worldGameObjects.clear();
-	for (auto&& screenObj : m_screenGameObjects)
-		screenObj.reset(); // deletes the raw pointer
-	m_screenGameObjects.clear();
+
 }
 
 void Scene::Update()
 {
-	/*
-	for (std::list<std::unique_ptr<GameObject>>::iterator it = m_worldGameObjects.begin(); it != m_worldGameObjects.end(); ++it)
-		(*it)->Update();
-	for (std::list<std::unique_ptr<GameObject>>::iterator it = m_screenGameObjects.begin(); it != m_screenGameObjects.end(); ++it)
-		(*it)->Update();
-	*/
+	for (auto&& worldGameObj : m_worldGameObjects) worldGameObj->Update();
+	for (auto&& screenGameObj : m_screenGameObjects) screenGameObj->Update();
 }
 
 void Scene::DrawWorld()
 {
-	/*
-	for (std::list<std::unique_ptr<GameObject>>::iterator it = m_worldGameObjects.begin(); it != m_worldGameObjects.end(); ++it)
-		(*it)->Draw();
-	*/
+	for (auto&& worldGameObj : m_worldGameObjects) worldGameObj->Draw();
 }
 
 void Scene::DrawScreen()
 {
-	/*
-	for (std::list<std::unique_ptr<GameObject>>::iterator it = m_screenGameObjects.begin(); it != m_screenGameObjects.end(); ++it)
-		(*it)->Draw();
-	*/
+	for (auto&& screenGameObj : m_screenGameObjects) screenGameObj->Draw();
 }
