@@ -50,7 +50,7 @@ private:
 	void CalculatePerspectiveView();
 
 	// Field of view.
-	float m_fov = 60.0f;
+	float m_fov = glm::radians(60.0f);
 
 	// Current position of the camera.
 	glm::vec3 m_position;

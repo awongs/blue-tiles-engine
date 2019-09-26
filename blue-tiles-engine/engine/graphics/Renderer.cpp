@@ -71,10 +71,10 @@ void Renderer::SetupBuffers()
 
 	// copy vertex data to vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObjectID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(m_verticesCube), m_verticesCube, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesBufferObjectID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indices), m_indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indicesCube), m_indicesCube, GL_STATIC_DRAW);
 
 	// declare that position is at index 0 of attribs for VAO
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
@@ -109,10 +109,10 @@ void Renderer::Render()
 	currentShader->SetUniformMatrix4fv("model", modelMatrix);
 	currentShader->SetUniformMatrix4fv("view", viewMatrix);
 	currentShader->SetUniformMatrix4fv("projection", projectionMatrix);
-
+	
 	// draw functions
 	glBindVertexArray(m_vertexAttributeObjectID);
-	glDrawElements(GL_TRIANGLES, sizeof(m_indices), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, sizeof(m_indicesCube), GL_UNSIGNED_INT, 0);
 }
 
 void Renderer::Display()
