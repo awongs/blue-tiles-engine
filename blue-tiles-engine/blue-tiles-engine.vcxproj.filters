@@ -34,6 +34,9 @@
     <Filter Include="Source Files\engine\sound">
       <UniqueIdentifier>{c1167587-40b9-4997-8db1-fa581abbec43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\physics">
+      <UniqueIdentifier>{bc39fee8-f452-43af-b9fc-0a33f50f66f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -81,6 +84,18 @@
     <ClCompile Include="engine\Scene.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="engine\physics\BoxCollider.cpp">
+      <Filter>Source Files\engine\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\physics\PhysicsEngine.cpp">
+      <Filter>Source Files\engine\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\physics\PhysicsObject.cpp">
+      <Filter>Source Files\engine\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\physics\SphereCollider.cpp">
+      <Filter>Source Files\engine\physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -121,6 +136,21 @@
     </ClInclude>
     <ClInclude Include="engine\Scene.h">
       <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\BoxCollider.h">
+      <Filter>Source Files\engine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\Collider.h">
+      <Filter>Source Files\engine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\PhysicsEngine.h">
+      <Filter>Source Files\engine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\PhysicsObject.h">
+      <Filter>Source Files\engine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\physics\SphereCollider.h">
+      <Filter>Source Files\engine\physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
