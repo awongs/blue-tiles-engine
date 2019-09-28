@@ -71,7 +71,10 @@ void MessageSystem::MessageManager::ProcessMessages(Scene* targetScene)
 		ObjectMessage msg = messageQueue.front();
 		messageQueue.pop();
 
-		targetScene->getWorldGameObjectById(msg.targetID)->HandleMessage(msg.message, msg.targetBehaviour);
+		auto& go = targetScene->getWorldGameObjectById(msg.targetID);
+		
+		// ignore message if no target game object found
+		if (go != nullptr) go->HandleMessage(msg.message, msg.targetBehaviour);
 	}
 }
 
