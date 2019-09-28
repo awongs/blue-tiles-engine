@@ -53,6 +53,7 @@ namespace MessageSystem
 		void FlushAllMessages();
 
 	private:
+		// struct for every message
 		struct ObjectMessage
 		{
 			unsigned int targetID;
@@ -62,8 +63,10 @@ namespace MessageSystem
 			std::string message;
 		};
 
+		// message to objects queue 
 		std::queue<ObjectMessage> messageQueue;
 
+		// broadcast message queue
 		std::queue<ObjectMessage> broadcastQueue;
 	};
 };
