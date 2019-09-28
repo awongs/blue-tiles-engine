@@ -158,6 +158,7 @@
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
     <ClCompile Include="engine\physics\BoxCollider.cpp" />
+    <ClCompile Include="engine\physics\Collider.cpp" />
     <ClCompile Include="engine\physics\PhysicsEngine.cpp" />
     <ClCompile Include="engine\physics\PhysicsObject.cpp" />
     <ClCompile Include="engine\physics\SphereCollider.cpp" />

@@ -96,6 +96,9 @@
     <ClCompile Include="engine\physics\SphereCollider.cpp">
       <Filter>Source Files\engine\physics</Filter>
     </ClCompile>
+    <ClCompile Include="engine\physics\Collider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
