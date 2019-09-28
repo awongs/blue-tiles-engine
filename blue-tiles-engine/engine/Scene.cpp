@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
+#include "MessageSystem.h"
 
 Scene::Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::vector<std::unique_ptr<GameObject>>& screenGameObjects)
 {
@@ -36,6 +37,9 @@ void Scene::Update()
 {
 	for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Update();
 	for (auto& screenGameObj : m_screenGameObjects) screenGameObj->Update();
+
+	// message system updates
+	MessageSystem::ProcessAllMessages(this);
 }
 
 void Scene::DrawWorld()
