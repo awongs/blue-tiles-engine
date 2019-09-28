@@ -157,7 +157,6 @@
     <ClCompile Include="engine\graphics\Shader.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
-    <ClCompile Include="engine\physics\BoxCollider.cpp" />
     <ClCompile Include="engine\physics\Collider.cpp" />
     <ClCompile Include="engine\physics\PhysicsEngine.cpp" />
     <ClCompile Include="engine\physics\PhysicsObject.cpp" />
@@ -179,7 +178,6 @@
     <ClInclude Include="engine\graphics\Shader.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
     <ClInclude Include="engine\input\Input.h" />
-    <ClInclude Include="engine\physics\BoxCollider.h" />
     <ClInclude Include="engine\physics\Collider.h" />
     <ClInclude Include="engine\physics\PhysicsEngine.h" />
     <ClInclude Include="engine\physics\PhysicsObject.h" />

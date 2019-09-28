@@ -129,11 +129,11 @@ public:
 
 private:
 	// Roughly check for potential collisions using bounding boxes.
-	void CheckBroadPhase();
+	void DoBroadPhase();
 
 	// Detect collisions more precisely, given that they were
 	// detected during broad phase.
-	void CheckNarrowPhase();
+	void DoNarrowPhase();
 
 	// Handle all detected collisions.
 	void HandleCollisions();
@@ -146,7 +146,7 @@ private:
 	// overlapping intervals. Intervals are defined by the area bounded
 	// by their 2 endpoints in one axis.
 	void UpdateIntervals(std::vector<Endpoint> &endpoints, 
-		std::vector<int> &lookupTable);
+		std::vector<GLuint> &lookupTable);
 
 	// Generate the list of overlapping intervals from the set of instructions
 	// created produced during the "sort" phase.
@@ -154,7 +154,7 @@ private:
 
 	// Check if two endpoints are overlapping.
 	bool IsOverlapping(int endpointIndex1, int endpointIndex2,
-		const std::vector<int> &lookupTable, 
+		const std::vector<GLuint> &lookupTable,
 		const std::vector<Endpoint> &endpoints);
 
 	// Hold all the physics components.
@@ -183,4 +183,7 @@ private:
 	// The paired game objects are close enough to each other to warrant 
 	// a narrow phase check.
 	std::set<std::pair<GLuint, GLuint>> m_overlapsSet;
+
+	// Hold pairs of physics components that collided during this frame.
+	std::vector<std::pair<PhysicsObject *, PhysicsObject *>> m_collisions;
 };

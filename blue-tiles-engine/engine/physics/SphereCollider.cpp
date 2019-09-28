@@ -1,7 +1,7 @@
 #include "SphereCollider.h"
 
 SphereCollider::SphereCollider(float radius) :
-	m_radius(radius)
+	Collider(glm::vec3(radius)), m_radius(radius)
 {
 
 }

@@ -20,6 +20,9 @@ public:
 
 	// Get the game object's id.
 	GLuint GetId() const;
+	
+	// Get the physics object's collider.
+	Collider *GetCollider() const;
 
 private:
 	// The id of the game object that this physics component belongs to.
