@@ -12,18 +12,18 @@ namespace MessageSystem
 	// targetID			- The ID of the game object that the message is for.
 	// targetBehaviour	- The behaviour that the message should be handled by in the target game object.
 	// message			- The message to be handled.
-	inline static void SendMessageToObject(unsigned int targetID, BehaviourType targetBehaviour, std::string message);
+	void SendMessageToObject(unsigned int targetID, BehaviourType targetBehaviour, std::string message);
 
 	// Queues a message to be sent to all game objects.
 	// targetBehaviour	- The behaviour that the message should be handled by all game objects.
 	// message			- The message to be handled. 
-	inline static void BroadcastMessage(BehaviourType targetBehaviour, std::string message);
+	void BroadcastMessage(BehaviourType targetBehaviour, std::string message);
 
 	// Processes/sends all of the messages in the message and broadcast queue.
 	// Game object specific messages are sent first and broadcast messages after.
 	// If a target game object is not found, the message is ignored and removed from the queue.
 	// targetScene		- The scene to use when searching for the correct game objects.
-	inline static void ProcessAllMessages(Scene* targetScene);
+	void ProcessAllMessages(Scene* targetScene);
 
 	class MessageManager
 	{
