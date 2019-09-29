@@ -3,7 +3,7 @@
 
 Scene::Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::vector<std::unique_ptr<GameObject>>& screenGameObjects)
 {
-	for (int i = 0; i < worldGameObjects.size() - 2; ++i)
+	for (int i = 0; i < static_cast<int>(worldGameObjects.size()) - 2; ++i)
 	{
 		for (int j = i + 1; j < worldGameObjects.size(); ++j)
 		{
@@ -13,7 +13,7 @@ Scene::Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::ve
 			}
 		}
 	}
-	for (int i = 0; i < screenGameObjects.size() - 2; ++i)
+	for (int i = 0; i < static_cast<int>(worldGameObjects.size()) - 2; ++i)
 	{
 		for (int j = i + 1; j < screenGameObjects.size(); ++j)
 		{
