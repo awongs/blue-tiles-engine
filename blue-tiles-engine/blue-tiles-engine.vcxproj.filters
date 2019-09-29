@@ -87,6 +87,9 @@
     <ClCompile Include="engine\behaviours\MeshRenderer.cpp">
       <Filter>Source Files\engine\behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="engine\MessageSystem.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="engine\behaviours\MeshRenderer.h">
       <Filter>Source Files\engine\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\MessageSystem.h">
+      <Filter>Source Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
