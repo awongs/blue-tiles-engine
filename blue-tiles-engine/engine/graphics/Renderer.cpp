@@ -15,9 +15,6 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 {
 	DebugLog::Info("Renderer initialization starting...\n");
 
-	DebugLog::Info("Generating buffers...\n");
-	//SetupBuffers();
-
 	m_shaderManager = new ShaderManager();
 
 	DebugLog::Info("Creating shader program...\n");

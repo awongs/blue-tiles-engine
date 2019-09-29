@@ -59,6 +59,9 @@ void GameObject::Update()
 	{
 		behaviour->Update();
 	}
+
+	// -- Testing Purposes --
+	rotation.y += 0.01f;
 }
 
 void GameObject::Draw()

@@ -20,8 +20,8 @@ private:
 	// ID to the indices buffer object
 	GLuint m_indicesBufferObjectID;
 
-	// ID to the vertex attribute object
-	GLuint m_vertexAttributeObjectID;
+	// ID to the vertex array object
+	GLuint m_vertexArrayObjectID;
 
 	// -- Testing Purposes --
 	GLfloat m_verticesCube[24 * 3] = {

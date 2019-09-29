@@ -58,6 +58,8 @@ GameEngine::~GameEngine()
 void GameEngine::Update()
 {
 	UpdateFPSCounter();
+
+	m_currentScene->Update();
 }
 
 void GameEngine::Draw()
