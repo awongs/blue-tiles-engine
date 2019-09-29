@@ -1,4 +1,5 @@
 #include <memory>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Renderer.h"
 #include "ShaderManager.h"
@@ -6,6 +7,8 @@
 #include "../debugbt/DebugLog.h"
 #include "../../util/FileManager.h"
 #include "Camera.h"
+#include "../Scene.h"
+#include "../behaviours/MeshRenderer.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
@@ -13,7 +16,7 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 	DebugLog::Info("Renderer initialization starting...\n");
 
 	DebugLog::Info("Generating buffers...\n");
-	SetupBuffers();
+	//SetupBuffers();
 
 	m_shaderManager = new ShaderManager();
 
@@ -28,7 +31,7 @@ Renderer::~Renderer()
 	// cleanup context
 	SDL_GL_DeleteContext(m_context);
 
-	glDeleteBuffers(1, &m_vertexBufferObjectID);
+	//glDeleteBuffers(1, &m_vertexBufferObjectID);
 }
 
 void Renderer::SetupShaders()
@@ -58,39 +61,14 @@ void Renderer::SetupShaders()
 	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
-void Renderer::SetupBuffers()
-{		
-	// generate buffers
-	glGenVertexArrays(1, &m_vertexAttributeObjectID);
-	glGenBuffers(1, &m_vertexBufferObjectID);
-	glGenBuffers(1, &m_indicesBufferObjectID);
-
-
-	// bind the Vertex Array Object first, then bind and set Vertex Buffers and attribute pointers
-	glBindVertexArray(m_vertexAttributeObjectID);
-
-	// copy vertex data to vertex buffer
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObjectID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(m_verticesCube), m_verticesCube, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesBufferObjectID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indicesCube), m_indicesCube, GL_STATIC_DRAW);
-
-	// declare that position is at index 0 of attribs for VAO
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-
-	// clear buffer bindings
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // do not unbind.
-	glBindVertexArray(0);
-}
-
-void Renderer::Render()
+void Renderer::Render(Scene& currentScene)
 {
 	// clearing screen
 	glClearColor(0.75f, 1.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+	
+	// Bind the VAO
+	//glBindVertexArray(m_vertexAttributeObjectID);
 
 	std::shared_ptr<Shader> currentShader = m_shaderManager->GetCurrentShader().lock();
 
@@ -100,19 +78,35 @@ void Renderer::Render()
 		DebugLog::Error("Pointer to current shader is null in render loop");
 	}
 
-	// MVP matrices, TODO: Model matrix is identity for now
-	glm::mat4 modelMatrix = glm::mat4(1);
+	// MVP matrices
 	glm::mat4 viewMatrix = Camera::GetInstance().GetViewMatrix();
 	glm::mat4 projectionMatrix = Camera::GetInstance().GetProjectionMatrix();
 
-	// Set matrices in shader
-	currentShader->SetUniformMatrix4fv("model", modelMatrix);
+	// Set camera matrices in shader
 	currentShader->SetUniformMatrix4fv("view", viewMatrix);
 	currentShader->SetUniformMatrix4fv("projection", projectionMatrix);
+
+	for (const std::unique_ptr<GameObject>& gameObject : currentScene.getWorldGameObjects())
+	{
+		glm::mat4 modelMatrix = glm::mat4(1);
+
+		// Rotation
+		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.x, glm::vec3(1, 0, 0));
+		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.y, glm::vec3(0, 1, 0));
+		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.z, glm::vec3(0, 0, 1));
+
+		// Scale
+		modelMatrix = glm::scale(modelMatrix, gameObject->scale);
+
+		// Translate
+		modelMatrix = glm::translate(modelMatrix, gameObject->position);
+
+		currentShader->SetUniformMatrix4fv("model", modelMatrix);
+		gameObject->Draw();
+	}
 	
 	// draw functions
-	glBindVertexArray(m_vertexAttributeObjectID);
-	glDrawElements(GL_TRIANGLES, sizeof(m_indicesCube), GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_TRIANGLES, sizeof(m_indicesCube), GL_UNSIGNED_INT, 0);
 }
 
 void Renderer::Display()
