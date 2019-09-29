@@ -102,8 +102,8 @@ void Renderer::Render()
 
 	// MVP matrices, TODO: Model matrix is identity for now
 	glm::mat4 modelMatrix = glm::mat4(1);
-	glm::mat4 viewMatrix = Camera::GetInstance()->GetViewMatrix();
-	glm::mat4 projectionMatrix = Camera::GetInstance()->GetProjectionMatrix();
+	glm::mat4 viewMatrix = Camera::GetInstance().GetViewMatrix();
+	glm::mat4 projectionMatrix = Camera::GetInstance().GetProjectionMatrix();
 
 	// Set matrices in shader
 	currentShader->SetUniformMatrix4fv("model", modelMatrix);
