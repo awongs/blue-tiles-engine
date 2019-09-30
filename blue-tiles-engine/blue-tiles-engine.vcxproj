@@ -176,6 +176,7 @@
     <ClInclude Include="engine\graphics\Renderer.h" />
     <ClInclude Include="engine\graphics\Shader.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
+    <ClInclude Include="engine\graphics\Texture.h" />
     <ClInclude Include="engine\input\Input.h" />
     <ClInclude Include="engine\MessageSystem.h" />
     <ClInclude Include="engine\Scene.h" />

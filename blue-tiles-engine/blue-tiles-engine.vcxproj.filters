@@ -137,6 +137,9 @@
     <ClInclude Include="engine\MessageSystem.h">
       <Filter>Source Files\engine</Filter>
     </ClInclude>
+    <ClInclude Include="engine\graphics\Texture.h">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="engine\graphics\shaders\VertexShader.vsh">
