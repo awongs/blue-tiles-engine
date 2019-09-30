@@ -9,15 +9,17 @@ enum class BehaviourType;
 namespace MessageSystem
 {
 	// Queues a message to be sent to the game object with the matching ID.
+	// senderID			- The ID of the game object that sent the message
 	// targetID			- The ID of the game object that the message is for.
 	// targetBehaviour	- The behaviour that the message should be handled by in the target game object.
 	// message			- The message to be handled.
-	void SendMessageToObject(unsigned int targetID, BehaviourType targetBehaviour, std::string message);
+	void SendMessageToObject(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message);
 
 	// Queues a message to be sent to all game objects.
+	// senderID			- The ID of the game object that sent the message
 	// targetBehaviour	- The behaviour that the message should be handled by all game objects.
 	// message			- The message to be handled. 
-	void BroadcastMessage(BehaviourType targetBehaviour, std::string message);
+	void BroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message);
 
 	// Processes/sends all of the messages in the message and broadcast queue.
 	// Game object specific messages are sent first and broadcast messages after.
@@ -39,10 +41,10 @@ namespace MessageSystem
 		~MessageManager();
 
 		// Places the message into the back of the message queue.
-		void QueueMessage(unsigned int targetID, BehaviourType targetBehaviour, std::string message);
+		void QueueMessage(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message);
 
 		// Places the broadcast message into the back of the broadcast queue.
-		void QueueBroadcastMessage(BehaviourType targetBehaviour, std::string message);
+		void QueueBroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message);
 
 		// Processes/sends all of the messages in the message queue to the targeted game objects in the target scene.
 		void ProcessMessages(Scene* targetScene);
@@ -50,12 +52,18 @@ namespace MessageSystem
 		// Processes/sends all of the broadcast messages in the broadcast queue to all of the game objects in the target scene. 
 		void ProcessBroadcast(Scene* targetScene);
 
+		// Removes all of the messages in the queue
 		void FlushAllMessages();
+
+		// Returns a string containing short info about the manager.
+		std::string GetInfo();
 
 	private:
 		// struct for every message
 		struct ObjectMessage
 		{
+			unsigned int senderID;
+
 			unsigned int targetID;
 
 			BehaviourType targetBehaviour;
@@ -63,10 +71,18 @@ namespace MessageSystem
 			std::string message;
 		};
 
+		bool processing;
+
 		// message to objects queue 
 		std::queue<ObjectMessage> messageQueue;
 
+		// message to objects queue while processing
+		std::queue<ObjectMessage> messageQueueQueue;
+
 		// broadcast message queue
 		std::queue<ObjectMessage> broadcastQueue;
+
+		// broacast message queue while processing
+		std::queue<ObjectMessage> broadcastQueueQueue;
 	};
 };

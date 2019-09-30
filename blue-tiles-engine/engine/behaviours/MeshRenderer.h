@@ -11,7 +11,7 @@ public:
 
 	void Update() override;
 	void Draw() override;
-	bool HandleMessage(std::string message) override;
+	bool HandleMessage(unsigned int senderID, std::string message) override;
 
 private:
 	// ID to the vertex buffer object

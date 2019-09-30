@@ -13,14 +13,14 @@ namespace MessageSystem
 		GLOBAL FUNCTIONS
 	*/
 
-	void SendMessageToObject(unsigned int targetID, BehaviourType targetBehaviour, std::string message)
+	void SendMessageToObject(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message)
 	{
-		MessageManager::instance->QueueMessage(targetID, targetBehaviour, message);
+		MessageManager::instance->QueueMessage(senderID, targetID, targetBehaviour, message);
 	}
 
-	void BroadcastMessage(BehaviourType targetBehaviour, std::string message)
+	void BroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
 	{
-		MessageManager::instance->QueueBroadcastMessage(targetBehaviour, message);
+		MessageManager::instance->QueueBroadcastMessage(senderID, targetBehaviour, message);
 	}
 
 	void ProcessAllMessages(Scene* targetScene)
@@ -32,8 +32,8 @@ namespace MessageSystem
 	/*
 		CLASS FUNCTIONS
 	*/
-
 	MessageManager::MessageManager()
+		: processing(false)
 	{
 	}
 
@@ -42,30 +42,36 @@ namespace MessageSystem
 	{
 	}
 
-	void MessageManager::QueueMessage(unsigned int targetID, BehaviourType targetBehaviour, std::string message)
+	void MessageManager::QueueMessage(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message)
 	{
 		ObjectMessage msg;
 
+		msg.senderID = senderID;
 		msg.targetID = targetID;
 		msg.targetBehaviour = targetBehaviour;
 		msg.message = message;
 
-		messageQueue.push(msg);
+		if (processing) messageQueueQueue.push(msg);
+		else messageQueue.push(msg);
 	}
 
-	void MessageManager::QueueBroadcastMessage(BehaviourType targetBehaviour, std::string message)
+	void MessageManager::QueueBroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
 	{
 		ObjectMessage msg;
 
+		msg.senderID = senderID;
 		msg.targetID = 0;
 		msg.targetBehaviour = targetBehaviour;
 		msg.message = message;
 
-		broadcastQueue.push(msg);
+		if (processing) broadcastQueue.push(msg);
+		else broadcastQueueQueue.push(msg);
 	}
 
 	void MessageManager::ProcessMessages(Scene* targetScene)
 	{
+		processing = true;
+
 		while (messageQueue.size() != 0)
 		{
 			ObjectMessage msg = messageQueue.front();
@@ -74,12 +80,23 @@ namespace MessageSystem
 			auto& go = targetScene->getWorldGameObjectById(msg.targetID);
 
 			// ignore message if no target game object found
-			if (go != nullptr) go->HandleMessage(msg.message, msg.targetBehaviour);
+			if (go != nullptr) go->HandleMessage(msg.senderID, msg.message, msg.targetBehaviour);
 		}
+
+		// copy queuequeue to queue
+		while (messageQueueQueue.size() != 0)
+		{
+			messageQueue.push(messageQueueQueue.front());
+			messageQueueQueue.pop();
+		}
+
+		processing = false;
 	}
 
 	void MessageManager::ProcessBroadcast(Scene* targetScene)
 	{
+		processing = true;
+
 		std::vector<std::unique_ptr<GameObject>> const& objects = targetScene->getWorldGameObjects();
 
 		while (broadcastQueue.size() != 0)
@@ -89,19 +106,34 @@ namespace MessageSystem
 
 			for (auto& obj : objects)
 			{
-				obj->HandleMessage(msg.message, msg.targetBehaviour);
+				obj->HandleMessage(msg.senderID, msg.message, msg.targetBehaviour);
 			}
 		}
+
+		// copy broadcast messages queuequeue to queue
+		while (broadcastQueueQueue.size() != 0)
+		{
+			broadcastQueue.push(broadcastQueueQueue.front());
+			broadcastQueueQueue.pop();
+		}
+
+		processing = false;
 	}
 
 	void MessageManager::FlushAllMessages()
 	{
-		size_t msgQCount = messageQueue.size();
-		size_t bcQCount = broadcastQueue.size();
-
 		messageQueue.empty();
+		messageQueueQueue.empty();
 		broadcastQueue.empty();
+		broadcastQueueQueue.empty();
 
-		DebugLog::Info("Flushed all messages in queue! MSG=" + std::to_string(msgQCount) + " BC=" + std::to_string(bcQCount));
+		DebugLog::Info(GetInfo());
+	}
+	std::string MessageManager::GetInfo()
+	{
+		size_t msgQCount = messageQueue.size() + messageQueueQueue.size();
+		size_t bcQCount = broadcastQueue.size() + broadcastQueueQueue.size();
+
+		return "Flushed all messages in queue! MSG=" + std::to_string(msgQCount) + " BC=" + std::to_string(bcQCount);
 	}
 }

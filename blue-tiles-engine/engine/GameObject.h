@@ -49,7 +49,7 @@ public:
 	virtual void Draw();
 
 	// Handles messages
-	virtual bool HandleMessage(std::string message, BehaviourType type);
+	virtual bool HandleMessage(unsigned int senderID, std::string message, BehaviourType type);
 
 	// Gets behaviour of BehaviourType; Returns nullptr if doesn't exist
 	Behaviour* GetBehaviour(BehaviourType type);

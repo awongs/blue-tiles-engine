@@ -20,7 +20,7 @@ void Behaviour::Draw()
 
 }
 
-bool Behaviour::HandleMessage(std::string message)
+bool Behaviour::HandleMessage(unsigned int senderID, std::string message)
 {
 	return false;
 }
