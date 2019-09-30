@@ -52,7 +52,11 @@ namespace MessageSystem
 		// Processes/sends all of the broadcast messages in the broadcast queue to all of the game objects in the target scene. 
 		void ProcessBroadcast(Scene* targetScene);
 
+		// Removes all of the messages in the queue
 		void FlushAllMessages();
+
+		// Returns a string containing short info about the manager.
+		std::string GetInfo();
 
 	private:
 		// struct for every message

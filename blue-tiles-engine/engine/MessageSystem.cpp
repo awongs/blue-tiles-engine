@@ -123,14 +123,18 @@ namespace MessageSystem
 
 	void MessageSystem::MessageManager::FlushAllMessages()
 	{
-		size_t msgQCount = messageQueue.size() + messageQueueQueue.size();
-		size_t bcQCount = broadcastQueue.size() + broadcastQueueQueue.size();
-
 		messageQueue.empty();
 		messageQueueQueue.empty();
 		broadcastQueue.empty();
 		broadcastQueueQueue.empty();
 
-		DebugLog::Info("Flushed all messages in queue! MSG=" + std::to_string(msgQCount) + " BC=" + std::to_string(bcQCount));
+		DebugLog::Info(GetInfo());
+	}
+	std::string MessageManager::GetInfo()
+	{
+		size_t msgQCount = messageQueue.size() + messageQueueQueue.size();
+		size_t bcQCount = broadcastQueue.size() + broadcastQueueQueue.size();
+
+		return "Flushed all messages in queue! MSG=" + std::to_string(msgQCount) + " BC=" + std::to_string(bcQCount)
 	}
 }
