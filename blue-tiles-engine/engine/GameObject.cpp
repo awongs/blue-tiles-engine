@@ -87,5 +87,7 @@ Behaviour* GameObject::GetBehaviour(BehaviourType type)
 
 bool GameObject::HandleMessage(unsigned int senderID, std::string message, BehaviourType type)
 {
-	return false;
+	Behaviour* behav = GetBehaviour(type);
+
+	return behav != nullptr ? behav->HandleMessage(senderID, message) : false;
 }
