@@ -53,7 +53,7 @@ void MeshRenderer::Draw()
 	glDrawElements(GL_TRIANGLES, sizeof(m_indicesCube), GL_UNSIGNED_INT, 0);
 }
 
-bool MeshRenderer::HandleMessage(std::string message)
+bool MeshRenderer::HandleMessage(unsigned int senderID, std::string message)
 {
 	return false;
 }

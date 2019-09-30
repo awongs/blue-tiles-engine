@@ -22,5 +22,5 @@ public:
 	virtual void Draw();
 
 	// Handles messages
-	virtual bool HandleMessage(std::string message);
+	virtual bool HandleMessage(unsigned int senderID, std::string message);
 };
