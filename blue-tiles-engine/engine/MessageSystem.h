@@ -9,17 +9,15 @@ enum class BehaviourType;
 namespace MessageSystem
 {
 	// Queues a message to be sent to the game object with the matching ID.
-	// senderID			- The id of theg game object of the sender of the message
 	// targetID			- The ID of the game object that the message is for.
 	// targetBehaviour	- The behaviour that the message should be handled by in the target game object.
 	// message			- The message to be handled.
-	void SendMessageToObject(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message);
+	void SendMessageToObject(unsigned int targetID, BehaviourType targetBehaviour, std::string message);
 
 	// Queues a message to be sent to all game objects.
-	// senderID			- The id of theg game object of the sender of the message
 	// targetBehaviour	- The behaviour that the message should be handled by all game objects.
 	// message			- The message to be handled. 
-	void BroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message);
+	void BroadcastMessage(BehaviourType targetBehaviour, std::string message);
 
 	// Processes/sends all of the messages in the message and broadcast queue.
 	// Game object specific messages are sent first and broadcast messages after.
@@ -41,10 +39,10 @@ namespace MessageSystem
 		~MessageManager();
 
 		// Places the message into the back of the message queue.
-		void QueueMessage(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message);
+		void QueueMessage(unsigned int targetID, BehaviourType targetBehaviour, std::string message);
 
 		// Places the broadcast message into the back of the broadcast queue.
-		void QueueBroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message);
+		void QueueBroadcastMessage(BehaviourType targetBehaviour, std::string message);
 
 		// Processes/sends all of the messages in the message queue to the targeted game objects in the target scene.
 		void ProcessMessages(Scene* targetScene);
@@ -58,8 +56,6 @@ namespace MessageSystem
 		// struct for every message
 		struct ObjectMessage
 		{
-			unsigned int senderID;
-
 			unsigned int targetID;
 
 			BehaviourType targetBehaviour;

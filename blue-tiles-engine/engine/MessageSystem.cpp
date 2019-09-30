@@ -13,14 +13,14 @@ namespace MessageSystem
 		GLOBAL FUNCTIONS
 	*/
 
-	void MessageSystem::SendMessageToObject(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message)
+	void MessageSystem::SendMessageToObject(unsigned int targetID, BehaviourType targetBehaviour, std::string message)
 	{
-		MessageManager::instance->QueueMessage(unsigned int senderID, targetID, targetBehaviour, message);
+		MessageManager::instance->QueueMessage(targetID, targetBehaviour, message);
 	}
 
-	void MessageSystem::BroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
+	void MessageSystem::BroadcastMessage(BehaviourType targetBehaviour, std::string message)
 	{
-		MessageManager::instance->QueueBroadcastMessage(unsigned int senderID, targetBehaviour, message);
+		MessageManager::instance->QueueBroadcastMessage(targetBehaviour, message);
 	}
 
 	void MessageSystem::ProcessAllMessages(Scene* targetScene)
@@ -42,11 +42,10 @@ namespace MessageSystem
 	{
 	}
 
-	void MessageSystem::MessageManager::QueueMessage(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message)
+	void MessageSystem::MessageManager::QueueMessage(unsigned int targetID, BehaviourType targetBehaviour, std::string message)
 	{
 		ObjectMessage msg;
 
-		msg.senderID = senderID;
 		msg.targetID = targetID;
 		msg.targetBehaviour = targetBehaviour;
 		msg.message = message;
@@ -54,11 +53,10 @@ namespace MessageSystem
 		messageQueue.push(msg);
 	}
 
-	void MessageSystem::MessageManager::QueueBroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
+	void MessageSystem::MessageManager::QueueBroadcastMessage(BehaviourType targetBehaviour, std::string message)
 	{
 		ObjectMessage msg;
 
-		msg.senderID = senderID;
 		msg.targetID = 0;
 		msg.targetBehaviour = targetBehaviour;
 		msg.message = message;
