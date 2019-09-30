@@ -13,17 +13,17 @@ namespace MessageSystem
 		GLOBAL FUNCTIONS
 	*/
 
-	void MessageSystem::SendMessageToObject(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message)
+	void SendMessageToObject(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message)
 	{
 		MessageManager::instance->QueueMessage(senderID, targetID, targetBehaviour, message);
 	}
 
-	void MessageSystem::BroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
+	void BroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
 	{
 		MessageManager::instance->QueueBroadcastMessage(senderID, targetBehaviour, message);
 	}
 
-	void MessageSystem::ProcessAllMessages(Scene* targetScene)
+	void ProcessAllMessages(Scene* targetScene)
 	{
 		MessageManager::instance->ProcessMessages(targetScene);
 		MessageManager::instance->ProcessBroadcast(targetScene);
@@ -32,18 +32,17 @@ namespace MessageSystem
 	/*
 		CLASS FUNCTIONS
 	*/
-
-	MessageSystem::MessageManager::MessageManager()
+	MessageManager::MessageManager()
 		: processing(false)
 	{
 	}
 
 
-	MessageSystem::MessageManager::~MessageManager()
+	MessageManager::~MessageManager()
 	{
 	}
 
-	void MessageSystem::MessageManager::QueueMessage(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message)
+	void MessageManager::QueueMessage(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message)
 	{
 		ObjectMessage msg;
 
@@ -56,7 +55,7 @@ namespace MessageSystem
 		else messageQueue.push(msg);
 	}
 
-	void MessageSystem::MessageManager::QueueBroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
+	void MessageManager::QueueBroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
 	{
 		ObjectMessage msg;
 
@@ -69,7 +68,7 @@ namespace MessageSystem
 		else broadcastQueueQueue.push(msg);
 	}
 
-	void MessageSystem::MessageManager::ProcessMessages(Scene* targetScene)
+	void MessageManager::ProcessMessages(Scene* targetScene)
 	{
 		processing = true;
 
@@ -94,7 +93,7 @@ namespace MessageSystem
 		processing = false;
 	}
 
-	void MessageSystem::MessageManager::ProcessBroadcast(Scene* targetScene)
+	void MessageManager::ProcessBroadcast(Scene* targetScene)
 	{
 		processing = true;
 
@@ -121,7 +120,7 @@ namespace MessageSystem
 		processing = false;
 	}
 
-	void MessageSystem::MessageManager::FlushAllMessages()
+	void MessageManager::FlushAllMessages()
 	{
 		messageQueue.empty();
 		messageQueueQueue.empty();
