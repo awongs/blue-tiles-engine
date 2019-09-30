@@ -1,7 +1,7 @@
 #include "MessageSystem.h"
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
-#include "Behaviour.h"
+#include "behaviours/Behaviour.h"
 
 namespace MessageSystem
 {
