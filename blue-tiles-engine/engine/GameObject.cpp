@@ -52,16 +52,16 @@ GameObject::~GameObject()
 	
 }
 
-void GameObject::Update()
+void GameObject::Update(float deltaTime)
 {
 	// Tell each behaviour to update
 	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
 	{
-		behaviour->Update();
+		behaviour->Update(deltaTime);
 	}
 
 	// -- Testing Purposes --
-	rotation.y += 0.01f;
+	rotation.y += 3.14f * deltaTime;
 }
 
 void GameObject::Draw()

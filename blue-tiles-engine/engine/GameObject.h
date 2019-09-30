@@ -43,7 +43,7 @@ public:
 	glm::vec3 scale;
 
 	// Update
-	virtual void Update();
+	virtual void Update(float deltaTime);
 
 	// Draw
 	virtual void Draw();

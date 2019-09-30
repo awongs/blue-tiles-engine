@@ -10,7 +10,7 @@ Behaviour::~Behaviour()
 
 }
 
-void Behaviour::Update()
+void Behaviour::Update(float deltaTime)
 {
 
 }

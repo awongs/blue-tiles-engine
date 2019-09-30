@@ -33,10 +33,10 @@ Scene::~Scene()
 
 }
 
-void Scene::Update()
+void Scene::Update(float deltaTime)
 {
-	for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Update();
-	for (auto& screenGameObj : m_screenGameObjects) screenGameObj->Update();
+	for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Update(deltaTime);
+	for (auto& screenGameObj : m_screenGameObjects) screenGameObj->Update(deltaTime);
 
 	// message system updates
 	MessageSystem::ProcessAllMessages(this);
