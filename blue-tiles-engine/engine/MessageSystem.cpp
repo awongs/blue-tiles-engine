@@ -76,7 +76,7 @@ namespace MessageSystem
 			auto& go = targetScene->getWorldGameObjectById(msg.targetID);
 
 			// ignore message if no target game object found
-			if (go != nullptr) go->HandleMessage(msg.message, msg.targetBehaviour);
+			if (go != nullptr) go->HandleMessage(msg.senderID, msg.message, msg.targetBehaviour);
 		}
 	}
 
@@ -91,7 +91,7 @@ namespace MessageSystem
 
 			for (auto& obj : objects)
 			{
-				obj->HandleMessage(msg.message, msg.targetBehaviour);
+				obj->HandleMessage(msg.senderID, msg.message, msg.targetBehaviour);
 			}
 		}
 	}
