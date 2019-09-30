@@ -9,6 +9,7 @@
 #include "PhysicsObject.h"
 
 class Collider;
+class SphereCollider;
 
 class PhysicsEngine
 {
@@ -18,8 +19,8 @@ class PhysicsEngine
 		// Defines whether the endpoint is a minimum or maximum point.
 		enum class Type
 		{
-			Minimum,
-			Maximum
+			MINIMUM,
+			MAXIMUM
 		};
 
 		inline void init(int physObjIndex, Type type)
@@ -41,7 +42,7 @@ class PhysicsEngine
 
 		inline int getLookupIndex() const
 		{
-			return 2 * m_physObjIndex + (m_type == Type::Maximum ? 1 : 0);
+			return 2 * m_physObjIndex + (m_type == Type::MAXIMUM ? 1 : 0);
 		}
 
 		inline Type getType() const
@@ -85,8 +86,8 @@ class PhysicsEngine
 		// elements from/to the set of overlapping intervals.
 		enum class Type
 		{
-			Remove,
-			Insert
+			REMOVE,
+			INSERT
 		};
 
 		Event(int index1, int index2, Type type) :
@@ -157,6 +158,12 @@ private:
 		const std::vector<GLuint> &lookupTable,
 		const std::vector<Endpoint> &endpoints);
 
+	// Narrow phase: check if 2 spheres are colliding.
+	bool IsSphereSphereColliding(SphereCollider *col1, SphereCollider *col2);
+
+	// Narrow phase: check if a sphere and a box are colliding.
+	bool IsBoxSphereColliding(Collider *col1, SphereCollider *col2);
+
 	// Hold all the physics components.
 	std::vector<std::unique_ptr<PhysicsObject>> m_physObjects;
 
@@ -184,6 +191,11 @@ private:
 	// a narrow phase check.
 	std::set<std::pair<GLuint, GLuint>> m_overlapsSet;
 
-	// Hold pairs of physics components that collided during this frame.
+	// Hold pairs of physics components that collided during broad phase 
+	// for this frame.
+	std::vector<std::pair<PhysicsObject *, PhysicsObject *>> m_broadCollisions;
+
+	// Hold pairs of physics components that collided after narrow phase
+	// for this frame.
 	std::vector<std::pair<PhysicsObject *, PhysicsObject *>> m_collisions;
 };

@@ -10,3 +10,13 @@ SphereCollider::~SphereCollider()
 {
 
 }
+
+float SphereCollider::GetRadius() const
+{
+	return m_radius;
+}
+
+Collider::Type SphereCollider::GetType() const
+{
+	return Type::SPHERE;
+}

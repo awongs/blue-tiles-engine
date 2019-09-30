@@ -1,5 +1,6 @@
 #include "PhysicsEngine.h"
 #include "../debugbt/DebugLog.h"
+#include "SphereCollider.h"
 
 #include <glm/glm.hpp>
 
@@ -47,12 +48,65 @@ void PhysicsEngine::DoBroadPhase()
 
 void PhysicsEngine::DoNarrowPhase()
 {
-	// TODO: implement sphere collider checks.
+	for (auto &collision : m_broadCollisions)
+	{
+		Collider *col1{ collision.first->GetCollider() };
+		Collider *col2{ collision.second->GetCollider() };
+
+		Collider::Type type1{ col1->GetType() };
+		Collider::Type type2{ col2->GetType() };
+
+		int collisionType{ type1 | type2 };
+		switch (collisionType)
+		{
+			// Sphere-sphere collision.
+			case Collider::Type::SPHERE:
+			{
+				SphereCollider *sphere1{ static_cast<SphereCollider *>(col1) };
+				SphereCollider *sphere2{ static_cast<SphereCollider *>(col2) };
+				if (IsSphereSphereColliding(sphere1, sphere2))
+				{
+					m_collisions.push_back(collision);
+				}
+
+				break;
+			}
+
+			// Box-sphere/sphere-box collision.
+			case (Collider::Type::BOX | Collider::Type::SPHERE):
+			{
+				// Check which collider is the sphere.
+				bool isCol1Sphere{ type1 == Collider::Type::SPHERE };
+				Collider *box{ isCol1Sphere ? col2 : col1 };
+				SphereCollider *sphere{ isCol1Sphere ? 
+					static_cast<SphereCollider *>(col1) : 
+					static_cast<SphereCollider *>(col2) };
+				
+				if (IsBoxSphereColliding(box, sphere))
+				{
+					m_collisions.push_back(collision);
+				}
+
+				break;
+			}
+
+			// Box-box collision.
+			case (Collider::Type::BOX):
+			{
+				// This is the same as broad phase result.
+				m_collisions.push_back(collision);
+				break;
+			}
+		}
+	}
+
+	// Done with list of broad phase collisions, so clear them for the
+	// next frame.
+	m_broadCollisions.clear();
 }
 
 void PhysicsEngine::HandleCollisions()
 {
-	// TODO: maybe better way to do this?
 	for (auto &col : m_collisions)
 	{
 		PhysicsObject *first{ col.first };
@@ -90,13 +144,13 @@ void PhysicsEngine::UpdateEndpoints()
 		for (auto it = m_physObjects.begin(); it != m_physObjects.end(); ++it, ++physObjIndex)
 		{
 			// Update the minimum endpoint of this interval.
-			m_endpointsX[endpointIndex].init(physObjIndex, Endpoint::Type::Minimum);
-			m_endpointsY[endpointIndex].init(physObjIndex, Endpoint::Type::Minimum);
+			m_endpointsX[endpointIndex].init(physObjIndex, Endpoint::Type::MINIMUM);
+			m_endpointsY[endpointIndex].init(physObjIndex, Endpoint::Type::MINIMUM);
 			++endpointIndex;
 
 			// Update the maximum endpoint of this interval.
-			m_endpointsX[endpointIndex].init(physObjIndex, Endpoint::Type::Maximum);
-			m_endpointsY[endpointIndex].init(physObjIndex, Endpoint::Type::Maximum);
+			m_endpointsX[endpointIndex].init(physObjIndex, Endpoint::Type::MAXIMUM);
+			m_endpointsY[endpointIndex].init(physObjIndex, Endpoint::Type::MAXIMUM);
 			++endpointIndex;
 		}
 
@@ -148,19 +202,19 @@ void PhysicsEngine::UpdateIntervals(std::vector<Endpoint> &endpoints,
 			Endpoint nextPoint{ endpoints[j + 1] };
 
 			// No overlap between intervals, so remove it from the overlaps set.
-			if (prevPoint.getType() == Endpoint::Type::Minimum &&
-				nextPoint.getType() == Endpoint::Type::Maximum)
+			if (prevPoint.getType() == Endpoint::Type::MINIMUM &&
+				nextPoint.getType() == Endpoint::Type::MAXIMUM)
 			{
 				int index1{ glm::min(prevPoint.getPhysObjIndex(), nextPoint.getPhysObjIndex()) };
 				int index2{ glm::max(prevPoint.getPhysObjIndex(), nextPoint.getPhysObjIndex()) };
 				if (index1 != index2)
 				{
-					m_events.push_back(Event(index1, index2, Event::Type::Remove));
+					m_events.push_back(Event(index1, index2, Event::Type::REMOVE));
 				}
 			}
 			// Overlap found between intervals.
-			else if (prevPoint.getType() == Endpoint::Type::Maximum &&
-				thisPoint.getType() == Endpoint::Type::Minimum)
+			else if (prevPoint.getType() == Endpoint::Type::MAXIMUM &&
+				thisPoint.getType() == Endpoint::Type::MINIMUM)
 			{
 				int index1{ glm::min(prevPoint.getPhysObjIndex(), nextPoint.getPhysObjIndex()) };
 				int index2{ glm::max(prevPoint.getPhysObjIndex(), nextPoint.getPhysObjIndex()) };
@@ -168,7 +222,7 @@ void PhysicsEngine::UpdateIntervals(std::vector<Endpoint> &endpoints,
 					IsOverlapping(index1, index2, m_lookupX, m_endpointsX) &&
 					IsOverlapping(index1, index2, m_lookupY, m_endpointsY))
 				{
-					m_events.push_back(Event(index1, index2, Event::Type::Insert));
+					m_events.push_back(Event(index1, index2, Event::Type::INSERT));
 				}
 			}
 
@@ -190,7 +244,7 @@ void PhysicsEngine::GenerateOverlapsSet()
 	// Iterate through events and perform them to get an updated overlaps set.
 	for (const Event &event : m_events)
 	{
-		if (event.getType() == Event::Type::Remove)
+		if (event.getType() == Event::Type::REMOVE)
 		{
 			m_overlapsSet.erase(std::make_pair(event.getIndex1(), event.getIndex2()));
 		}
@@ -212,7 +266,7 @@ void PhysicsEngine::GenerateOverlapsSet()
 		}
 		else
 		{
-			m_collisions.push_back(std::make_pair(
+			m_broadCollisions.push_back(std::make_pair(
 				m_physObjects[it->first].get(),
 				m_physObjects[it->second].get()));
 
@@ -238,4 +292,16 @@ bool PhysicsEngine::IsOverlapping(int endpointIndex1, int endpointIndex2,
 	float min1 = endpoints[lookupTable[2 * endpointIndex1]].getValue();
 	float max2 = endpoints[lookupTable[2 * endpointIndex2 + 1]].getValue();
 	return min1 <= max2;
+}
+
+bool PhysicsEngine::IsSphereSphereColliding(SphereCollider *col1, SphereCollider *col2)
+{
+	// TODO: implement this.
+	return false;
+}
+
+bool PhysicsEngine::IsBoxSphereColliding(Collider *col1, SphereCollider *col2)
+{
+	// TODO: implement this.
+	return false;
 }

@@ -20,3 +20,8 @@ glm::vec3 Collider::GetPosition() const
 {
 	return m_position;
 }
+
+Collider::Type Collider::GetType() const
+{
+	return Type::BOX;
+}

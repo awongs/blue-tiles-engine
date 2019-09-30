@@ -8,6 +8,10 @@ public:
 	SphereCollider(float radius);
 	~SphereCollider();
 
+	float GetRadius() const;
+
+	virtual Collider::Type GetType() const;
+
 private:
 	float m_radius;
 };
