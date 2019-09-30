@@ -13,17 +13,17 @@ namespace MessageSystem
 		GLOBAL FUNCTIONS
 	*/
 
-	void MessageSystem::SendMessageToObject(unsigned int targetID, BehaviourType targetBehaviour, std::string message)
+	void SendMessageToObject(unsigned int targetID, BehaviourType targetBehaviour, std::string message)
 	{
 		MessageManager::instance->QueueMessage(targetID, targetBehaviour, message);
 	}
 
-	void MessageSystem::BroadcastMessage(BehaviourType targetBehaviour, std::string message)
+	void BroadcastMessage(BehaviourType targetBehaviour, std::string message)
 	{
 		MessageManager::instance->QueueBroadcastMessage(targetBehaviour, message);
 	}
 
-	void MessageSystem::ProcessAllMessages(Scene* targetScene)
+	void ProcessAllMessages(Scene* targetScene)
 	{
 		MessageManager::instance->ProcessMessages(targetScene);
 		MessageManager::instance->ProcessBroadcast(targetScene);
@@ -33,16 +33,16 @@ namespace MessageSystem
 		CLASS FUNCTIONS
 	*/
 
-	MessageSystem::MessageManager::MessageManager()
+	MessageManager::MessageManager()
 	{
 	}
 
 
-	MessageSystem::MessageManager::~MessageManager()
+	MessageManager::~MessageManager()
 	{
 	}
 
-	void MessageSystem::MessageManager::QueueMessage(unsigned int targetID, BehaviourType targetBehaviour, std::string message)
+	void MessageManager::QueueMessage(unsigned int targetID, BehaviourType targetBehaviour, std::string message)
 	{
 		ObjectMessage msg;
 
@@ -53,7 +53,7 @@ namespace MessageSystem
 		messageQueue.push(msg);
 	}
 
-	void MessageSystem::MessageManager::QueueBroadcastMessage(BehaviourType targetBehaviour, std::string message)
+	void MessageManager::QueueBroadcastMessage(BehaviourType targetBehaviour, std::string message)
 	{
 		ObjectMessage msg;
 
@@ -64,7 +64,7 @@ namespace MessageSystem
 		broadcastQueue.push(msg);
 	}
 
-	void MessageSystem::MessageManager::ProcessMessages(Scene* targetScene)
+	void MessageManager::ProcessMessages(Scene* targetScene)
 	{
 		while (messageQueue.size() != 0)
 		{
@@ -78,7 +78,7 @@ namespace MessageSystem
 		}
 	}
 
-	void MessageSystem::MessageManager::ProcessBroadcast(Scene* targetScene)
+	void MessageManager::ProcessBroadcast(Scene* targetScene)
 	{
 		std::vector<std::unique_ptr<GameObject>> const& objects = targetScene->getWorldGameObjects();
 
@@ -94,7 +94,7 @@ namespace MessageSystem
 		}
 	}
 
-	void MessageSystem::MessageManager::FlushAllMessages()
+	void MessageManager::FlushAllMessages()
 	{
 		size_t msgQCount = messageQueue.size();
 		size_t bcQCount = broadcastQueue.size();
