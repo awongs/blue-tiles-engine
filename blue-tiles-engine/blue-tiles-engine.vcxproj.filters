@@ -34,6 +34,9 @@
     <Filter Include="Source Files\engine\sound">
       <UniqueIdentifier>{c1167587-40b9-4997-8db1-fa581abbec43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\behaviours">
+      <UniqueIdentifier>{9feadcdd-a8e0-4fdb-aae0-8d64d62255ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -72,14 +75,17 @@
     <ClCompile Include="engine\sound\SoundManager.cpp">
       <Filter>Source Files\engine\sound</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Behaviour.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
     <ClCompile Include="engine\GameObject.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
     <ClCompile Include="engine\Scene.cpp">
       <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\Behaviour.cpp">
+      <Filter>Source Files\engine\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\MeshRenderer.cpp">
+      <Filter>Source Files\engine\behaviours</Filter>
     </ClCompile>
     <ClCompile Include="engine\MessageSystem.cpp">
       <Filter>Source Files\engine</Filter>
@@ -116,14 +122,17 @@
     <ClInclude Include="engine\sound\SoundManager.h">
       <Filter>Source Files\engine\sound</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Behaviour.h">
-      <Filter>Source Files\engine</Filter>
-    </ClInclude>
     <ClInclude Include="engine\GameObject.h">
       <Filter>Source Files\engine</Filter>
     </ClInclude>
     <ClInclude Include="engine\Scene.h">
       <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\Behaviour.h">
+      <Filter>Source Files\engine\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\MeshRenderer.h">
+      <Filter>Source Files\engine\behaviours</Filter>
     </ClInclude>
     <ClInclude Include="engine\MessageSystem.h">
       <Filter>Source Files\engine</Filter>

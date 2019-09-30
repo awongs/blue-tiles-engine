@@ -54,12 +54,23 @@ GameObject::~GameObject()
 
 void GameObject::Update()
 {
+	// Tell each behaviour to update
+	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	{
+		behaviour->Update();
+	}
 
+	// -- Testing Purposes --
+	rotation.y += 0.01f;
 }
 
 void GameObject::Draw()
 {
-
+	// Tell each behaviour to draw
+	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	{
+		behaviour->Draw();
+	}
 }
 
 Behaviour* GameObject::GetBehaviour(BehaviourType type)

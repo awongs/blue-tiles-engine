@@ -1,8 +1,10 @@
 #pragma once
 
+#include <memory>
 #include <sdl2/SDL.h>
 
 class Renderer;
+class Scene;
 
 /*
 	The main game engine class
@@ -28,6 +30,8 @@ public:
 	Renderer* renderer;
 
 private:
+	// The current scene.
+	std::unique_ptr<Scene> m_currentScene;
 
 	// Updates the FPS counter
 	void UpdateFPSCounter();

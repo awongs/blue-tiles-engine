@@ -1,6 +1,11 @@
+#include <vector>
+
 #include "GameEngine.h"
 #include "graphics/Renderer.h"
 #include "debugbt/DebugLog.h"
+#include "GameObject.h"
+#include "behaviours/MeshRenderer.h"
+#include "Scene.h"
 
 GameEngine::GameEngine(SDL_Window* targetWindow)
 	: m_window(targetWindow)
@@ -30,6 +35,19 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	m_lastFrameTime = SDL_GetTicks();
 
 	DebugLog::Info("Engine initialization completed!");
+
+	// -- Testing --
+	std::vector<std::unique_ptr<GameObject>> worldGameObjects;
+	std::vector<std::unique_ptr<GameObject>> screenGameObjects;
+	std::vector<std::unique_ptr<Behaviour>> behaviours;
+
+	behaviours.push_back(std::make_unique<MeshRenderer>());
+
+	worldGameObjects.push_back(std::make_unique<GameObject>(behaviours));
+
+	m_currentScene = std::make_unique<Scene>(worldGameObjects, screenGameObjects);
+
+	DebugLog::Info("Test scene initialization completed!");
 }
 
 GameEngine::~GameEngine()
@@ -40,11 +58,13 @@ GameEngine::~GameEngine()
 void GameEngine::Update()
 {
 	UpdateFPSCounter();
+
+	m_currentScene->Update();
 }
 
 void GameEngine::Draw()
 {
-	renderer->Render();
+	renderer->Render(*m_currentScene);
 
 	renderer->Display();
 

@@ -2,7 +2,7 @@
 #include <string>
 
 // Available Behaviour Types
-enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource };
+enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource, MeshRenderer };
 
 class Behaviour
 {

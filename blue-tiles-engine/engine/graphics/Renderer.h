@@ -1,9 +1,10 @@
-	#pragma once
+#pragma once
 
 #include <sdl2/SDL.h>
 #include <glad/glad.h>
 
 class ShaderManager;
+class Scene;
 
 /*
 	This renders the game engine.
@@ -22,10 +23,10 @@ public:
 	void SetupShaders();
 
 	// Sets up buffers for rendering
-	void SetupBuffers();
+	//void SetupBuffers();
 
 	// Renders the frame
-	void Render();
+	void Render(Scene& currentScene);
 
 	// Displays the frame to the context
 	void Display();
@@ -37,26 +38,4 @@ private:
 
 	// Pointer to a shader manager
 	ShaderManager* m_shaderManager;
-
-	// ID to the vertex buffer object
-	GLuint m_vertexBufferObjectID;
-
-	// ID to the vertex array object
-	GLuint m_vertexAttributeObjectID;
-
-	// ID to the indices buffer object
-	GLuint m_indicesBufferObjectID;
-
-	// place holder triangle vertices
-
-	GLfloat m_vertices[12] = {
-		 0.5f,  0.5f, 0.0f,  // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f   // top left 
-	};
-	unsigned int m_indices[6] = {  // note that we start from 0!
-		0, 1, 3,  // first Triangle
-		1, 2, 3   // second Triangle
-	};
 };
