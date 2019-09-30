@@ -12,7 +12,7 @@ public:
 	~Scene();
 
 	// Updates game objects
-	void Update();
+	void Update(float deltaTime);
 
 	// Draws world game objects
 	void DrawWorld();

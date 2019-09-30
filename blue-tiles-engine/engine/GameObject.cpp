@@ -52,12 +52,12 @@ GameObject::~GameObject()
 	
 }
 
-void GameObject::Update()
+void GameObject::Update(float deltaTime)
 {
 	// Tell each behaviour to update
 	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
 	{
-		behaviour->Update();
+		behaviour->Update(deltaTime);
 	}
 
 	// -- Testing Purposes --

@@ -59,7 +59,7 @@ void GameEngine::Update()
 {
 	UpdateFPSCounter();
 
-	m_currentScene->Update();
+	m_currentScene->Update(m_deltaTime);
 }
 
 void GameEngine::Draw()

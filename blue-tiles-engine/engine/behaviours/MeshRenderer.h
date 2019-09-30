@@ -9,7 +9,7 @@ public:
 	MeshRenderer();
 	virtual ~MeshRenderer();
 
-	void Update() override;
+	void Update(float deltaTime) override;
 	void Draw() override;
 	bool HandleMessage(unsigned int senderID, std::string message) override;
 

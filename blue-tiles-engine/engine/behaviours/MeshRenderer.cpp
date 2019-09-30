@@ -38,7 +38,7 @@ MeshRenderer::~MeshRenderer()
 	glDeleteVertexArrays(1, &m_vertexArrayObjectID);
 }
 
-void MeshRenderer::Update()
+void MeshRenderer::Update(float deltaTime)
 {
 }
 
