@@ -1,10 +1,12 @@
 #include <fstream>
 #include <sstream>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
 #include "FileManager.h"
 #include "../engine/debugbt/DebugLog.h"
+#include "../engine/graphics/Texture.h"
 
 namespace filemanager
 {
@@ -56,11 +58,22 @@ namespace filemanager
 		}
 	}
 
-	unsigned char* LoadTexture(const std::string filePath)
+	std::shared_ptr<Texture> LoadTexture(const std::string filePath)
 	{
+		// Image definitions
 		int width, height, numberOfChannels;
+		
+		// Load the image data
 		unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &numberOfChannels, 0);
 
-		return data;
+		// Check if the image data was sucessfully loaded
+		if (data == nullptr)
+		{
+			DebugLog::Error("Failed to load " + filePath);
+			return nullptr;
+		}
+
+		// Return the texture as a shared pointer
+		return std::make_shared<Texture>(data, width, height, numberOfChannels);
 	}
 }

@@ -5,7 +5,11 @@
 class Texture
 {
 public:
+	// Constructor, takes image properties as parameters.
 	Texture(unsigned char* imageData, int width, int height, int numberOfChannels);
+
+	// Destructor.
+	virtual ~Texture();
 
 	// Accessor for texture ID.
 	GLuint GetTextureID() const;

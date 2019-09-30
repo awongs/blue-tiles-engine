@@ -1,5 +1,8 @@
 #pragma once
 #include <string>
+#include <memory>
+
+class Texture;
 
 namespace filemanager
 {
@@ -13,5 +16,5 @@ namespace filemanager
 
 	// Returns an image's contents as an unsigned char pointer.
 	// Expects filePath to be a path from the working directory.
-	unsigned char* LoadTexture(const std::string filePath);
+	std::shared_ptr<Texture> LoadTexture(const std::string filePath);
 }

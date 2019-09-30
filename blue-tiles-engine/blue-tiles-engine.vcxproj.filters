@@ -90,6 +90,9 @@
     <ClCompile Include="engine\MessageSystem.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="engine\graphics\Texture.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">

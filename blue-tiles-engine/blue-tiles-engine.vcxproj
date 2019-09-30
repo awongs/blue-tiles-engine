@@ -157,6 +157,7 @@
     <ClCompile Include="engine\graphics\Renderer.cpp" />
     <ClCompile Include="engine\graphics\Shader.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
+    <ClCompile Include="engine\graphics\Texture.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
     <ClCompile Include="engine\MessageSystem.cpp" />
     <ClCompile Include="engine\Scene.cpp" />
