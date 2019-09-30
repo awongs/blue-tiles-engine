@@ -1,5 +1,7 @@
 #include <fstream>
 #include <sstream>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 #include "FileManager.h"
 #include "../engine/debugbt/DebugLog.h"
@@ -32,6 +34,7 @@ namespace filemanager
 			return std::string();
 		}
 	}
+	
 	void AppendFile(const std::string filePath, const std::string content)
 	{
 		// Setup stream for opening the file
@@ -51,5 +54,13 @@ namespace filemanager
 		{
 			DebugLog::Error("Failed to open " + filePath);
 		}
+	}
+
+	unsigned char* LoadTexture(const std::string filePath)
+	{
+		int width, height, numberOfChannels;
+		unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &numberOfChannels, 0);
+
+		return data;
 	}
 }
