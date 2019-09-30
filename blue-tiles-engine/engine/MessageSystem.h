@@ -67,10 +67,18 @@ namespace MessageSystem
 			std::string message;
 		};
 
+		bool processing;
+
 		// message to objects queue 
 		std::queue<ObjectMessage> messageQueue;
 
+		// message to objects queue while processing
+		std::queue<ObjectMessage> messageQueueQueue;
+
 		// broadcast message queue
 		std::queue<ObjectMessage> broadcastQueue;
+
+		// broacast message queue while processing
+		std::queue<ObjectMessage> broadcastQueueQueue;
 	};
 };

@@ -34,6 +34,7 @@ namespace MessageSystem
 	*/
 
 	MessageSystem::MessageManager::MessageManager()
+		: processing(false)
 	{
 	}
 
@@ -51,7 +52,8 @@ namespace MessageSystem
 		msg.targetBehaviour = targetBehaviour;
 		msg.message = message;
 
-		messageQueue.push(msg);
+		if (processing) messageQueueQueue.push(msg);
+		else messageQueue.push(msg);
 	}
 
 	void MessageSystem::MessageManager::QueueBroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
@@ -63,11 +65,14 @@ namespace MessageSystem
 		msg.targetBehaviour = targetBehaviour;
 		msg.message = message;
 
-		broadcastQueue.push(msg);
+		if (processing) broadcastQueue.push(msg);
+		else broadcastQueueQueue.push(msg);
 	}
 
 	void MessageSystem::MessageManager::ProcessMessages(Scene* targetScene)
 	{
+		processing = true;
+
 		while (messageQueue.size() != 0)
 		{
 			ObjectMessage msg = messageQueue.front();
@@ -78,10 +83,21 @@ namespace MessageSystem
 			// ignore message if no target game object found
 			if (go != nullptr) go->HandleMessage(msg.senderID, msg.message, msg.targetBehaviour);
 		}
+
+		// copy queuequeue to queue
+		while (messageQueueQueue.size() != 0)
+		{
+			messageQueue.push(messageQueueQueue.front());
+			messageQueueQueue.pop();
+		}
+
+		processing = false;
 	}
 
 	void MessageSystem::MessageManager::ProcessBroadcast(Scene* targetScene)
 	{
+		processing = true;
+
 		std::vector<std::unique_ptr<GameObject>> const& objects = targetScene->getWorldGameObjects();
 
 		while (broadcastQueue.size() != 0)
@@ -94,15 +110,26 @@ namespace MessageSystem
 				obj->HandleMessage(msg.senderID, msg.message, msg.targetBehaviour);
 			}
 		}
+
+		// copy broadcast messages queuequeue to queue
+		while (broadcastQueueQueue.size() != 0)
+		{
+			broadcastQueue.push(broadcastQueueQueue.front());
+			broadcastQueueQueue.pop();
+		}
+
+		processing = false;
 	}
 
 	void MessageSystem::MessageManager::FlushAllMessages()
 	{
-		size_t msgQCount = messageQueue.size();
-		size_t bcQCount = broadcastQueue.size();
+		size_t msgQCount = messageQueue.size() + messageQueueQueue.size();
+		size_t bcQCount = broadcastQueue.size() + broadcastQueueQueue.size();
 
 		messageQueue.empty();
+		messageQueueQueue.empty();
 		broadcastQueue.empty();
+		broadcastQueueQueue.empty();
 
 		DebugLog::Info("Flushed all messages in queue! MSG=" + std::to_string(msgQCount) + " BC=" + std::to_string(bcQCount));
 	}
