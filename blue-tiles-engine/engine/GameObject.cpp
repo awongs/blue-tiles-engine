@@ -61,7 +61,7 @@ void GameObject::Update(float deltaTime)
 	}
 
 	// -- Testing Purposes --
-	rotation.y += 0.01f;
+	rotation.y += 3.14f * deltaTime;
 }
 
 void GameObject::Draw()
