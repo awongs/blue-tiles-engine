@@ -20,10 +20,10 @@ void Level::LoadLevel(std::string jsonFile)
 	width		= _levelJSON["info"]["width"];
 	length		= _levelJSON["info"]["length"];
 	numGrids	= width * length;
-	vector<GameObject> temp;
+	std::vector<GameObject> temp;
 	objects.swap(temp);
 	for (auto room : _levelJSON["rooms"])
 	{
-
+		
 	}
 }

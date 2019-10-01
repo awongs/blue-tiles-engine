@@ -7,6 +7,8 @@
 #include <iostream>
 #include <string>
 #include "GameObject.h"
+#include "../gameobjects/Guard.h"
+#include "../gameobjects/Room.h"
 #include "debugbt/DebugLog.h"
 using json = nlohmann::json;
 
@@ -28,10 +30,13 @@ class Level
 		float numGrids;
 
 		// Game objects
-		vector<GameObject> objects;
+		std::vector<GameObject> objects;
+
+		// Rooms
+		std::vector<Room> rooms;
 
 		// Guards (Should be std::vector<Guard> probably)
-		vector<GameObject> guards;
+		std::vector<Guard> guards;
 
 
 		void LoadLevel(std::string jsonFile);

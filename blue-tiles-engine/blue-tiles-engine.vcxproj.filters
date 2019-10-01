@@ -37,6 +37,9 @@
     <Filter Include="Source Files\engine\behaviours">
       <UniqueIdentifier>{9feadcdd-a8e0-4fdb-aae0-8d64d62255ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gameobjects">
+      <UniqueIdentifier>{36981046-462b-41f4-ab2d-be4543a8e796}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -93,6 +96,15 @@
     <ClCompile Include="engine\Level.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="gameobjects\Room.cpp">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="gameobjects\Guard.cpp">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="gameobjects\Door.cpp">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -142,6 +154,15 @@
     </ClInclude>
     <ClInclude Include="engine\Level.h">
       <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="gameobjects\Room.h">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="gameobjects\Guard.h">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="gameobjects\Door.h">
+      <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

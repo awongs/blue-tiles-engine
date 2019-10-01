@@ -2,8 +2,8 @@
   "info": {
     "level": 0,
 	"startPos" : 1,
-	"width" : 3,
-	"height" : 3
+	"width" : 10,
+	"height" : 10
   },
   "rooms": [
     {
@@ -12,15 +12,8 @@
 	    "doors" : [
         {
           "doorid" : 0,
-          "location" : 13,
-          "keyRequired" : "key1",
-          "facing" : "right",
-		  "exit" : false
-        },
-        {
-          "doorid" : 1,
           "location" : 22,
-          "keyRequired" : "none",
+          "keyRequired" : "key1",
           "facing" : "down",
 		  "exit" : true
         }
@@ -31,7 +24,7 @@
     {
       "objectid" : 0,
       "name" : "key1",
-      "location": 1,
+      "location": 3,
       "rotation": {
         "angle" : 0
       }
@@ -39,7 +32,7 @@
     {
       "objectid" : 1,
       "name" : "block",
-      "location": 3,
+      "location": 2,
       "rotation": {
         "angle" : 0,
         "rotateFrom" : 0,
@@ -52,11 +45,12 @@
     {
       "guardid" : 0,
       "location": 23,
+	  "range" : 1,
       "rotation": {
-        "angle" : 0,
-        "rotateFrom" : 0,
+        "angle" : -90,
+        "rotateFrom" : -90,
         "rotateTo" : 0,
-        "interval" : 0
+        "interval" : 5
       }
     }
   ]

@@ -163,6 +163,9 @@
     <ClCompile Include="engine\Scene.cpp" />
     <ClCompile Include="engine\sound\Sound.cpp" />
     <ClCompile Include="engine\sound\SoundManager.cpp" />
+    <ClCompile Include="gameobjects\Door.cpp" />
+    <ClCompile Include="gameobjects\Guard.cpp" />
+    <ClCompile Include="gameobjects\Room.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="util\FileManager.cpp" />
@@ -183,6 +186,9 @@
     <ClInclude Include="engine\Scene.h" />
     <ClInclude Include="engine\sound\Sound.h" />
     <ClInclude Include="engine\sound\SoundManager.h" />
+    <ClInclude Include="gameobjects\Door.h" />
+    <ClInclude Include="gameobjects\Guard.h" />
+    <ClInclude Include="gameobjects\Room.h" />
     <ClInclude Include="util\FileManager.h" />
   </ItemGroup>
   <ItemGroup>
