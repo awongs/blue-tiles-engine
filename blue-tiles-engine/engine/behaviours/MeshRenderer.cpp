@@ -1,5 +1,6 @@
 #include "MeshRenderer.h"
 #include "../debugbt/DebugLog.h"
+#include "../../util/FileManager.h"
 
 MeshRenderer::MeshRenderer()
 	: Behaviour(BehaviourType::MeshRenderer)
@@ -21,13 +22,21 @@ MeshRenderer::MeshRenderer()
 	// Generate and setup the vertex array object
 	glGenVertexArrays(1, &m_vertexArrayObjectID);
 	glBindVertexArray(m_vertexArrayObjectID);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+
+	// Position
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
+	
+	// Texture coordinates
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
 
 	// Unbind everything
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	texture = filemanager::LoadTexture("../Assets/crate.jpg");
 }
 
 MeshRenderer::~MeshRenderer()
