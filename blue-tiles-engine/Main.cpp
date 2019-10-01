@@ -8,7 +8,7 @@
 #include "engine/GameEngine.h"
 #include "engine/input/Input.h"
 #include "engine/debugbt/DebugLog.h"
-
+#include "engine/GameWindow.h"
 #include "engine/sound/Sound.h"
 #include "engine/sound/Music.h"
 #include "engine/sound/SoundManager.h"
