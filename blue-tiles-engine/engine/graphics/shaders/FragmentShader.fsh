@@ -2,7 +2,7 @@
 
 uniform sampler2D uTexture;
 
-varying vec2 fragTexCoord;
+in vec2 fragTexCoord;
 
 void main()
 {

@@ -21,6 +21,9 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 	DebugLog::Info("Creating shader program...\n");
 	SetupShaders();
 
+	// Enable depth testing
+	glEnable(GL_DEPTH_TEST);
+
 	DebugLog::Info("Renderer initialization completed!\n");
 }
 
@@ -64,8 +67,8 @@ void Renderer::SetupShaders()
 void Renderer::Render(Scene& currentScene)
 {
 	// clearing screen
-	glClearColor(0.75f, 1.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	// Bind the VAO
 	//glBindVertexArray(m_vertexAttributeObjectID);
