@@ -1,9 +1,11 @@
 #include "MeshRenderer.h"
 #include "../debugbt/DebugLog.h"
+#include "../..//util/MeshManager.h"
 
 MeshRenderer::MeshRenderer()
 	: Behaviour(BehaviourType::MeshRenderer)
 {
+	meshmanager::LoadObj("golden_goose.obj", m_vertices, m_uvs, m_normals, m_indices);
 	// TODO : Identify game object ID here
 	DebugLog::Info("Generating buffers for MeshRenderer");
 
@@ -13,15 +15,15 @@ MeshRenderer::MeshRenderer()
 	
 	// Allocate data into the buffers
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObjectID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(m_verticesCube), m_verticesCube, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(glm::vec3), &m_vertices[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesBufferObjectID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_indicesCube), m_indicesCube, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(GLuint), &m_indices[0], GL_STATIC_DRAW);
 
 	// Generate and setup the vertex array object
 	glGenVertexArrays(1, &m_vertexArrayObjectID);
 	glBindVertexArray(m_vertexArrayObjectID);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
 	// Unbind everything
@@ -50,7 +52,7 @@ void MeshRenderer::Draw()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesBufferObjectID);
 
 	// Draw the mesh
-	glDrawElements(GL_TRIANGLES, sizeof(m_indicesCube), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 }
 
 bool MeshRenderer::HandleMessage(unsigned int senderID, std::string message)

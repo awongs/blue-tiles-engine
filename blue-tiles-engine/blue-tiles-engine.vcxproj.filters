@@ -93,6 +93,9 @@
     <ClCompile Include="engine\sound\Music.cpp">
       <Filter>Source Files\engine\sound</Filter>
     </ClCompile>
+    <ClCompile Include="util\MeshManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -142,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="engine\sound\Music.h">
       <Filter>Source Files\engine\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="util\MeshManager.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
