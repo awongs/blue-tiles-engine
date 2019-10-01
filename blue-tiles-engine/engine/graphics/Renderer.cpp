@@ -31,8 +31,6 @@ Renderer::~Renderer()
 {
 	// cleanup context
 	SDL_GL_DeleteContext(m_context);
-
-	//glDeleteBuffers(1, &m_vertexBufferObjectID);
 }
 
 void Renderer::SetupShaders()
@@ -81,8 +79,6 @@ void Renderer::Render(Scene& currentScene)
 	for (const std::unique_ptr<GameObject>& gameObject : currentScene.getWorldGameObjects())
 	{
 		glm::mat4 modelMatrix = glm::mat4(1);
-	
-		MeshRenderer* meshRenderer = static_cast<MeshRenderer*>(gameObject->GetBehaviour(BehaviourType::MeshRenderer));
 
 		// Rotate
 		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.x, glm::vec3(1, 0, 0));
@@ -95,16 +91,8 @@ void Renderer::Render(Scene& currentScene)
 		// Translate
 		modelMatrix = glm::translate(modelMatrix, gameObject->position);
 
-		// Use texture zero
-		glActiveTexture(GL_TEXTURE0);
-		currentShader->SetUniform1i("uTexture", 0);
-
-
-		//glBindTexture(GL_TEXTURE_2D, meshRenderer->texture->GetTextureID());
-
+		// Tell the game object to draw
 		currentShader->SetUniformMatrix4fv("model", modelMatrix);
-
-		
 		gameObject->Draw();
 	}
 }

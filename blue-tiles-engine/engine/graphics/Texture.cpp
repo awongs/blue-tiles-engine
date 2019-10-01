@@ -40,7 +40,7 @@ Texture::Texture(void* imageData, int width, int height, int numberOfChannels)
 	}
 
 	// Unbind the texture
-	//glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Texture::~Texture()

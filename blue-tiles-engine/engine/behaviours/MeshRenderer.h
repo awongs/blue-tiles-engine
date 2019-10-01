@@ -29,7 +29,7 @@ private:
 	GLuint m_vertexArrayObjectID;
 	
 	// This mesh's texture.
-	std::shared_ptr<Texture> texture;
+	std::shared_ptr<Texture> m_texture;
 
 	// -- Testing Purposes --
 	GLfloat m_verticesCube[24 * 5] = {

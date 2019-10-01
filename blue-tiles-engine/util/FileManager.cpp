@@ -70,7 +70,7 @@ namespace filemanager
 			// Create the texture
 			std::shared_ptr<Texture> texture = std::make_shared<Texture>(image->pixels, image->w, image->h, image->format->BytesPerPixel);
 
-			// Return the texture as a shared pointer
+			// Return the texture as a shared pointer after freeing the surface
 			SDL_FreeSurface(image);
 			return texture;
 		}
