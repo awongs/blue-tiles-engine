@@ -90,6 +90,9 @@
     <ClCompile Include="engine\MessageSystem.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="engine\Level.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -135,6 +138,9 @@
       <Filter>Source Files\engine\behaviours</Filter>
     </ClInclude>
     <ClInclude Include="engine\MessageSystem.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\Level.h">
       <Filter>Source Files\engine</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,6 +9,7 @@
 #include "engine/input/Input.h"
 #include "engine/debugbt/DebugLog.h"
 #include "engine/sound/Sound.h"
+#include "engine/Level.h"
 
 int main()
 {
@@ -62,9 +63,14 @@ int main()
 	const string path = "../Assets/sound-assets/Alert.mp3";
 	sound->addMusic(path);
 	
-	if((Mix_PlayMusic(sound->getMusic(), -1))!=0) {
+	Level* l = new Level("level0");
+
+	/*if((Mix_PlayMusic(sound->getMusic(), -1))!=0) {
 		DebugLog::Error("Failed");
-	}
+	}*/
+
+
+
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
 	{
