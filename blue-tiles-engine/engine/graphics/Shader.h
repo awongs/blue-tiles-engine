@@ -19,6 +19,9 @@ public:
 
 	// Accessor for program handle.
 	GLuint GetProgramHandle() const;
+
+	// Sets a uniofmr int value in the shader.
+	void SetUniform1i(const std::string name, const int value) const;
 	
 	// Sets a uniform float value in the shader.
 	void SetUniform1f(const std::string name, const float value) const;

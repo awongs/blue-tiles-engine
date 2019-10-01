@@ -94,5 +94,5 @@ void Camera::CalculateViewMatrix()
 void Camera::CalculatePerspectiveView()
 {
 	// TODO: Make aspect ratio not hard coded
-	m_projectionMatrix = glm::perspective(m_fov, 4.0f / 3.0f, 0.0f, 400.0f);
+	m_projectionMatrix = glm::perspective(m_fov, 4.0f / 3.0f, 0.1f, 400.0f);
 }
