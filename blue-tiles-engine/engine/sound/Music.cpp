@@ -18,7 +18,9 @@ Music::Music(const std::string & file) {
 //Deconstructor
  Music::~Music() {
     DebugLog::Info("music dtor called");
-    Mix_FreeMusic(m_music);
+    if(!m_music) {
+        Mix_FreeMusic(m_music);
+    }
 }
 
 //Play music

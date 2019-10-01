@@ -19,7 +19,9 @@ Sound::Sound(const std::string & file) {
 // Deconstructor
 Sound::~Sound() {
     DebugLog::Info("Sound dtor called");
-    Mix_FreeChunk(m_sound);
+    if(!m_sound) {
+        Mix_FreeChunk(m_sound);
+    }
 }
 
 // Play the soundeffect
