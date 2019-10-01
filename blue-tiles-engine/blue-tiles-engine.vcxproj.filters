@@ -90,6 +90,9 @@
     <ClCompile Include="engine\MessageSystem.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="engine\sound\Music.cpp">
+      <Filter>Source Files\engine\sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -136,6 +139,9 @@
     </ClInclude>
     <ClInclude Include="engine\MessageSystem.h">
       <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\sound\Music.h">
+      <Filter>Source Files\engine\sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
