@@ -1,8 +1,10 @@
 #include <fstream>
 #include <sstream>
+#include <sdl2/SDL_image.h>
 
 #include "FileManager.h"
 #include "../engine/debugbt/DebugLog.h"
+#include "../engine/graphics/Texture.h"
 
 namespace filemanager
 {
@@ -32,6 +34,7 @@ namespace filemanager
 			return std::string();
 		}
 	}
+	
 	void AppendFile(const std::string filePath, const std::string content)
 	{
 		// Setup stream for opening the file
@@ -50,6 +53,32 @@ namespace filemanager
 		else
 		{
 			DebugLog::Error("Failed to open " + filePath);
+		}
+	}
+
+	std::shared_ptr<Texture> LoadTexture(const std::string filePath)
+	{
+		// Image definitions
+		int width, height, numberOfChannels;
+
+		SDL_Surface* image;
+		image = IMG_Load("../Assets/crate.jpg");
+
+		// Check if the image data was sucessfully loaded
+		if (image != nullptr)
+		{
+			// Create the texture
+			std::shared_ptr<Texture> texture = std::make_shared<Texture>(image->pixels, image->w, image->h, image->format->BytesPerPixel);
+
+			// Return the texture as a shared pointer after freeing the surface
+			SDL_FreeSurface(image);
+			return texture;
+		}
+		else
+		{
+			DebugLog::Error("Failed to load " + filePath);
+			DebugLog::Error(IMG_GetError());
+			return nullptr;
 		}
 	}
 }

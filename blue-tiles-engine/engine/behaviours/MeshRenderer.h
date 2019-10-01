@@ -1,7 +1,10 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <memory>
 #include "Behaviour.h"
+
+class Texture;
 
 class MeshRenderer : public Behaviour
 {
@@ -13,6 +16,8 @@ public:
 	void Draw() override;
 	bool HandleMessage(unsigned int senderID, std::string message) override;
 
+	
+
 private:
 	// ID to the vertex buffer object
 	GLuint m_vertexBufferObjectID;
@@ -22,44 +27,47 @@ private:
 
 	// ID to the vertex array object
 	GLuint m_vertexArrayObjectID;
+	
+	// This mesh's texture.
+	std::shared_ptr<Texture> m_texture;
 
 	// -- Testing Purposes --
-	GLfloat m_verticesCube[24 * 3] = {
+	GLfloat m_verticesCube[24 * 5] = {
 		// Front
-		0.5, -0.5, 0.5,
-		0.5,  0.5, 0.5,
-		-0.5,  0.5, 0.5,
-		-0.5, -0.5, 0.5,
+		0.5, -0.5, 0.5,    1, 0,
+		0.5,  0.5, 0.5,    1, 1,
+		-0.5,  0.5, 0.5,   0, 1,
+		-0.5, -0.5, 0.5,   0, 0,
 
 		// Back
-		-0.5, -0.5, -0.5,
-		-0.5,  0.5, -0.5,
-		0.5,  0.5, -0.5,
-		0.5, -0.5, -0.5,
+		-0.5, -0.5, -0.5,  1, 0,
+		-0.5,  0.5, -0.5,  1, 1,
+		0.5,  0.5, -0.5,   0, 1,
+		0.5, -0.5, -0.5,   0, 0,
 
 		// Left
-		-0.5, -0.5,  0.5,
-		-0.5,  0.5,  0.5,
-		-0.5,  0.5, -0.5,
-		-0.5, -0.5, -0.5,
+		-0.5, -0.5,  0.5,  1, 0,
+		-0.5,  0.5,  0.5,  1, 1,
+		-0.5,  0.5, -0.5,  0, 1,
+		-0.5, -0.5, -0.5,  0, 0,
 
 		// Right
-		0.5, -0.5, -0.5,
-		0.5,  0.5, -0.5,
-		0.5,  0.5,  0.5,
-		0.5, -0.5,  0.5,
+		0.5, -0.5, -0.5,   1, 0,
+		0.5,  0.5, -0.5,   1, 1,
+		0.5,  0.5,  0.5,   0, 1,
+		0.5, -0.5,  0.5,   0, 0,
 
 		// Top
-		0.5,  0.5,  0.5,
-		0.5,  0.5, -0.5,
-		-0.5,  0.5, -0.5,
-		-0.5,  0.5,  0.5,
+		0.5,  0.5,  0.5,   1, 0,
+		0.5,  0.5, -0.5,   1, 1,
+		-0.5,  0.5, -0.5,  0, 1,
+		-0.5,  0.5,  0.5,  0, 0,
 
 		// Bottom
-		0.5, -0.5, -0.5,
-		0.5, -0.5,  0.5,
-		-0.5, -0.5,  0.5,
-		-0.5, -0.5, -0.5
+		0.5, -0.5, -0.5,   1, 0,
+		0.5, -0.5,  0.5,   1, 1,
+		-0.5, -0.5,  0.5,  0, 1,
+		-0.5, -0.5, -0.5,  0, 0
 	};
 
 	unsigned int m_indicesCube[12 * 3] = {
