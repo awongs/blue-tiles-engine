@@ -7,7 +7,7 @@
 */
 
 Music::Music(const std::string & file) {
-    //SDL Mixer function that loads wave files.
+    // SDL Mixer function that loads wave files.
     m_music = Mix_LoadMUS (&file[0]);
     // Checks if m_music is null.
     if(!m_music) {
@@ -15,13 +15,16 @@ Music::Music(const std::string & file) {
     }
 }
 
-//Deconstructor
+// Deconstructor
  Music::~Music() {
     DebugLog::Info("music dtor called");
-    Mix_FreeMusic(m_music);
+    if(!m_music) {
+        Mix_FreeMusic(m_music);
+        m_music = nullptr;
+    }
 }
 
-//Play music
+// Play music
 void Music::play() const {
     if(!m_music) {
         DebugLog::Error(Mix_GetError());
