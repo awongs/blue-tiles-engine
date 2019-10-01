@@ -1,9 +1,7 @@
-#include <stb/stb_image.h>
-
 #include "Texture.h"
 #include "../debugbt/DebugLog.h"
 
-Texture::Texture(unsigned char* imageData, int width, int height, int numberOfChannels)
+Texture::Texture(void* imageData, int width, int height, int numberOfChannels)
 	: width(width)
 	, height(height)
 	, numberOfChannels(numberOfChannels)
@@ -24,15 +22,25 @@ Texture::Texture(unsigned char* imageData, int width, int height, int numberOfCh
 
 	if (imageData != nullptr)
 	{
-		// Load image data onto the texture
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+		// Check pixel format, then load image onto the texture
+		if (numberOfChannels == 3)
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+		}
+		else if (numberOfChannels == 4)
+		{
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+		}
+		
 		glGenerateMipmap(GL_TEXTURE_2D);
-		stbi_image_free(imageData);
 	}
 	else
 	{
 		DebugLog::Error("Failed to load texture, image data was null");
 	}
+
+	// Unbind the texture
+	//glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 Texture::~Texture()

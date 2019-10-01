@@ -53,15 +53,6 @@ void Renderer::SetupShaders()
 	shaderProgram = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
 	m_shaderManager->UseShaderProgram(shaderProgram);
-
-	glBindFragDataLocation(shaderProgram, 0, "FragColor");
-
-	// vertex data layout
-	/*
-	GLint posAttrib = glGetAttribLocation(shaderProgram, "aPos");
-	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	*/
 }
 
 void Renderer::Render(Scene& currentScene)
@@ -69,9 +60,6 @@ void Renderer::Render(Scene& currentScene)
 	// clearing screen
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	// Bind the VAO
-	//glBindVertexArray(m_vertexAttributeObjectID);
 
 	std::shared_ptr<Shader> currentShader = m_shaderManager->GetCurrentShader().lock();
 
@@ -79,9 +67,10 @@ void Renderer::Render(Scene& currentScene)
 	if (currentShader == nullptr)
 	{
 		DebugLog::Error("Pointer to current shader is null in render loop");
+		return;
 	}
 
-	// MVP matrices
+	// Camera matrices
 	glm::mat4 viewMatrix = Camera::GetInstance().GetViewMatrix();
 	glm::mat4 projectionMatrix = Camera::GetInstance().GetProjectionMatrix();
 
@@ -92,10 +81,10 @@ void Renderer::Render(Scene& currentScene)
 	for (const std::unique_ptr<GameObject>& gameObject : currentScene.getWorldGameObjects())
 	{
 		glm::mat4 modelMatrix = glm::mat4(1);
-
+	
 		MeshRenderer* meshRenderer = static_cast<MeshRenderer*>(gameObject->GetBehaviour(BehaviourType::MeshRenderer));
 
-		// Rotation
+		// Rotate
 		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.x, glm::vec3(1, 0, 0));
 		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.y, glm::vec3(0, 1, 0));
 		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.z, glm::vec3(0, 0, 1));
@@ -106,17 +95,18 @@ void Renderer::Render(Scene& currentScene)
 		// Translate
 		modelMatrix = glm::translate(modelMatrix, gameObject->position);
 
+		// Use texture zero
 		glActiveTexture(GL_TEXTURE0);
 		currentShader->SetUniform1i("uTexture", 0);
 
-		glBindTexture(GL_TEXTURE_2D, meshRenderer->texture->GetTextureID());
+
+		//glBindTexture(GL_TEXTURE_2D, meshRenderer->texture->GetTextureID());
 
 		currentShader->SetUniformMatrix4fv("model", modelMatrix);
+
+		
 		gameObject->Draw();
 	}
-	
-	// draw functions
-	//glDrawElements(GL_TRIANGLES, sizeof(m_indicesCube), GL_UNSIGNED_INT, 0);
 }
 
 void Renderer::Display()

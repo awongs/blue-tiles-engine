@@ -16,7 +16,7 @@ public:
 	void Draw() override;
 	bool HandleMessage(unsigned int senderID, std::string message) override;
 
-	std::shared_ptr<Texture> texture;
+	
 
 private:
 	// ID to the vertex buffer object
@@ -27,6 +27,9 @@ private:
 
 	// ID to the vertex array object
 	GLuint m_vertexArrayObjectID;
+	
+	// This mesh's texture.
+	std::shared_ptr<Texture> texture;
 
 	// -- Testing Purposes --
 	GLfloat m_verticesCube[24 * 5] = {

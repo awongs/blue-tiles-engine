@@ -1,8 +1,6 @@
 #include <fstream>
 #include <sstream>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
+#include <sdl2/SDL_image.h>
 
 #include "FileManager.h"
 #include "../engine/debugbt/DebugLog.h"
@@ -62,18 +60,25 @@ namespace filemanager
 	{
 		// Image definitions
 		int width, height, numberOfChannels;
-		
-		// Load the image data
-		unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &numberOfChannels, 0);
+
+		SDL_Surface* image;
+		image = IMG_Load("../Assets/crate.jpg");
 
 		// Check if the image data was sucessfully loaded
-		if (data == nullptr)
+		if (image != nullptr)
+		{
+			// Create the texture
+			std::shared_ptr<Texture> texture = std::make_shared<Texture>(image->pixels, image->w, image->h, image->format->BytesPerPixel);
+
+			// Return the texture as a shared pointer
+			SDL_FreeSurface(image);
+			return texture;
+		}
+		else
 		{
 			DebugLog::Error("Failed to load " + filePath);
+			DebugLog::Error(IMG_GetError());
 			return nullptr;
 		}
-
-		// Return the texture as a shared pointer
-		return std::make_shared<Texture>(data, width, height, numberOfChannels);
 	}
 }
