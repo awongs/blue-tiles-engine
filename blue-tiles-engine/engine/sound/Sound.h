@@ -1,7 +1,6 @@
 #pragma once
 
 #include <sdl2/SDL_mixer.h>
-#include <sdl2/SDL_mixer.h>
 #include <vector>
 #include <iostream>
 #include "../debugbt/DebugLog.h"
