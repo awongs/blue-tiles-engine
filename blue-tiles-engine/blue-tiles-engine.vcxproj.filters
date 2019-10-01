@@ -90,14 +90,14 @@
     <ClCompile Include="engine\MessageSystem.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
-    <ClCompile Include="engine\GameWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="engine\graphics\Texture.cpp">
       <Filter>Source Files\engine\graphics</Filter>
     </ClCompile>
     <ClCompile Include="engine\sound\Music.cpp">
       <Filter>Source Files\engine\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\GameWindow.cpp">
+      <Filter>Source Files\engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
