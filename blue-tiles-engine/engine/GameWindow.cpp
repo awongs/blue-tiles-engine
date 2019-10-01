@@ -17,14 +17,14 @@ GameWindow::~GameWindow()
 	SDL_Quit();
 }
 
-void GameWindow::SetupSDLWindow()
+int GameWindow::SetupSDLWindow()
 {
 	// Initialize SDL.
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
 	{
 		std::cout << "Could not initialize SDL: " << SDL_GetError() <<
 			std::endl;
-		return;
+		return 1;
 	}
 
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
@@ -48,6 +48,13 @@ void GameWindow::SetupSDLWindow()
 	{
 		std::cout << "Window could not be created: " << SDL_GetError() <<
 			std::endl;
-		return;
+		return 1;
 	}
+
+	return 0;
+}
+
+SDL_Window* GameWindow::GetWindow()
+{
+	return m_window;
 }

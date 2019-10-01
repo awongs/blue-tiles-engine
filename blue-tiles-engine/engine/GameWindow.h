@@ -1,5 +1,7 @@
 #pragma once
 
+struct SDL_Window;
+
 class GameWindow
 {
 public:
@@ -9,10 +11,12 @@ public:
 
 	~GameWindow();
 
-private:
-
 	// Sets up SDL window stuff 
-	void SetupSDLWindow();
+	int SetupSDLWindow();
+
+	SDL_Window* GetWindow();
+
+private:
 
 	// Pointer to a sdl window
 	SDL_Window* m_window;
