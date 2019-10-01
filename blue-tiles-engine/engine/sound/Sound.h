@@ -17,6 +17,6 @@ public:
     // Plays the sound
     void play() const;
 private:
-    //Used for sound
+    // Used for sound
      Mix_Chunk *m_sound;
 };

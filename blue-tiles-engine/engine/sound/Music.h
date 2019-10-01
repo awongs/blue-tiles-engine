@@ -7,8 +7,7 @@
 
 class Music {
 public:
-    // Constuctor of music.
-   
+    // Constuctor of music
     Music(const std::string & file);
 
     // Deconstructor of music
@@ -16,7 +15,8 @@ public:
 
     // Plays the music
     void play() const;
+
 private:
-    //Used for Music
+    // Used for Music
      Mix_Music *m_music;
 };

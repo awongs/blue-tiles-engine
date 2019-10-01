@@ -21,8 +21,6 @@ int main()
 		return 1;
 	}
 
-	
-
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
@@ -59,10 +57,10 @@ int main()
 	// Create a sound manager
 	SoundManager* soundManager = new SoundManager();
 	
-	//Shared pointer to a music object.
+	// Shared pointer to a music object.
 	auto music = soundManager->getMusic("alarm");
-
 	music->play();
+
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
 	{
@@ -112,6 +110,7 @@ int main()
 	// destroy SoundManager
 	delete soundManager;
 	soundManager = NULL;
+
 	// Clean up SDL.
 	SDL_DestroyWindow(window);
 	SDL_Quit();
