@@ -110,7 +110,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL2.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;SDL2_mixer.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -148,7 +148,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="engine\Behaviour.cpp" />
+    <ClCompile Include="engine\behaviours\Behaviour.cpp" />
+    <ClCompile Include="engine\behaviours\MeshRenderer.cpp" />
     <ClCompile Include="engine\debugbt\DebugLog.cpp" />
     <ClCompile Include="engine\GameEngine.cpp" />
     <ClCompile Include="engine\graphics\Camera.cpp" />
@@ -156,12 +157,15 @@
     <ClCompile Include="engine\graphics\Renderer.cpp" />
     <ClCompile Include="engine\graphics\Shader.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
+    <ClCompile Include="engine\graphics\Texture.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
     <ClCompile Include="engine\physics\Collider.cpp" />
     <ClCompile Include="engine\physics\PhysicsEngine.cpp" />
     <ClCompile Include="engine\physics\PhysicsObject.cpp" />
     <ClCompile Include="engine\physics\SphereCollider.cpp" />
+    <ClCompile Include="engine\MessageSystem.cpp" />
     <ClCompile Include="engine\Scene.cpp" />
+    <ClCompile Include="engine\sound\Music.cpp" />
     <ClCompile Include="engine\sound\Sound.cpp" />
     <ClCompile Include="engine\sound\SoundManager.cpp" />
     <ClCompile Include="glad.c" />
@@ -169,7 +173,8 @@
     <ClCompile Include="util\FileManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="engine\Behaviour.h" />
+    <ClInclude Include="engine\behaviours\Behaviour.h" />
+    <ClInclude Include="engine\behaviours\MeshRenderer.h" />
     <ClInclude Include="engine\debugbt\DebugLog.h" />
     <ClInclude Include="engine\GameEngine.h" />
     <ClInclude Include="engine\graphics\Camera.h" />
@@ -177,12 +182,15 @@
     <ClInclude Include="engine\graphics\Renderer.h" />
     <ClInclude Include="engine\graphics\Shader.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
+    <ClInclude Include="engine\graphics\Texture.h" />
     <ClInclude Include="engine\input\Input.h" />
     <ClInclude Include="engine\physics\Collider.h" />
     <ClInclude Include="engine\physics\PhysicsEngine.h" />
     <ClInclude Include="engine\physics\PhysicsObject.h" />
     <ClInclude Include="engine\physics\SphereCollider.h" />
+    <ClInclude Include="engine\MessageSystem.h" /
     <ClInclude Include="engine\Scene.h" />
+    <ClInclude Include="engine\sound\Music.h" />
     <ClInclude Include="engine\sound\Sound.h" />
     <ClInclude Include="engine\sound\SoundManager.h" />
     <ClInclude Include="util\FileManager.h" />

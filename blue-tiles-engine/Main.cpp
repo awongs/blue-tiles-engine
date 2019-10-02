@@ -10,7 +10,8 @@
 #include "engine/physics/Collider.h"
 #include "engine/input/Input.h"
 #include "engine/debugbt/DebugLog.h"
-#include "engine/sound/Sound.h"
+#include "engine/sound/Music.h"
+#include "engine/sound/SoundManager.h"
 
 int main()
 {
@@ -20,12 +21,6 @@ int main()
 		std::cout << "Could not initialize SDL: " << SDL_GetError() << 
 			std::endl;
 		return 1;
-	}
-
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
-		std::cout << "Could not initialize SDL_mixer:" << Mix_GetError() <<
-			std::endl;
-		return 2;
 	}
 
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
@@ -78,14 +73,14 @@ int main()
 	Input *input{ new Input() };
 
 	SDL_Event windowEvent;
-	Sound *sound {new Sound()};
-	const string path = "../Assets/sound-assets/Alert.mp3";
-	sound->addMusic(path);
+
+	// Create a sound manager
+	SoundManager* soundManager = new SoundManager();
 	
-	/*if((Mix_PlayMusic(sound->getMusic(), -1))!=0) {
-		DebugLog::Error("Failed");
-	}*/
-	
+	// Shared pointer to a music object.
+	auto music = soundManager->getMusic("alarm");
+	music->play();
+
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
 	{
@@ -185,6 +180,10 @@ int main()
 	// destroy engine
 	delete engine;
 	engine = NULL;
+
+	// destroy SoundManager
+	delete soundManager;
+	soundManager = NULL;
 
 	// Clean up SDL.
 	SDL_DestroyWindow(window);

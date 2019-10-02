@@ -6,7 +6,7 @@
 #include <iterator>
 #include <glm/glm.hpp>
 #include <vector>
-#include "Behaviour.h"
+#include "behaviours/Behaviour.h"
 
 class GameObject
 {
@@ -43,13 +43,13 @@ public:
 	glm::vec3 scale;
 
 	// Update
-	virtual void Update();
+	virtual void Update(float deltaTime);
 
 	// Draw
 	virtual void Draw();
 
 	// Handles messages
-	virtual bool HandleMessage(std::string message, BehaviourType type);
+	virtual bool HandleMessage(unsigned int senderID, std::string message, BehaviourType type);
 
 	// Gets behaviour of BehaviourType; Returns nullptr if doesn't exist
 	Behaviour* GetBehaviour(BehaviourType type);

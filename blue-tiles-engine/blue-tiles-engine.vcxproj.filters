@@ -37,6 +37,9 @@
     <Filter Include="Source Files\engine\physics">
       <UniqueIdentifier>{bc39fee8-f452-43af-b9fc-0a33f50f66f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\behaviours">
+      <UniqueIdentifier>{9feadcdd-a8e0-4fdb-aae0-8d64d62255ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -75,9 +78,6 @@
     <ClCompile Include="engine\sound\SoundManager.cpp">
       <Filter>Source Files\engine\sound</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Behaviour.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
     <ClCompile Include="engine\GameObject.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
@@ -95,6 +95,21 @@
     </ClCompile>
     <ClCompile Include="engine\physics\Collider.cpp">
       <Filter>Source Files\engine\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\Behaviour.cpp">
+      <Filter>Source Files\engine\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\MeshRenderer.cpp">
+      <Filter>Source Files\engine\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\MessageSystem.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\graphics\Texture.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\sound\Music.cpp">
+      <Filter>Source Files\engine\sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -128,9 +143,6 @@
     <ClInclude Include="engine\sound\SoundManager.h">
       <Filter>Source Files\engine\sound</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Behaviour.h">
-      <Filter>Source Files\engine</Filter>
-    </ClInclude>
     <ClInclude Include="engine\GameObject.h">
       <Filter>Source Files\engine</Filter>
     </ClInclude>
@@ -148,6 +160,21 @@
     </ClInclude>
     <ClInclude Include="engine\physics\SphereCollider.h">
       <Filter>Source Files\engine\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\Behaviour.h">
+      <Filter>Source Files\engine\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\MeshRenderer.h">
+      <Filter>Source Files\engine\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\MessageSystem.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\Texture.h">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\sound\Music.h">
+      <Filter>Source Files\engine\sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

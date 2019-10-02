@@ -2,15 +2,15 @@
 
 #include "Camera.h"
 
-// Singleton instance definition
-Camera* Camera::m_instance;
-
 Camera::Camera()
 	: m_position()
 	, m_orientation()
 	, m_viewMatrix()
 	, m_projectionMatrix()
 {
+	// -- Testing -- Move the camera back a bit
+	Translate(glm::vec3(0.0f, 0.0f, 2.0f));
+
 	// Initial matrix values
 	CalculateViewMatrix();
 	CalculatePerspectiveView();
@@ -18,17 +18,13 @@ Camera::Camera()
 
 Camera::~Camera()
 {
-	m_instance = nullptr;
 }
 
-Camera* Camera::GetInstance()
+Camera& Camera::GetInstance()
 {
-	// Initialize camera if this is the first time
-	if (m_instance == nullptr)
-	{
-		m_instance = new Camera();
-	}
-	return m_instance;
+	// This instance will be initialized the first time GetInstance is called
+	static Camera instance;
+	return instance;
 }
 
 void Camera::SetPosition(const glm::vec3 position)
@@ -88,8 +84,8 @@ void Camera::CalculateViewMatrix()
 	// Create an identity matrix for position
 	glm::mat4 positionMatrix = glm::mat4(1);
 
-	// Calculate position matrix
-	positionMatrix = glm::translate(positionMatrix, m_position);
+	// Using negative position here to simulate an actual camera moving instead of the world
+	positionMatrix = glm::translate(positionMatrix, -m_position);
 
 	// View matrix is rotation multiplied by position
 	m_viewMatrix = rotationMatrix * positionMatrix;
@@ -98,5 +94,5 @@ void Camera::CalculateViewMatrix()
 void Camera::CalculatePerspectiveView()
 {
 	// TODO: Make aspect ratio not hard coded
-	m_projectionMatrix = glm::perspective(m_fov, 4.0f / 3.0f, 0.0f, 400.0f);
+	m_projectionMatrix = glm::perspective(m_fov, 4.0f / 3.0f, 0.1f, 400.0f);
 }

@@ -2,7 +2,7 @@
 #include <string>
 
 // Available Behaviour Types
-enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource };
+enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource, MeshRenderer };
 
 class Behaviour
 {
@@ -16,11 +16,11 @@ public:
 	BehaviourType type;
 
 	// Update
-	virtual void Update();
+	virtual void Update(float deltaTime);
 
 	// Draw
 	virtual void Draw();
 
 	// Handles messages
-	virtual bool HandleMessage(std::string message);
+	virtual bool HandleMessage(unsigned int senderID, std::string message);
 };

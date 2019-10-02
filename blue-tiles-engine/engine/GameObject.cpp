@@ -52,14 +52,25 @@ GameObject::~GameObject()
 	
 }
 
-void GameObject::Update()
+void GameObject::Update(float deltaTime)
 {
+	// Tell each behaviour to update
+	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	{
+		behaviour->Update(deltaTime);
+	}
 
+	// -- Testing Purposes --
+	rotation.y += 3.14f * deltaTime;
 }
 
 void GameObject::Draw()
 {
-
+	// Tell each behaviour to draw
+	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	{
+		behaviour->Draw();
+	}
 }
 
 Behaviour* GameObject::GetBehaviour(BehaviourType type)
@@ -74,7 +85,9 @@ Behaviour* GameObject::GetBehaviour(BehaviourType type)
 	return nullptr;
 }
 
-bool GameObject::HandleMessage(std::string message, BehaviourType type)
+bool GameObject::HandleMessage(unsigned int senderID, std::string message, BehaviourType type)
 {
-	return false;
+	Behaviour* behav = GetBehaviour(type);
+
+	return behav != nullptr ? behav->HandleMessage(senderID, message) : false;
 }

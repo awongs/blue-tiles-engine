@@ -2,15 +2,18 @@
 
 #include <glm/glm.hpp>
 
-
 class Camera
 {
 public:
 	// Deconstructor.
-	~Camera();
+	virtual ~Camera();
+
+	// Prevent copying.
+	Camera(const Camera& other) = delete;
+	Camera& operator=(const Camera& other) = delete;
 
 	// Instance accessor.
-	static Camera* GetInstance();
+	static Camera& GetInstance();
 
 	// Sets the position to an input vec3.
 	void SetPosition(const glm::vec3 position);
@@ -40,9 +43,6 @@ private:
 	// Constructor.
 	Camera();
 
-	// Singleton instance variable.
-	static Camera* m_instance;
-
 	// Calculates and sets the view matrix.
 	void CalculateViewMatrix();
 
@@ -50,7 +50,7 @@ private:
 	void CalculatePerspectiveView();
 
 	// Field of view.
-	float m_fov = 60.0f;
+	float m_fov = glm::radians(60.0f);
 
 	// Current position of the camera.
 	glm::vec3 m_position;
