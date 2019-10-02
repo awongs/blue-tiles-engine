@@ -110,7 +110,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;SDL2_mixer.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2_mixer.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -188,7 +188,7 @@
     <ClInclude Include="engine\physics\PhysicsEngine.h" />
     <ClInclude Include="engine\physics\PhysicsObject.h" />
     <ClInclude Include="engine\physics\SphereCollider.h" />
-    <ClInclude Include="engine\MessageSystem.h" /
+    <ClInclude Include="engine\MessageSystem.h" />
     <ClInclude Include="engine\Scene.h" />
     <ClInclude Include="engine\sound\Music.h" />
     <ClInclude Include="engine\sound\Sound.h" />
