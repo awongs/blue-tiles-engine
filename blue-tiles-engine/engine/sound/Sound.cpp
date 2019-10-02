@@ -9,7 +9,7 @@
 // Constructor to sound taking in a string that has the path to the .mp3
 Sound::Sound(const std::string & file) {
     //SDL Mixer function that loads wave files.
-    m_sound = Mix_LoadWAV (&file[0]);
+    m_sound = Mix_LoadWAV(&file[0]);
     // Checks if m_sound is null.
     if(!m_sound) {
         DebugLog::Error(Mix_GetError());
@@ -19,7 +19,10 @@ Sound::Sound(const std::string & file) {
 // Deconstructor
 Sound::~Sound() {
     DebugLog::Info("Sound dtor called");
-    Mix_FreeChunk(m_sound);
+    if(!m_sound) {
+        Mix_FreeChunk(m_sound);
+        m_sound = nullptr;
+    }
 }
 
 // Play the soundeffect

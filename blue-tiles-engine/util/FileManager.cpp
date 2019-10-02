@@ -58,9 +58,7 @@ namespace filemanager
 
 	std::shared_ptr<Texture> LoadTexture(const std::string filePath)
 	{
-		// Image definitions
-		int width, height, numberOfChannels;
-
+		// Image surface
 		SDL_Surface* image;
 		image = IMG_Load("../Assets/crate.jpg");
 
