@@ -80,6 +80,9 @@ void Renderer::Render(Scene& currentScene)
 	{
 		glm::mat4 modelMatrix = glm::mat4(1);
 
+		// Translate
+		modelMatrix = glm::translate(modelMatrix, gameObject->position);
+
 		// Rotate
 		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.x, glm::vec3(1, 0, 0));
 		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.y, glm::vec3(0, 1, 0));
@@ -87,9 +90,6 @@ void Renderer::Render(Scene& currentScene)
 
 		// Scale
 		modelMatrix = glm::scale(modelMatrix, gameObject->scale);
-
-		// Translate
-		modelMatrix = glm::translate(modelMatrix, gameObject->position);
 
 		// Tell the game object to draw
 		currentShader->SetUniformMatrix4fv("model", modelMatrix);
