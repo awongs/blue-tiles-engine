@@ -152,6 +152,7 @@
     <ClCompile Include="engine\behaviours\MeshRenderer.cpp" />
     <ClCompile Include="engine\debugbt\DebugLog.cpp" />
     <ClCompile Include="engine\GameEngine.cpp" />
+    <ClCompile Include="engine\GameWindow.cpp" />
     <ClCompile Include="engine\graphics\Camera.cpp" />
     <ClCompile Include="engine\GameObject.cpp" />
     <ClCompile Include="engine\graphics\Renderer.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="engine\behaviours\MeshRenderer.h" />
     <ClInclude Include="engine\debugbt\DebugLog.h" />
     <ClInclude Include="engine\GameEngine.h" />
+    <ClInclude Include="engine\GameWindow.h" />
     <ClInclude Include="engine\graphics\Camera.h" />
     <ClInclude Include="engine\GameObject.h" />
     <ClInclude Include="engine\graphics\Renderer.h" />

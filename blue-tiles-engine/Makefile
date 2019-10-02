@@ -1,5 +1,5 @@
 #OBJS All c or cpp files
-OBJS =  Main.cpp glad.c engine/GameEngine.cpp engine/graphics/ShaderManager.cpp engine/debugbt/DebugLog.cpp engine/input/Input.cpp  engine/graphics/Renderer.cpp util/FileManager.cpp engine/sound/Sound.cpp engine/MessageSystem.cpp engine/behaviours/Behaviour.cpp engine/behaviours/MeshRenderer.cpp engine/Scene.cpp engine/graphics/Camera.cpp engine/GameObject.cpp engine/graphics/Shader.cpp engine/sound/Music.cpp engine/sound/SoundManager.cpp engine/graphics/Texture.cpp  
+OBJS =  Main.cpp glad.c engine/GameEngine.cpp engine/graphics/ShaderManager.cpp engine/debugbt/DebugLog.cpp engine/input/Input.cpp  engine/graphics/Renderer.cpp util/FileManager.cpp engine/sound/Sound.cpp engine/MessageSystem.cpp engine/behaviours/Behaviour.cpp engine/behaviours/MeshRenderer.cpp engine/Scene.cpp engine/graphics/Camera.cpp engine/GameObject.cpp engine/graphics/Shader.cpp engine/sound/Music.cpp engine/sound/SoundManager.cpp engine/GameWindow.cpp engine/graphics/Texture.cpp    
 
 #CC Which Compiler to use.
 CC = g++
