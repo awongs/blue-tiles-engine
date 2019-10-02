@@ -91,9 +91,5 @@ int main()
 	delete soundManager;
 	soundManager = NULL;
 
-	// Clean up SDL.
-	SDL_DestroyWindow(window);
-	SDL_Quit();
-
 	return 0;
 }
