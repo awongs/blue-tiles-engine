@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "Behaviour.h"
+#include "../../util/MeshManager.h"
 
 class Texture;
 
@@ -32,9 +33,7 @@ private:
 	// This mesh's texture.
 	std::shared_ptr<Texture> m_texture;
 
-	std::vector<glm::vec3> m_vertices;
-	std::vector<glm::vec2> m_uvs;
-	std::vector<glm::vec3> m_normals;
+	std::vector<meshmanager::Vertex> m_vertices;
 	std::vector<GLuint> m_indices;
 
 	// -- Testing Purposes --

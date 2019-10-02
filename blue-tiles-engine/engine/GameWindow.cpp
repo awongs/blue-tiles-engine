@@ -2,12 +2,13 @@
 
 #include <sdl2/SDL.h>
 #include <iostream>
+#include "../util/MeshManager.h"
 
 GameWindow::GameWindow(int width, int height)
 	: m_windowHeight(height)
 	, m_windowWidth(width)
+	, m_window(nullptr)
 {
-	SetupSDLWindow();
 }
 
 GameWindow::~GameWindow()

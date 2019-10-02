@@ -12,13 +12,13 @@ namespace meshmanager
 	https://gamedev.stackexchange.com/a/104074
 	Lucidelve
 	*/
-	bool LoadObj(const std::string filePath, std::vector<glm::vec3>& out_vertices, std::vector<glm::vec2>& out_uvs, std::vector<glm::vec3>& out_normals, std::vector<GLuint>& out_indices)
+	bool LoadObj(const std::string filePath, std::vector<Vertex>& out_vertices, std::vector<GLuint>& out_indices)
 	{
 		std::string file = filemanager::LoadFile(filePath);
 		if (file.empty()) return false;
 
 		std::vector<GLuint> vertexIndices, uvIndices, normalIndices;
-		std::vector<glm::vec3> temp_vertices;
+		std::vector<glm::vec3> temp_positions;
 		std::vector<glm::vec2> temp_uvs;
 		std::vector<glm::vec3> temp_normals;
 
@@ -43,7 +43,7 @@ namespace meshmanager
 			{
 				glm::vec3 vertex;
 				lineSS >> vertex.x >> vertex.y >> vertex.z;
-				temp_vertices.push_back(vertex);
+				temp_positions.push_back(vertex);
 			}
 			else if (directive.compare("vt") == 0)
 			{
@@ -168,38 +168,33 @@ namespace meshmanager
 			unsigned int uvIndex = uvIndices[i];
 			unsigned int normalIndex = normalIndices[i];
 
-			glm::vec3 vertex = temp_vertices[vertexIndex - 1];
-			glm::vec2 uv = temp_uvs[uvIndex - 1];
-			glm::vec3 normal = temp_normals[normalIndex - 1];
+			Vertex vertex;
+			vertex.position = temp_positions[vertexIndex - 1];
+			vertex.uv = temp_uvs[uvIndex - 1];
+			vertex.normal = temp_normals[normalIndex - 1];
 
 			GLuint hv = -1, ht = -1, hn = -1;
 
-			for (std::vector<glm::vec3>::iterator hvit = out_vertices.begin(); hvit != out_vertices.end(); ++hvit)
+			for (std::vector<Vertex>::iterator hvit = out_vertices.begin(); hvit != out_vertices.end(); ++hvit)
 			{
-				if ((*hvit).x == vertex.x &&
-					(*hvit).y == vertex.y &&
-					(*hvit).z == vertex.z)
+				if ((*hvit).position.x == vertex.position.x &&
+					(*hvit).position.y == vertex.position.y &&
+					(*hvit).position.z == vertex.position.z)
 				{
 					hv = hvit - out_vertices.begin();
 				}
-			}
 
-			for (std::vector<glm::vec2>::iterator htit = out_uvs.begin(); htit != out_uvs.end(); ++htit)
-			{
-				if ((*htit).x == uv.x &&
-					(*htit).y == uv.y)
+				if ((*hvit).uv.x == vertex.uv.x &&
+					(*hvit).uv.y == vertex.uv.y)
 				{
-					ht = htit - out_uvs.begin();
+					ht = hvit - out_vertices.begin();
 				}
-			}
 
-			for (std::vector<glm::vec3>::iterator hnit = out_vertices.begin(); hnit != out_vertices.end(); ++hnit)
-			{
-				if ((*hnit).x == normal.x &&
-					(*hnit).y == normal.y &&
-					(*hnit).z == normal.z)
+				if ((*hvit).normal.x == vertex.normal.x &&
+					(*hvit).normal.y == vertex.normal.y &&
+					(*hvit).normal.z == vertex.normal.z)
 				{
-					hn = hnit - out_vertices.begin();
+					hn = hvit - out_vertices.begin();
 				}
 			}
 
@@ -210,8 +205,6 @@ namespace meshmanager
 			else
 			{
 				out_vertices.push_back(vertex);
-				out_uvs.push_back(uv);
-				out_normals.push_back(normal);
 				out_indices.push_back(out_vertices.size() - 1);
 			}
 		}
