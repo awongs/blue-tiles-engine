@@ -1,8 +1,9 @@
 #include "Behaviour.h"
 
-Behaviour::Behaviour(BehaviourType _type)
+Behaviour::Behaviour(GLuint gameObjectId, BehaviourType type) :
+	m_gameObjectId(gameObjectId), m_type(type)
 {
-	type = _type;
+
 }
 
 Behaviour::~Behaviour()
@@ -10,17 +11,7 @@ Behaviour::~Behaviour()
 
 }
 
-void Behaviour::Update(float deltaTime)
+BehaviourType Behaviour::GetType() const
 {
-
-}
-
-void Behaviour::Draw()
-{
-
-}
-
-bool Behaviour::HandleMessage(unsigned int senderID, std::string message)
-{
-	return false;
+	return m_type;
 }

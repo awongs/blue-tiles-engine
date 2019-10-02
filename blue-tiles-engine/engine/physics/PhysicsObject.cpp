@@ -1,15 +1,32 @@
 #include "PhysicsObject.h"
+#include "SphereCollider.h"
 
 PhysicsObject::PhysicsObject(GLuint gameObjectId, Collider *collider,
 	std::function<void(const PhysicsObject &)> onCollision) :
-	m_gameObjectId(gameObjectId), m_onCollision(onCollision)
+	Behaviour(gameObjectId, BehaviourType::PhysicsObject),
+	m_collider(collider), m_onCollision(onCollision)
 {
-	m_collider = std::unique_ptr<Collider>(collider);
+
 }
 
 PhysicsObject::~PhysicsObject()
 {
 
+}
+
+void PhysicsObject::Update(float deltaTime)
+{
+
+}
+
+void PhysicsObject::Draw()
+{
+
+}
+
+bool PhysicsObject::HandleMessage(unsigned int senderID, std::string message)
+{
+	return false;
 }
 
 void PhysicsObject::OnCollision(const PhysicsObject &other)
@@ -24,5 +41,8 @@ GLuint PhysicsObject::GetId() const
 
 Collider *PhysicsObject::GetCollider() const
 {
+	if (m_collider == nullptr)
+		return nullptr;
+
 	return m_collider.get();
 }

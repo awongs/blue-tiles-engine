@@ -3,8 +3,11 @@
 #include <memory>
 #include <sdl2/SDL.h>
 
+#include "physics/PhysicsEngine.h"
+
 class Renderer;
 class Scene;
+class Input;
 
 /*
 	The main game engine class
@@ -19,6 +22,9 @@ public:
 
 	// Destroys and cleans up the engine.
 	~GameEngine();
+
+	// Handle user input.
+	void HandleInput(Input *input, SDL_Event windowEvent);
 
 	// Main game update loop
 	void Update();
@@ -53,4 +59,7 @@ private:
 
 	// Number of frames per second
 	int m_frameRate;
+
+	// The game's physics engine.
+	std::unique_ptr<PhysicsEngine> m_physEngine{ nullptr };
 };

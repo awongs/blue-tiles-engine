@@ -3,8 +3,8 @@
 #include "../../util/FileManager.h"
 #include "../graphics/Texture.h"
 
-MeshRenderer::MeshRenderer()
-	: Behaviour(BehaviourType::MeshRenderer)
+MeshRenderer::MeshRenderer(GLuint gameObjectId)
+	: Behaviour(gameObjectId, BehaviourType::MeshRenderer)
 {
 	meshmanager::LoadObj("golden_goose.obj", m_vertices, m_indices);
 	// TODO : Identify game object ID here

@@ -6,10 +6,9 @@
 #include <set>
 #include <vector>
 
-#include "PhysicsObject.h"
-
 class Collider;
 class SphereCollider;
+class PhysicsObject;
 
 class PhysicsEngine
 {
@@ -124,9 +123,8 @@ public:
 	// Check for collisions between each of the physics components.
 	void Update();
 
-	// Add a new physics component for a game object to the vector.
-	void AddPhysicsObject(GLuint gameObjectId, Collider *collider,
-		std::function<void(const PhysicsObject &)> onCollision);
+	// Add a physics component for a game object to the vector.
+	void AddPhysicsObject(PhysicsObject *obj);
 
 private:
 	// Roughly check for potential collisions using bounding boxes.
@@ -165,7 +163,7 @@ private:
 	bool IsBoxSphereColliding(Collider *col1, SphereCollider *col2);
 
 	// Hold all the physics components.
-	std::vector<std::unique_ptr<PhysicsObject>> m_physObjects;
+	std::vector<PhysicsObject *> m_physObjects;
 
 	// Hold all endpoints in the x and y-directions, sorted in ascending order.
 	// Endpoints refer to the bounds of an AABB, projected onto an axis.
