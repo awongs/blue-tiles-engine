@@ -1,7 +1,6 @@
 #pragma once
 
 #include <sdl2/SDL_mixer.h>
-#include <sdl2/SDL_mixer.h>
 #include <vector>
 #include <iostream>
 #include "../debugbt/DebugLog.h"
@@ -17,6 +16,6 @@ public:
     // Plays the sound
     void play() const;
 private:
-    //Used for sound
+    // Used for sound
      Mix_Chunk *m_sound;
 };
