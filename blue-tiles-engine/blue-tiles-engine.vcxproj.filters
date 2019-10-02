@@ -111,11 +111,11 @@
     <ClCompile Include="engine\sound\Music.cpp">
       <Filter>Source Files\engine\sound</Filter>
     </ClCompile>
-    <ClCompile Include="util\MeshManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="engine\GameWindow.cpp">
       <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="util\MeshManager.cpp">
+      <Filter>Source Files\util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -186,7 +186,7 @@
       <Filter>Source Files\engine\sound</Filter>
     </ClInclude>
     <ClInclude Include="util\MeshManager.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

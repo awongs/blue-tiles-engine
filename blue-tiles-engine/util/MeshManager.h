@@ -12,5 +12,5 @@ namespace meshmanager
 		glm::vec2 uv;
 		glm::vec3 normal;
 	};
-	bool LoadObj(const std::string filePath, std::vector<glm::vec3>& out_vertices, std::vector<glm::vec2>& out_uvs, std::vector<glm::vec3>& out_normals, std::vector<GLuint>& out_indices);
+	bool LoadObj(const std::string filePath, std::vector<Vertex>& out_vertices, std::vector<GLuint>& out_indices);
 }
