@@ -1,8 +1,12 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <vector>
 #include <memory>
+
 #include "Behaviour.h"
+#include "../../util/MeshManager.h"
 
 class Texture;
 
@@ -16,8 +20,6 @@ public:
 	void Draw() override;
 	bool HandleMessage(unsigned int senderID, std::string message) override;
 
-	
-
 private:
 	// ID to the vertex buffer object
 	GLuint m_vertexBufferObjectID;
@@ -30,6 +32,9 @@ private:
 	
 	// This mesh's texture.
 	std::shared_ptr<Texture> m_texture;
+
+	std::vector<meshmanager::Vertex> m_vertices;
+	std::vector<GLuint> m_indices;
 
 	// -- Testing Purposes --
 	GLfloat m_verticesCube[24 * 5] = {
@@ -95,5 +100,4 @@ private:
 		20, 21, 22,
 		22, 23, 20
 	};
-
 };

@@ -1,4 +1,5 @@
 #include <vector>
+#include <glm/gtc/random.hpp>
 
 #include "GameEngine.h"
 #include "graphics/Renderer.h"
@@ -37,13 +38,19 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	DebugLog::Info("Engine initialization completed!");
 
 	// -- Testing --
+	srand(time(0));
 	std::vector<std::unique_ptr<GameObject>> worldGameObjects;
 	std::vector<std::unique_ptr<GameObject>> screenGameObjects;
-	std::vector<std::unique_ptr<Behaviour>> behaviours;
+	for (int i = 0; i < 10; i++)
+	{
+		std::vector<std::unique_ptr<Behaviour>> behaviours;
 
-	behaviours.push_back(std::make_unique<MeshRenderer>());
+		behaviours.push_back(std::make_unique<MeshRenderer>());
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(behaviours);
+		ga->position += glm::vec3(glm::linearRand<float>(-10.0f, 10.0f), 0.0f, glm::linearRand<float>(-10.0f, 10.0f));
 
-	worldGameObjects.push_back(std::make_unique<GameObject>(behaviours));
+		worldGameObjects.push_back(std::move(ga));
+	}
 
 	m_currentScene = std::make_unique<Scene>(worldGameObjects, screenGameObjects);
 
