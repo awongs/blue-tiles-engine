@@ -6,7 +6,7 @@
 #include <ostream>
 #include <iostream>
 #include <string>
-#include "GameObject.h"
+#include "../gameobjects/Object.h"
 #include "../gameobjects/Guard.h"
 #include "../gameobjects/Room.h"
 #include "debugbt/DebugLog.h"
@@ -21,16 +21,16 @@ class Level
 		int levelNum;
 
 		// Width of level ^ v
-		float width;
+		int width;
 
 		// Length of level <------>
-		float length;
+		int length;
 
 		// Number of grids in the level (width * length)
-		float numGrids;
+		int numGrids;
 
 		// Game objects
-		std::vector<GameObject> objects;
+		std::vector<Object> objects;
 
 		// Rooms
 		std::vector<Room> rooms;

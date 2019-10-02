@@ -25,32 +25,25 @@
       "objectid" : 0,
       "name" : "key1",
       "location": 3,
-      "rotation": {
-        "angle" : 0
-      }
+      "rotation": 0.0
     },
     {
       "objectid" : 1,
       "name" : "block",
       "location": 2,
-      "rotation": {
-        "angle" : 0,
-        "rotateFrom" : 0,
-        "rotateTo" : 0,
-        "interval" : 0
-      }
+      "rotation": 0.0
     }
 	],
   "guards": [
     {
       "guardid" : 0,
       "location": 23,
-	  "range" : 1,
+	  "range" : 1.0,
       "rotation": {
-        "angle" : -90,
-        "rotateFrom" : -90,
-        "rotateTo" : 0,
-        "interval" : 5
+        "angle" : -90.0,
+        "rotateFrom" : -90.0,
+        "rotateTo" : 0.0,
+        "interval" : 5.0
       }
     }
   ]

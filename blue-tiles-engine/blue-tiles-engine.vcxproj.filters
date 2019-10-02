@@ -105,6 +105,9 @@
     <ClCompile Include="gameobjects\Door.cpp">
       <Filter>Source Files\gameobjects</Filter>
     </ClCompile>
+    <ClCompile Include="gameobjects\Object.cpp">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -162,6 +165,9 @@
       <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
     <ClInclude Include="gameobjects\Door.h">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="gameobjects\Object.h">
       <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
   </ItemGroup>
