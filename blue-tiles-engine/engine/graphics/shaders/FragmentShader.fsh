@@ -1,8 +1,12 @@
 #version 330 core
 
-out vec4 FragColor;
-		
+uniform sampler2D uTexture;
+
+in vec2 fragTexCoord;
+in vec3 fragNormal;
+
 void main()
 {
-	FragColor = vec4(1.0f, 0.2f, 0.2f, 1.0f);
+	// -- Testing -- Combine normal and texture for colour
+	gl_FragColor = vec4(fragNormal, 1.0) + texture(uTexture, fragTexCoord);
 }

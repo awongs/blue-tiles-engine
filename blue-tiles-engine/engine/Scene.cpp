@@ -10,7 +10,7 @@ Scene::Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::ve
 		{
 			if (worldGameObjects[i]->id == worldGameObjects[j]->id)
 			{
-				DebugLog::Warn(std::string("World GameObject has a matching id: " + worldGameObjects[i]->id));
+				DebugLog::Warn(std::string("World GameObject has a matching id: " + std::to_string(worldGameObjects[i]->id)));
 			}
 		}
 	}
@@ -20,7 +20,7 @@ Scene::Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::ve
 		{
 			if (screenGameObjects[i]->id == screenGameObjects[j]->id)
 			{
-				DebugLog::Warn(std::string("Screen GameObject has a matching id: " + screenGameObjects[i]->id));
+				DebugLog::Warn(std::string("Screen GameObject has a matching id: " + std::to_string(screenGameObjects[i]->id)));
 			}
 		}
 	}

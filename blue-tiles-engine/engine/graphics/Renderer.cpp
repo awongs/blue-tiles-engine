@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "../Scene.h"
 #include "../behaviours/MeshRenderer.h"
+#include "Texture.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
@@ -20,6 +21,9 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 	DebugLog::Info("Creating shader program...\n");
 	SetupShaders();
 
+	// Enable depth testing
+	glEnable(GL_DEPTH_TEST);
+
 	DebugLog::Info("Renderer initialization completed!\n");
 }
 
@@ -27,8 +31,6 @@ Renderer::~Renderer()
 {
 	// cleanup context
 	SDL_GL_DeleteContext(m_context);
-
-	//glDeleteBuffers(1, &m_vertexBufferObjectID);
 }
 
 void Renderer::SetupShaders()
@@ -49,23 +51,13 @@ void Renderer::SetupShaders()
 	shaderProgram = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
 	m_shaderManager->UseShaderProgram(shaderProgram);
-
-	glBindFragDataLocation(shaderProgram, 0, "FragColor");
-
-	// vertex data layout
-	GLint posAttrib = glGetAttribLocation(shaderProgram, "aPos");
-	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
 void Renderer::Render(Scene& currentScene)
 {
 	// clearing screen
-	glClearColor(0.75f, 1.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-	
-	// Bind the VAO
-	//glBindVertexArray(m_vertexAttributeObjectID);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	std::shared_ptr<Shader> currentShader = m_shaderManager->GetCurrentShader().lock();
 
@@ -73,9 +65,10 @@ void Renderer::Render(Scene& currentScene)
 	if (currentShader == nullptr)
 	{
 		DebugLog::Error("Pointer to current shader is null in render loop");
+		return;
 	}
 
-	// MVP matrices
+	// Camera matrices
 	glm::mat4 viewMatrix = Camera::GetInstance().GetViewMatrix();
 	glm::mat4 projectionMatrix = Camera::GetInstance().GetProjectionMatrix();
 
@@ -87,7 +80,10 @@ void Renderer::Render(Scene& currentScene)
 	{
 		glm::mat4 modelMatrix = glm::mat4(1);
 
-		// Rotation
+		// Translate
+		modelMatrix = glm::translate(modelMatrix, gameObject->position);
+
+		// Rotate
 		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.x, glm::vec3(1, 0, 0));
 		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.y, glm::vec3(0, 1, 0));
 		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.z, glm::vec3(0, 0, 1));
@@ -95,15 +91,10 @@ void Renderer::Render(Scene& currentScene)
 		// Scale
 		modelMatrix = glm::scale(modelMatrix, gameObject->scale);
 
-		// Translate
-		modelMatrix = glm::translate(modelMatrix, gameObject->position);
-
+		// Tell the game object to draw
 		currentShader->SetUniformMatrix4fv("model", modelMatrix);
 		gameObject->Draw();
 	}
-	
-	// draw functions
-	//glDrawElements(GL_TRIANGLES, sizeof(m_indicesCube), GL_UNSIGNED_INT, 0);
 }
 
 void Renderer::Display()

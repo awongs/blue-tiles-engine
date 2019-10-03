@@ -20,6 +20,21 @@ GLuint Shader::GetProgramHandle() const
 	return m_programHandle;
 }
 
+void Shader::SetUniform1i(const std::string name, const int value) const
+{
+	int id = glGetUniformLocation(m_programHandle, name.c_str());
+
+	if (id != -1)
+	{
+		// Set the value
+		glUniform1i(id, value);
+	}
+	else
+	{
+		DebugLog::Error("Couldn't find a uniform int named: " + name);
+	}
+}
+
 void Shader::SetUniform1f(const std::string name, const float value) const
 {
 	int id = glGetUniformLocation(m_programHandle, name.c_str());
