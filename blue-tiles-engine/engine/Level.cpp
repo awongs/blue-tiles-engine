@@ -62,4 +62,20 @@ void Level::LoadLevel(std::string jsonFile)
 		)
 		);
 	}
+
+	// To clear guards vector
+	std::vector<Guard> temp3;
+	guards.swap(temp3);
+	for (auto guard : _levelJSON["guards"]) {
+		guards.push_back(*new Guard(
+			guard.value("guardid", -1),
+			guard.value("location", -1),
+			guard.value("range", 0.0),
+			guard["rotation"].value("angle", 0.0),
+			guard["rotation"].value("rotateFrom", 0.0),
+			guard["rotation"].value("rotateTo", 0.0),
+			guard["rotation"].value("interval", 0.0)
+		)
+		);
+	}
 }
