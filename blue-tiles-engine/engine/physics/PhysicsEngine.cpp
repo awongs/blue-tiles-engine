@@ -1,6 +1,7 @@
 #include "PhysicsEngine.h"
 #include "../debugbt/DebugLog.h"
 #include "SphereCollider.h"
+#include "PhysicsObject.h"
 
 #include <glm/glm.hpp>
 
@@ -19,12 +20,9 @@ void PhysicsEngine::Update()
 	HandleCollisions();
 }
 
-void PhysicsEngine::AddPhysicsObject(GLuint gameObjectId, Collider *collider,
-	std::function<void(const PhysicsObject &)> onCollision)
+void PhysicsEngine::AddPhysicsObject(PhysicsObject *obj)
 {
-	std::unique_ptr<PhysicsObject> physObj{ std::make_unique<PhysicsObject>(
-		gameObjectId, collider, onCollision) };
-	m_physObjects.push_back(std::move(physObj));
+	m_physObjects.push_back(obj);
 }
 
 void PhysicsEngine::DoBroadPhase()
@@ -171,7 +169,7 @@ void PhysicsEngine::UpdateEndpoints()
 	for (auto it = m_physObjects.begin(); it != m_physObjects.end(); ++it, ++physObjIndex)
 	{
 		// Get collider values.
-		Collider *col{ it->get()->GetCollider() };
+		Collider *col{ (*it)->GetCollider() };
 		glm::vec3 halfSizes{ col->GetHalfSizes() };
 		glm::vec3 pos{ col->GetPosition() };
 
@@ -267,8 +265,8 @@ void PhysicsEngine::GenerateOverlapsSet()
 		else
 		{
 			m_broadCollisions.push_back(std::make_pair(
-				m_physObjects[it->first].get(),
-				m_physObjects[it->second].get()));
+				m_physObjects[it->first],
+				m_physObjects[it->second]));
 
 			++it;
 		}

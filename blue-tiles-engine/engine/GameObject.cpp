@@ -91,7 +91,7 @@ Behaviour* GameObject::GetBehaviour(BehaviourType type)
 {
 	for (auto& behaviour : m_Behaviours)
 	{
-		if (behaviour->type == type)
+		if (behaviour->GetType() == type)
 		{
 			return behaviour.get();
 		}

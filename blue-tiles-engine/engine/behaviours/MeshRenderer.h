@@ -13,7 +13,7 @@ class Texture;
 class MeshRenderer : public Behaviour
 {
 public:
-	MeshRenderer();
+	MeshRenderer(GLuint gameobjectId);
 	virtual ~MeshRenderer();
 
 	void Update(float deltaTime) override;

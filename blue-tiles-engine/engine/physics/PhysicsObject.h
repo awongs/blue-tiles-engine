@@ -5,15 +5,25 @@
 #include <functional>
 #include <memory>
 
+#include "../behaviours/Behaviour.h"
 #include "Collider.h"
 
-class PhysicsObject
+class PhysicsObject : public Behaviour
 {
 public:
 	PhysicsObject(GLuint gameObjectId, Collider *collider, 
 		std::function<void(const PhysicsObject &)> onCollision);
 
 	~PhysicsObject();
+
+	// Update
+	virtual void Update(float deltaTime);
+
+	// Draw
+	virtual void Draw();
+
+	// Handles messages
+	virtual bool HandleMessage(unsigned int senderID, std::string message);
 
 	// The physics engine calls this when a collision is detected.
 	void OnCollision(const PhysicsObject &other);
@@ -25,9 +35,6 @@ public:
 	Collider *GetCollider() const;
 
 private:
-	// The id of the game object that this physics component belongs to.
-	GLuint m_gameObjectId;
-
 	// This physics component's collider.
 	std::unique_ptr<Collider> m_collider{ nullptr };
 
