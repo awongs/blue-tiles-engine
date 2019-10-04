@@ -49,6 +49,14 @@ GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std:
 	scale = sca;
 }
 
+GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot)
+{
+	id = _id;
+	name = n;
+	position = pos;
+	rotation = rot;
+}
+
 GameObject::~GameObject()
 {
 	

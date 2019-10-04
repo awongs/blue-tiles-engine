@@ -12,6 +12,7 @@
 #include "engine/debugbt/DebugLog.h"
 #include "engine/GameWindow.h"
 #include "engine/sound/Sound.h"
+#include "engine/Level.h"
 #include "engine/sound/Music.h"
 #include "engine/sound/SoundManager.h"
 
@@ -54,6 +55,8 @@ int main()
 
 	SDL_Event windowEvent;
 
+	Level* l = new Level("level0");
+  
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
 	{

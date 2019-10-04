@@ -27,6 +27,9 @@ public:
 	// Constructor behaviours + name + position + rotation + scale
 	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca);
 
+	// Constructor id + name + position + rotation
+	GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot);
+
 	// Deconstructor
 	~GameObject();
 

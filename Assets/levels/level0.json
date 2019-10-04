@@ -1,0 +1,50 @@
+{
+  "info": {
+    "level": 0,
+	"startPos" : 1,
+	"width" : 10,
+	"height" : 10
+  },
+  "rooms": [
+    {
+      "roomid": 0,
+	    "gridUsed" : [1,2,3,11,12,13,21,22,23],
+	    "doors" : [
+        {
+          "doorid" : 0,
+          "location" : 22,
+          "keyRequired" : "key1",
+          "facing" : "down",
+		  "exit" : true
+        }
+      ]
+	}
+  ],
+  "objects" : [
+    {
+      "objectid" : 0,
+      "name" : "key1",
+      "location": 3,
+      "rotation": 0.0
+    },
+    {
+      "objectid" : 1,
+      "name" : "block",
+      "location": 2,
+      "rotation": 0.0
+    }
+	],
+  "guards": [
+    {
+      "guardid" : 0,
+      "location": 23,
+	  "range" : 1.0,
+      "rotation": {
+        "angle" : -90.0,
+        "rotateFrom" : -90.0,
+        "rotateTo" : 0.0,
+        "interval" : 5.0
+      }
+    }
+  ]
+}
