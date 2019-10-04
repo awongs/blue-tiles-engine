@@ -28,6 +28,10 @@ SoundManager::SoundManager() {
     }
 }
 
+SoundManager & SoundManager::getInstance() {
+    static SoundManager instance;
+    return instance;
+}
 // Deconstructor to the SoundManager
 SoundManager::~SoundManager() {
     // Ensure that the sound and music assets are freed before
