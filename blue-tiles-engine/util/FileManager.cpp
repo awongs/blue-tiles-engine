@@ -60,7 +60,7 @@ namespace filemanager
 	{
 		// Image surface
 		SDL_Surface* image;
-		image = IMG_Load("../Assets/crate.jpg");
+		image = IMG_Load(filePath.c_str());
 
 		// Check if the image data was sucessfully loaded
 		if (image != nullptr)
