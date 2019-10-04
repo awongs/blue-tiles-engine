@@ -54,13 +54,6 @@ int main()
 
 	SDL_Event windowEvent;
 
-	// Create a sound manager
-	SoundManager* soundManager = new SoundManager();
-	
-	// Shared pointer to a music object.
-	auto music = soundManager->getMusic("alarm");
-	music->play();
-
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
 	{
@@ -160,10 +153,6 @@ int main()
 	// destroy engine
 	delete engine;
 	engine = NULL;
-
-	// destroy SoundManager
-	delete soundManager;
-	soundManager = NULL;
 
 	return 0;
 }

@@ -1,6 +1,8 @@
 #include "GameObject.h"
+#include "sound/SoundManager.h"
 #include <algorithm>
 #include <functional>
+#include "sound/Music.h"
 
 GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours)
 {
@@ -62,6 +64,10 @@ void GameObject::Update(float deltaTime)
 
 	// -- Testing Purposes --
 	rotation.y += 3.14f * deltaTime;
+	
+	// Shared pointer to a music object.
+	auto music = SoundManager::getInstance().getMusic("alarm");
+	//music->play();
 }
 
 void GameObject::Draw()
