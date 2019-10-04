@@ -1,5 +1,5 @@
 #pragma once
-#include "../engine/GameObject.h"
+#include <engine/GameObject.h>
 
 class Door
 {

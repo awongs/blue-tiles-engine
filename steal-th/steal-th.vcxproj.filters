@@ -13,10 +13,45 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\gameobjects">
+      <UniqueIdentifier>{4f67cba8-7d92-4ab4-b181-158d667d55ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gameobjects\Door.cpp">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="gameobjects\Guard.cpp">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="gameobjects\Object.cpp">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="gameobjects\Room.cpp">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gameobjects\Door.h">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="gameobjects\Guard.h">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="gameobjects\Object.h">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="gameobjects\Room.h">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

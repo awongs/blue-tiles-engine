@@ -331,3 +331,6 @@ ASALocalRun/
 
 *.so
 
+# Don't ignore models
+!Assets/models/*
+
