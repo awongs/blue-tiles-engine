@@ -6,7 +6,7 @@
 MeshRenderer::MeshRenderer(GLuint gameObjectId)
 	: Behaviour(gameObjectId, BehaviourType::MeshRenderer)
 {
-	meshmanager::LoadObj("golden_goose.obj", m_vertices, m_indices);
+	meshmanager::LoadObj("../Assets/models/golden_goose.obj", m_vertices, m_indices);
 	// TODO : Identify game object ID here
 	DebugLog::Info("Generating buffers for MeshRenderer");
 
@@ -43,7 +43,7 @@ MeshRenderer::MeshRenderer(GLuint gameObjectId)
 	glBindVertexArray(0);
 
 	// -- Testing purposes --
-	m_texture = filemanager::LoadTexture("../Assets/crate.jpg");
+	m_texture = filemanager::LoadTexture("../Assets/textures/crate.jpg");
 }
 
 MeshRenderer::~MeshRenderer()
