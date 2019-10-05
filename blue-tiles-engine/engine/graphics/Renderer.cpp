@@ -41,8 +41,8 @@ void Renderer::SetupShaders()
 	GLuint shaderProgram;
 
 	// Load shader files into strings
-	std::string vertexSource = filemanager::LoadFile("engine/graphics/shaders/VertexShader.vsh");
-	std::string fragmentSource = filemanager::LoadFile("engine/graphics/shaders/FragmentShader.fsh");
+	std::string vertexSource = filemanager::LoadFile("../Assets/shaders/VertexShader.vsh");
+	std::string fragmentSource = filemanager::LoadFile("../Assets/shaders/FragmentShader.fsh");
 
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, vertexSource.c_str());
 

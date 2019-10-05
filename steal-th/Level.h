@@ -6,10 +6,13 @@
 #include <ostream>
 #include <iostream>
 #include <string>
-#include "../gameobjects/Object.h"
-#include "../gameobjects/Guard.h"
-#include "../gameobjects/Room.h"
-#include "debugbt/DebugLog.h"
+#include <engine/debugbt/DebugLog.h>
+
+#include "gameobjects/Object.h"
+#include "gameobjects/Guard.h"
+#include "gameobjects/Room.h"
+
+
 using json = nlohmann::json;
 
 class Level

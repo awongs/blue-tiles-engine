@@ -25,9 +25,6 @@
     <Filter Include="Source Files\util">
       <UniqueIdentifier>{d57af584-dd06-4a6d-a35a-6779e261ecf3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\engine\graphics\shaders">
-      <UniqueIdentifier>{2226b07d-1429-4278-86b8-2afe507aa4f4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\engine\input">
       <UniqueIdentifier>{1d16b429-6d49-4663-9f06-cf0422fb0ea1}</UniqueIdentifier>
     </Filter>
@@ -40,14 +37,8 @@
     <Filter Include="Source Files\engine\behaviours">
       <UniqueIdentifier>{9feadcdd-a8e0-4fdb-aae0-8d64d62255ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gameobjects">
-      <UniqueIdentifier>{36981046-462b-41f4-ab2d-be4543a8e796}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -107,21 +98,6 @@
     </ClCompile>
     <ClCompile Include="engine\MessageSystem.cpp">
       <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="engine\Level.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Room.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Guard.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Door.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Object.cpp">
-      <Filter>Source Files\gameobjects</Filter>
     </ClCompile>
     <ClCompile Include="engine\graphics\Texture.cpp">
       <Filter>Source Files\engine\graphics</Filter>
@@ -194,21 +170,6 @@
     <ClInclude Include="engine\MessageSystem.h">
       <Filter>Source Files\engine</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Level.h">
-      <Filter>Source Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="gameobjects\Room.h">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClInclude>
-    <ClInclude Include="gameobjects\Guard.h">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClInclude>
-    <ClInclude Include="gameobjects\Door.h">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClInclude>
-    <ClInclude Include="gameobjects\Object.h">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClInclude>
     <ClInclude Include="engine\GameWindow.h">
       <Filter>Source Files\engine</Filter>
     </ClInclude>
@@ -221,13 +182,5 @@
     <ClInclude Include="util\MeshManager.h">
       <Filter>Source Files\util</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="engine\graphics\shaders\VertexShader.vsh">
-      <Filter>Source Files\engine\graphics\shaders</Filter>
-    </None>
-    <None Include="engine\graphics\shaders\FragmentShader.fsh">
-      <Filter>Source Files\engine\graphics\shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

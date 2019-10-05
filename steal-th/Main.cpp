@@ -1,20 +1,10 @@
-#include <glad/glad.h>
-
 #define SDL_MAIN_HANDLED
-#include <sdl2/SDL.h>
-#include <sdl2/SDL_mixer.h>
-#include <iostream>
+#include <engine/GameWindow.h>
+#include <engine/GameEngine.h>
+#include <engine/input/Input.h>
+#include "Level.h"
 
-#include "engine/GameEngine.h"
-#include "engine/physics/PhysicsEngine.h"
-#include "engine/physics/Collider.h"
-#include "engine/input/Input.h"
-#include "engine/debugbt/DebugLog.h"
-#include "engine/GameWindow.h"
-#include "engine/sound/Sound.h"
-#include "engine/Level.h"
-#include "engine/sound/Music.h"
-#include "engine/sound/SoundManager.h"
+
 
 int main()
 {
@@ -46,12 +36,12 @@ int main()
 	//	[](const PhysicsObject &other) { });
 
 	// Create the input manager.
-	Input *input{ new Input() };
+	Input* input{ new Input() };
 
 	SDL_Event windowEvent;
 
 	Level* l = new Level("level0");
-  
+
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
 	{
