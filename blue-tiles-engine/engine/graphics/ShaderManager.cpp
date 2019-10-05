@@ -47,7 +47,7 @@ GLuint ShaderManager::CompileShader(GLuint shaderType, const char* shaderCode)
 	return shader;
 }
 
-GLuint ShaderManager::CreateShaderProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
+std::weak_ptr<Shader> ShaderManager::CreateShaderProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
 {
 	// compile status code
 	GLint statusCode;
@@ -72,17 +72,18 @@ GLuint ShaderManager::CreateShaderProgram(GLuint vertexShaderID, GLuint fragment
 	}
 	else
 	{
-		DebugLog::Info("Successfully combined and linked shader program\n");
+		DebugLog::Info("Successfully combined and linked shader program #" + std::to_string(shaderProgram));
 	}
 
+	// Wrap program ID into Shader class
+	std::shared_ptr<Shader> newShader = std::make_shared<Shader>(shaderProgram);
+	m_programsCreated.push_back(newShader);
 
-	return shaderProgram;
+	return newShader;
 }
 
 void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 {
-	glUseProgram(shaderProgramID);
-
 	// Find the compiled shader
 	for (const std::shared_ptr<Shader>& shader : m_programsCreated)
 	{
@@ -90,9 +91,17 @@ void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 		{
 			// Set current shader
 			m_currentShader = shader;
+			glUseProgram(shaderProgramID);
+
+			DebugLog::Info("Now using Shader #" + std::to_string(shaderProgramID));
+			return;
 		}
 	}
 
+	// Couldn't find a shader program with the specified ID
+	DebugLog::Warn("Couldn't find Shader #" + std::to_string(shaderProgramID));
+
+	/*
 	bool hasProgram = false;
 
 	for (int i = 0; i < m_programsCreated.size() ; i++)
@@ -103,13 +112,7 @@ void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 			break;
 		}
 	}
-
-	if (!hasProgram)
-	{
-		std::shared_ptr<Shader> newShader = std::make_shared<Shader>(shaderProgramID);
-		m_programsCreated.push_back(newShader);
-		m_currentShader = newShader;
-	}
+	*/
 }
 
 std::weak_ptr<Shader> ShaderManager::GetCurrentShader()

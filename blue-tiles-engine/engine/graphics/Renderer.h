@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 
 class ShaderManager;
+class Shader;
 class Scene;
 
 /*
@@ -23,7 +24,7 @@ public:
 	void SetupShaders();
 
 	// Sets up buffers for rendering
-	//void SetupBuffers();
+	void SetupBuffers();
 
 	// Renders the frame
 	void Render(Scene& currentScene);
@@ -38,4 +39,19 @@ private:
 
 	// Pointer to a shader manager
 	ShaderManager* m_shaderManager;
+
+	// Pointer to the default shader.
+	std::weak_ptr<Shader> m_defaultShader;
+
+	// Pointer to the deferred shader.
+	std::weak_ptr<Shader> m_deferredShader;
+
+	// Geometry frame buffer for deferred rendering.
+	GLuint m_gBuffer;
+	
+	// Position texture in geometry buffer.
+	GLuint m_gPosition;
+
+	// Normal texture in geometry buffer.
+	GLuint m_gNormal;
 };

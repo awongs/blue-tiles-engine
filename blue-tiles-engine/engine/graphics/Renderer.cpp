@@ -21,6 +21,9 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 	DebugLog::Info("Creating shader program...\n");
 	SetupShaders();
 
+	DebugLog::Info("Setting up frame buffers \n");
+	SetupBuffers();
+
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
 
@@ -38,19 +41,64 @@ void Renderer::SetupShaders()
 	// id of shader programs
 	GLuint vertexShader;
 	GLuint fragmentShader;
-	GLuint shaderProgram;
 
 	// Load shader files into strings
-	std::string vertexSource = filemanager::LoadFile("../Assets/shaders/VertexShader.vsh");
-	std::string fragmentSource = filemanager::LoadFile("../Assets/shaders/FragmentShader.fsh");
+	std::string deferredVertex = filemanager::LoadFile("../Assets/shaders/Deferred.vsh");
+	std::string deferredFragment = filemanager::LoadFile("../Assets/shaders/Deferred.fsh");
+	std::string defaultVertex = filemanager::LoadFile("../Assets/shaders/Default.vsh");
+	std::string defaultFragment = filemanager::LoadFile("../Assets/shaders/Default.fsh");
 
-	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, vertexSource.c_str());
+	// Compile deferred shader
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, deferredVertex.c_str());
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, deferredFragment.c_str());
+	m_deferredShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
-	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, fragmentSource.c_str());
+	// Compile default shader
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, defaultVertex.c_str());
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, defaultFragment.c_str());
+	m_defaultShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
-	shaderProgram = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
+	m_shaderManager->UseShaderProgram(m_defaultShader.lock()->GetProgramHandle());
+}
 
-	m_shaderManager->UseShaderProgram(shaderProgram);
+void Renderer::SetupBuffers()
+{
+	// TODO: Hardcoded width and height
+	int screenWidth = 800;
+	int screenHeight = 600;
+
+	// Create the gBuffer
+	glGenFramebuffers(1, &m_gBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_gBuffer);
+
+	// Position color buffer
+	glGenTextures(1, &m_gPosition);
+	glBindTexture(GL_TEXTURE_2D, m_gPosition);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_gPosition, 0);
+
+	// Normal color buffer
+	glGenTextures(1, &m_gNormal);
+	glBindTexture(GL_TEXTURE_2D, m_gNormal);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_gNormal, 0);
+
+	// Set color attachments for fragment shader
+	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+	glDrawBuffers(2, attachments);
+
+	// Check for errors
+	if (glGetError() != GL_NO_ERROR || glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		DebugLog::Warn("Error in SetupBuffers()");
+	}
+
+	// Go back to default frame buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Renderer::Render(Scene& currentScene)

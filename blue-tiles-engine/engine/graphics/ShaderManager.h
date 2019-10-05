@@ -23,7 +23,7 @@ public:
 	GLuint CompileShader(GLuint shaderType, const char* shaderCode);
 
 	// Creates and links up a shader program with two shaders
-	GLuint CreateShaderProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
+	std::weak_ptr<Shader> CreateShaderProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
 
 	// Selects the shader to be used for rendering
 	void UseShaderProgram(GLuint shaderProgramID);
