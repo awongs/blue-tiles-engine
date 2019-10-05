@@ -1,22 +1,45 @@
-#OBJS All c or cpp files
-OBJS =  Main.cpp glad.c engine/GameEngine.cpp engine/graphics/ShaderManager.cpp engine/debugbt/DebugLog.cpp engine/input/Input.cpp  engine/graphics/Renderer.cpp util/FileManager.cpp engine/sound/Sound.cpp engine/MessageSystem.cpp engine/behaviours/Behaviour.cpp engine/behaviours/MeshRenderer.cpp engine/Scene.cpp engine/graphics/Camera.cpp engine/GameObject.cpp engine/graphics/Shader.cpp engine/sound/Music.cpp engine/sound/SoundManager.cpp engine/GameWindow.cpp engine/graphics/Texture.cpp engine/physics/Collider.cpp engine/physics/PhysicsEngine.cpp engine/physics/PhysicsObject.cpp engine/physics/SphereCollider.cpp util/MeshManager.cpp    
+#  Makefile template for Static library. 
+# 1. Compile every *.cpp in the folder 
+# 2. All obj files under obj folder
+# 3. static library .a at lib folder
+# 4. run 'make dirmake' before calling 'make'
 
-#CC Which Compiler to use.
+
 CC = g++
+OUT_FILE_NAME = blue-tiles-engine.a
 
-#COMPILER_FLAGS Other include files
-# -w suppresses all warnings
-COMPILER_FLAGS = -I../libraries/includes -Llibraries/libs
+CFLAGS= -fPIC -O0 -g -Wall -c -fpermissive
 
-#LINKER_FLAGS Specifies the libraries to link against
-LINKER_FLAGS = -lSDL2 -lSDL2_mixer -lSDL2_image -lGL -ldl -lGL -lX11 -lpthread -lXrandr -lXi
+INC = -I../libraries/includes
 
-#OBJ_NAME The name of the output file
-OBJ_NAME = blue-engine
+OBJ_DIR=./obj
 
-#The Make commands
-all : $(OBJS)
-	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+OUT_DIR=./lib
 
+SUBDIRS = engine util
+
+
+# Enumerating of every *.cpp as *.o and using that as dependency.	
+# filter list of .c files in a directory.
+# FILES =dump_l.c \
+#	kter.c \
+#
+# $(OUT_FILE_NAME): $(patsubst %.c,$(OBJ_DIR)/%.o,$(wildcard $(FILES))) 
+
+
+# Enumerating of every *.cpp as *.o and using that as dependency
+$(OUT_FILE_NAME): $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(wildcard engine/*.cpp engine/*/*.cpp util/*.cpp))
+	ar -r -o $(OUT_DIR)/$@ $^
+
+#Compiling every *.cpp to *.o
+$(OBJ_DIR)/%.o: %.cpp dirmake
+	$(CC) -c $(INC) $(CFLAGS) -o $@  $<
+	
+dirmake:
+	@mkdir -p $(OUT_DIR)
+	@mkdir -p $(OBJ_DIR)
+	
 clean:
-	rm blue-engine
+	rm -f $(OBJ_DIR)/*.o $(OUT_DIR)/$(OUT_FILE_NAME) Makefile.bak
+
+rebuild: clean build

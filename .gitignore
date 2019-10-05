@@ -334,3 +334,5 @@ ASALocalRun/
 # Don't ignore models
 !Assets/models/*
 
+#Ignore all .a files
+*.a

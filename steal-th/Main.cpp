@@ -1,7 +1,7 @@
 #define SDL_MAIN_HANDLED
 #include <engine/GameWindow.h>
 #include <engine/GameEngine.h>
-#include <engine/input/input.h>
+#include <engine/input/Input.h>
 #include "Level.h"
 
 
