@@ -3,20 +3,34 @@
 #include "../../util/FileManager.h"
 #include "../graphics/Texture.h"
 
-MeshRenderer::MeshRenderer(GLuint gameObjectId)
+MeshRenderer::MeshRenderer(GLuint gameObjectId, std::string objFilePath)
 	: Behaviour(gameObjectId, BehaviourType::MeshRenderer)
+	, m_vertexBufferObjectID(0)
+	, m_indicesBufferObjectID(0)
+	, m_vertexArrayObjectID(0)
 {
-	meshmanager::LoadObj("../Assets/models/golden_goose.obj", m_vertices, m_indices);
-	// TODO : Identify game object ID here
+	meshmanager::LoadObj(objFilePath, m_vertices, m_indices);
+
+	SetupBuffers();
+}
+
+void MeshRenderer::SetupBuffers()
+{
+	if (m_vertices.empty() || m_indices.empty())
+	{
+		DebugLog::Warn("MeshRenderer created with no vertices or indices");
+		return;
+	}
+
 	DebugLog::Info("Generating buffers for MeshRenderer");
 
 	// Generate the buffers
 	glGenBuffers(1, &m_vertexBufferObjectID);
 	glGenBuffers(1, &m_indicesBufferObjectID);
-	
+
 	// Allocate data into the buffers
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObjectID);
-	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(meshmanager::Vertex), &m_vertices[0], GL_STATIC_DRAW); 
+	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(meshmanager::Vertex), &m_vertices[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesBufferObjectID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(GLuint), &m_indices[0], GL_STATIC_DRAW);
@@ -28,7 +42,7 @@ MeshRenderer::MeshRenderer(GLuint gameObjectId)
 	// Position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(meshmanager::Vertex), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
-	
+
 	// Texture coordinates
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(meshmanager::Vertex), (GLvoid*)sizeof(glm::vec3));
 	glEnableVertexAttribArray(1);
@@ -41,9 +55,6 @@ MeshRenderer::MeshRenderer(GLuint gameObjectId)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-
-	// -- Testing purposes --
-	m_texture = filemanager::LoadTexture("../Assets/textures/crate.jpg");
 }
 
 MeshRenderer::~MeshRenderer()
@@ -68,7 +79,7 @@ void MeshRenderer::Draw()
 	// Bind the texture
 	if (m_texture != nullptr)
 	{
-		glBindTexture(GL_TEXTURE_2D, m_texture->GetTextureID());
+		//glBindTexture(GL_TEXTURE_2D, m_texture->GetTextureID());
 	}
 
 	// Draw the mesh

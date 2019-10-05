@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 
 class ShaderManager;
+class GameObject;
 class Shader;
 class Scene;
 
@@ -40,18 +41,22 @@ private:
 	// Pointer to a shader manager
 	ShaderManager* m_shaderManager;
 
-	// Pointer to the default shader.
-	std::weak_ptr<Shader> m_defaultShader;
+	// Pointer to the deferred geometry shader.
+	std::weak_ptr<Shader> m_deferredGeometryShader;
 
-	// Pointer to the deferred shader.
-	std::weak_ptr<Shader> m_deferredShader;
+	// Pointer to the deferred lighting shader.
+	std::weak_ptr<Shader> m_deferredLightingShader;
 
 	// Geometry frame buffer for deferred rendering.
 	GLuint m_gBuffer;
+
+	GLuint m_depthBuffer;
 	
 	// Position texture in geometry buffer.
 	GLuint m_gPosition;
 
 	// Normal texture in geometry buffer.
 	GLuint m_gNormal;
+
+	std::unique_ptr<GameObject> screenQuad;
 };

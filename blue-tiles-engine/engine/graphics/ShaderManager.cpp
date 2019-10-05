@@ -92,8 +92,6 @@ void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 			// Set current shader
 			m_currentShader = shader;
 			glUseProgram(shaderProgramID);
-
-			DebugLog::Info("Now using Shader #" + std::to_string(shaderProgramID));
 			return;
 		}
 	}
