@@ -8,13 +8,13 @@
 CC = g++
 OUT_FILE_NAME = blue-tiles-engine.a
 
-CFLAGS= -fPIC -O0 -g -Wall -c -fpermissive
+CFLAGS= -fPIC -O0 -g -c -fpermissive
 
 INC = -I../libraries/includes
 
 OBJ_DIR=./obj
 
-OUT_DIR=./lib
+OUT_DIR=../steal-th
 
 SUBDIRS = engine util
 
