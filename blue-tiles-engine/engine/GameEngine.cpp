@@ -49,8 +49,10 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	for (int i = 0; i < 2; i++)
 	{
 		std::vector<std::unique_ptr<Behaviour>> behaviours;
+		std::unique_ptr<MeshRenderer> meshRenderer = std::make_unique<MeshRenderer>(i, "../Assets/models/golden_goose.obj");
+		meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
 
-		behaviours.push_back(std::make_unique<MeshRenderer>(i, "../Assets/models/golden_goose.obj"));
+		behaviours.push_back(std::move(meshRenderer));
 
 		// Add the physics component to the game object.
 		Collider *col{ new Collider(glm::vec3(2.f)) };

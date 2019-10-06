@@ -12,9 +12,6 @@ MeshRenderer::MeshRenderer(GLuint gameObjectId, std::string objFilePath)
 	meshmanager::LoadObj(objFilePath, m_vertices, m_indices);
 
 	SetupBuffers();
-
-	// -- Testing --
-	SetTexture("../Assets/textures/golden_goose.png");
 }
 
 void MeshRenderer::SetupBuffers()
