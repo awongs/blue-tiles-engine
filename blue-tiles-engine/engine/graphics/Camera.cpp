@@ -8,7 +8,9 @@ Camera::Camera()
 	, m_viewMatrix()
 	, m_projectionMatrix()
 {
-	
+	// -- Testing -- Point the camera diagonally towards the origin
+	SetPosition(glm::vec3(0.0f, 20.0f, 20.0f));
+	SetOrientation(glm::vec3(glm::quarter_pi<float>(), 0.0f, 0.0f));
 
 	// Initial matrix values
 	CalculateViewMatrix();

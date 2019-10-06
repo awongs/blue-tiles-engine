@@ -56,7 +56,7 @@ namespace filemanager
 		}
 	}
 
-	std::shared_ptr<Texture> LoadTexture(const std::string filePath)
+	std::unique_ptr<Texture> LoadTexture(const std::string filePath)
 	{
 		// Image surface
 		SDL_Surface* image;
@@ -66,9 +66,9 @@ namespace filemanager
 		if (image != nullptr)
 		{
 			// Create the texture
-			std::shared_ptr<Texture> texture = std::make_shared<Texture>(image->pixels, image->w, image->h, image->format->BytesPerPixel);
+			std::unique_ptr<Texture> texture = std::make_unique<Texture>(image->pixels, image->w, image->h, image->format->BytesPerPixel);
 
-			// Return the texture as a shared pointer after freeing the surface
+			// Return the texture as a unique pointer after freeing the surface
 			SDL_FreeSurface(image);
 			return texture;
 		}

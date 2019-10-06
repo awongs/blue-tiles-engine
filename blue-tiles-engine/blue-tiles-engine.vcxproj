@@ -157,6 +157,7 @@
     <ClCompile Include="engine\GameWindow.cpp" />
     <ClCompile Include="engine\graphics\Camera.cpp" />
     <ClCompile Include="engine\GameObject.cpp" />
+    <ClCompile Include="engine\graphics\GeometryBuffer.cpp" />
     <ClCompile Include="engine\graphics\Renderer.cpp" />
     <ClCompile Include="engine\graphics\Shader.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="engine\GameWindow.h" />
     <ClInclude Include="engine\graphics\Camera.h" />
     <ClInclude Include="engine\GameObject.h" />
+    <ClInclude Include="engine\graphics\GeometryBuffer.h" />
     <ClInclude Include="engine\graphics\Renderer.h" />
     <ClInclude Include="engine\graphics\Shader.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />

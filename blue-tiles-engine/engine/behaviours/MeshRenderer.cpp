@@ -12,6 +12,9 @@ MeshRenderer::MeshRenderer(GLuint gameObjectId, std::string objFilePath)
 	meshmanager::LoadObj(objFilePath, m_vertices, m_indices);
 
 	SetupBuffers();
+
+	// -- Testing --
+	SetTexture("../Assets/textures/golden_goose.png");
 }
 
 void MeshRenderer::SetupBuffers()
@@ -57,6 +60,11 @@ void MeshRenderer::SetupBuffers()
 	glBindVertexArray(0);
 }
 
+void MeshRenderer::SetTexture(std::string texturePath)
+{
+	m_texture = filemanager::LoadTexture(texturePath);
+}
+
 MeshRenderer::~MeshRenderer()
 {
 	// Cleanup the buffers
@@ -79,7 +87,8 @@ void MeshRenderer::Draw()
 	// Bind the texture
 	if (m_texture != nullptr)
 	{
-		//glBindTexture(GL_TEXTURE_2D, m_texture->GetTextureID());
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_texture->GetTextureID());
 	}
 
 	// Draw the mesh

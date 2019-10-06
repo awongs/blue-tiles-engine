@@ -10,6 +10,7 @@
 #include "../Scene.h"
 #include "../behaviours/MeshRenderer.h"
 #include "Texture.h"
+#include "GeometryBuffer.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
@@ -21,13 +22,11 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 	DebugLog::Info("Creating shader program...\n");
 	SetupShaders();
 
-	DebugLog::Info("Setting up frame buffers \n");
-	SetupBuffers();
+	// TODO: Hardcoded screen width and height
+	m_geometryBuffer = std::make_unique<GeometryBuffer>(800, 600);
 
 	// Create the screen quad
-	std::vector<std::unique_ptr<Behaviour>> behaviours;
-	behaviours.push_back(std::make_unique<MeshRenderer>(420, "../Assets/models/quad.obj"));
-	screenQuad = std::make_unique<GameObject>(behaviours);
+	m_screenQuad = std::make_unique<MeshRenderer>(9001, "../Assets/models/quad.obj");
 
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
@@ -37,8 +36,12 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 
 Renderer::~Renderer()
 {
+	DebugLog::Info("Cleaning up Renderer");
+
 	// cleanup context
 	SDL_GL_DeleteContext(m_context);
+
+	delete m_shaderManager;
 }
 
 void Renderer::SetupShaders()
@@ -53,91 +56,41 @@ void Renderer::SetupShaders()
 	std::string deferredLightingVertex = filemanager::LoadFile("../Assets/shaders/DeferredLightingPass.vsh");
 	std::string deferredLightingFragment = filemanager::LoadFile("../Assets/shaders/DeferredLightingPass.fsh");
 
-	// Compile deferred shaders
+	// Compile geometry shader
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, deferredGeometryVertex.c_str());
 	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, deferredGeometryFragment.c_str());
 	m_deferredGeometryShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
+	// Compile lighting shader
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, deferredLightingVertex.c_str());
 	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, deferredLightingFragment.c_str());
 	m_deferredLightingShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
-
-	m_shaderManager->UseShaderProgram(m_deferredGeometryShader.lock()->GetProgramHandle());
-}
-
-void Renderer::SetupBuffers()
-{
-	// TODO: Hardcoded width and height
-	int screenWidth = 800;
-	int screenHeight = 600;
-
-	// Create the gBuffer
-	glGenFramebuffers(1, &m_gBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_gBuffer);
-
-	// Position color buffer
-	glGenTextures(1, &m_gPosition);
-	glBindTexture(GL_TEXTURE_2D, m_gPosition);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_gPosition, 0);
-
-	// Normal color buffer
-	glGenTextures(1, &m_gNormal);
-	glBindTexture(GL_TEXTURE_2D, m_gNormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, screenWidth, screenHeight, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_gNormal, 0);
-
-	// Set color attachments for fragment shader
-	unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-	glDrawBuffers(2, attachments);
-
-	// Attach depth buffer
-	glGenRenderbuffers(1, &m_depthBuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, m_depthBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, screenWidth, screenHeight);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthBuffer);
-
-	// Check for errors
-	if (glGetError() != GL_NO_ERROR || glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		DebugLog::Warn("Error in SetupBuffers()");
-	}
-
-	// Go back to default frame buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Renderer::Render(Scene& currentScene)
 {
-	
+	// Bind the geometry buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, m_geometryBuffer->GetBufferID());
 
-	glBindFramebuffer(GL_FRAMEBUFFER, m_gBuffer);
 	// clearing screen
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// -- Testing -- Point the camera diagonally towards the origin
-	Camera::GetInstance().SetPosition(glm::vec3(0.0f, 20.0f, 20.0f));
-	Camera::GetInstance().SetOrientation(glm::vec3(glm::quarter_pi<float>(), 0.0f, 0.0f));
-
-	std::shared_ptr<Shader> geometryShader = m_deferredGeometryShader.lock();
-	m_shaderManager->UseShaderProgram(geometryShader->GetProgramHandle());
+	// Use geometry shader
+	m_shaderManager->UseShaderProgram(m_deferredGeometryShader->GetProgramHandle());
 
 	// Make sure that the shader isn't null
-	if (geometryShader == nullptr)
+	if (m_deferredGeometryShader == nullptr)
 	{
-		DebugLog::Error("Pointer to current shader is null in render loop");
+		DebugLog::Error("Pointer to geometry shader is null in render loop");
 		return;
 	}
 
 	// Set camera matrices in shader
-	geometryShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
-	geometryShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
+	m_deferredGeometryShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
+	m_deferredGeometryShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
  
+	// Render the scene
 	for (const std::unique_ptr<GameObject>& gameObject : currentScene.getWorldGameObjects())
 	{
 		glm::mat4 modelMatrix = glm::mat4(1);
@@ -153,8 +106,12 @@ void Renderer::Render(Scene& currentScene)
 		// Scale
 		modelMatrix = glm::scale(modelMatrix, gameObject->scale);
 
+		// Set model matrix in shader
+		m_deferredGeometryShader->SetUniformMatrix4fv("model", modelMatrix);
+
+		// Note: Not explicitly setting the value of uTexture since it's already at the correct value of 0
+
 		// Tell the game object to draw
-		geometryShader->SetUniformMatrix4fv("model", modelMatrix);
 		gameObject->Draw();
 	}
 }
@@ -165,48 +122,37 @@ void Renderer::Display()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// Bind geometry textures
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_gPosition);
+	glBindTexture(GL_TEXTURE_2D, m_geometryBuffer->GetPositionTexture());
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_gNormal);
+	glBindTexture(GL_TEXTURE_2D, m_geometryBuffer->GetNormalTexture());
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_geometryBuffer->GetColourTexture());
 
 	// Switch to lighting shader
-	std::shared_ptr<Shader> lightingShader = m_deferredLightingShader.lock();
-	m_shaderManager->UseShaderProgram(lightingShader->GetProgramHandle());
+	m_shaderManager->UseShaderProgram(m_deferredLightingShader->GetProgramHandle());
 
 	// Make sure that the shader isn't null
-	if (lightingShader == nullptr)
+	if (m_deferredLightingShader == nullptr)
 	{
-		DebugLog::Error("Pointer to current shader is null in render loop");
+		DebugLog::Error("Pointer to lighting shader is null in render loop");
 		return;
 	}
 
-	// -- Testing -- Point the camera diagonally towards the origin
-	Camera::GetInstance().SetPosition(glm::vec3(0.0f, 0.0f, 0.8f));
-	Camera::GetInstance().SetOrientation(glm::vec3(0.0f, 0.0f, 0.0f));
-
-	// Set camera matrices in shader
-	lightingShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
-	lightingShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
-
+	// TODO - This never changes, can be optimized
 	glm::mat4 modelMatrix = glm::mat4(1);
-
-	// Translate
-	modelMatrix = glm::translate(modelMatrix, screenQuad->position);
-
-	// Rotate
-	modelMatrix = glm::rotate(modelMatrix, screenQuad->rotation.x, glm::vec3(1, 0, 0));
 	modelMatrix = glm::rotate(modelMatrix, glm::pi<float>(), glm::vec3(0, 1, 0));
 	modelMatrix = glm::rotate(modelMatrix, glm::pi<float>(), glm::vec3(0, 0, 1));
 
-	// Scale
-	modelMatrix = glm::scale(modelMatrix, screenQuad->scale);
+	// Set samplers in shader to their respective texture IDs
+	m_deferredLightingShader->SetUniform1i("gPosition", 0);
+	m_deferredLightingShader->SetUniform1i("gNormal", 1);
+	m_deferredLightingShader->SetUniform1i("gColour", 2);
 
-	lightingShader->SetUniform1i("gNormal", 1);
-	glBindTexture(GL_TEXTURE_2D, m_gNormal);
+	// Set model matrix in shader
+	m_deferredLightingShader->SetUniformMatrix4fv("model", modelMatrix);
 
-	lightingShader->SetUniformMatrix4fv("model", modelMatrix);
-
-	// Draw 
-	screenQuad->Draw();
+	// Draw onto the quad
+	m_screenQuad->Draw();
 }

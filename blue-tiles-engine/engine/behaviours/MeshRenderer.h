@@ -9,16 +9,24 @@
 #include "../../util/MeshManager.h"
 
 class Texture;
+using meshmanager::Vertex;
 
 class MeshRenderer : public Behaviour
 {
 public:
+	// Constructor.
 	MeshRenderer(GLuint gameObjectId, std::string objFilePath);
 	
+	// Sets up the vertex, index, and VAO buffers.
 	void SetupBuffers();
 
+	// Loads and sets the current texture.
+	void SetTexture(std::string texturePath);
+
+	// Destructor.
 	virtual ~MeshRenderer();
 
+	// Overwritten functions.
 	void Update(float deltaTime) override;
 	void Draw() override;
 	bool HandleMessage(unsigned int senderID, std::string message) override;
@@ -34,8 +42,11 @@ private:
 	GLuint m_vertexArrayObjectID;
 	
 	// This mesh's texture.
-	std::shared_ptr<Texture> m_texture;
+	std::unique_ptr<Texture> m_texture;
+	
+	// This mesh's vertices.
+	std::vector<Vertex> m_vertices;
 
-	std::vector<meshmanager::Vertex> m_vertices;
+	// This mesh's indices.
 	std::vector<GLuint> m_indices;
 };

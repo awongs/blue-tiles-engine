@@ -111,6 +111,9 @@
     <ClCompile Include="util\MeshManager.cpp">
       <Filter>Source Files\util</Filter>
     </ClCompile>
+    <ClCompile Include="engine\graphics\GeometryBuffer.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="util\MeshManager.h">
       <Filter>Source Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\GeometryBuffer.h">
+      <Filter>Source Files\engine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

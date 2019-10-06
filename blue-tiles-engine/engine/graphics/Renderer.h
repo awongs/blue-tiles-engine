@@ -3,8 +3,10 @@
 #include <sdl2/SDL.h>
 #include <glad/glad.h>
 
+
+class GeometryBuffer;
+class MeshRenderer;
 class ShaderManager;
-class GameObject;
 class Shader;
 class Scene;
 
@@ -24,9 +26,6 @@ public:
 	// Sets up shaders for rendering
 	void SetupShaders();
 
-	// Sets up buffers for rendering
-	void SetupBuffers();
-
 	// Renders the frame
 	void Render(Scene& currentScene);
 
@@ -41,22 +40,15 @@ private:
 	// Pointer to a shader manager
 	ShaderManager* m_shaderManager;
 
+	// Pointer to the geometry buffer.
+	std::unique_ptr<GeometryBuffer> m_geometryBuffer;
+
 	// Pointer to the deferred geometry shader.
-	std::weak_ptr<Shader> m_deferredGeometryShader;
+	std::shared_ptr<Shader> m_deferredGeometryShader;
 
 	// Pointer to the deferred lighting shader.
-	std::weak_ptr<Shader> m_deferredLightingShader;
+	std::shared_ptr<Shader> m_deferredLightingShader;
 
-	// Geometry frame buffer for deferred rendering.
-	GLuint m_gBuffer;
-
-	GLuint m_depthBuffer;
-	
-	// Position texture in geometry buffer.
-	GLuint m_gPosition;
-
-	// Normal texture in geometry buffer.
-	GLuint m_gNormal;
-
-	std::unique_ptr<GameObject> screenQuad;
+	// Quad to render the frame onto.
+	std::unique_ptr<MeshRenderer> m_screenQuad;
 };

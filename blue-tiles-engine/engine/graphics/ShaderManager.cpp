@@ -10,9 +10,11 @@ ShaderManager::ShaderManager()
 
 ShaderManager::~ShaderManager()
 {
-	// TODO delete compiled shaders
-
-	// TODO delete shader programs
+	DebugLog::Info("Cleaning up ShaderManager");
+	for (GLuint shader : m_shadersCreated)
+	{
+		glDeleteShader(shader);
+	}
 }
 
 GLuint ShaderManager::CompileShader(GLuint shaderType, const char* shaderCode)
@@ -47,7 +49,7 @@ GLuint ShaderManager::CompileShader(GLuint shaderType, const char* shaderCode)
 	return shader;
 }
 
-std::weak_ptr<Shader> ShaderManager::CreateShaderProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
+std::shared_ptr<Shader> ShaderManager::CreateShaderProgram(GLuint vertexShaderID, GLuint fragmentShaderID)
 {
 	// compile status code
 	GLint statusCode;
@@ -98,22 +100,9 @@ void ShaderManager::UseShaderProgram(GLuint shaderProgramID)
 
 	// Couldn't find a shader program with the specified ID
 	DebugLog::Warn("Couldn't find Shader #" + std::to_string(shaderProgramID));
-
-	/*
-	bool hasProgram = false;
-
-	for (int i = 0; i < m_programsCreated.size() ; i++)
-	{
-		if (m_programsCreated[i]->GetProgramHandle() == shaderProgramID)
-		{
-			hasProgram = true;
-			break;
-		}
-	}
-	*/
 }
 
-std::weak_ptr<Shader> ShaderManager::GetCurrentShader()
+std::shared_ptr<Shader> ShaderManager::GetCurrentShader() const
 {
 	return m_currentShader;
 }
