@@ -45,7 +45,7 @@ Texture::Texture(void* imageData, int width, int height, int numberOfChannels)
 
 Texture::~Texture()
 {
-	DebugLog::Info("Texture #" + std::to_string(textureID) + " destructor called.");
+	DebugLog::Info("Cleaning up Texture #" + std::to_string(textureID));
 	glDeleteTextures(1, &textureID);
 }
 

@@ -16,5 +16,5 @@ namespace filemanager
 
 	// Returns an image's contents as an unsigned char pointer.
 	// Expects filePath to be a path from the working directory.
-	std::shared_ptr<Texture> LoadTexture(const std::string filePath);
+	std::unique_ptr<Texture> LoadTexture(const std::string filePath);
 }

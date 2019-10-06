@@ -16,7 +16,7 @@ OBJ_NAME = blue-engine
 
 #The Make commands
 all : $(OBJS)
-	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+	$(CC) $(OBJS) $(COMPILER_FLAGS)  blue-tiles-engine.a $(LINKER_FLAGS) -o $(OBJ_NAME)
 
 clean:	
 	rm blue-engine

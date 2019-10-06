@@ -23,13 +23,13 @@ public:
 	GLuint CompileShader(GLuint shaderType, const char* shaderCode);
 
 	// Creates and links up a shader program with two shaders
-	GLuint CreateShaderProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
+	std::shared_ptr<Shader> CreateShaderProgram(GLuint vertexShaderID, GLuint fragmentShaderID);
 
 	// Selects the shader to be used for rendering
 	void UseShaderProgram(GLuint shaderProgramID);
 
 	// Accessor for the current shader.
-	std::weak_ptr<Shader> GetCurrentShader();
+	std::shared_ptr<Shader> GetCurrentShader() const;
 
 private:
 
@@ -39,6 +39,6 @@ private:
 	// List of shader programs created and linked by thise shader manager
 	std::vector<std::shared_ptr<Shader>> m_programsCreated;
 
-	// The current ID of the shader program being used
-	std::weak_ptr<Shader> m_currentShader;
+	// Pointer to the current ID of the shader program being used
+	std::shared_ptr<Shader> m_currentShader;
 };

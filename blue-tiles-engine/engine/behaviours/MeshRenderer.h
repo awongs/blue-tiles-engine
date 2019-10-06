@@ -9,13 +9,24 @@
 #include "../../util/MeshManager.h"
 
 class Texture;
+using meshmanager::Vertex;
 
 class MeshRenderer : public Behaviour
 {
 public:
-	MeshRenderer(GLuint gameobjectId);
+	// Constructor.
+	MeshRenderer(GLuint gameObjectId, std::string objFilePath);
+	
+	// Sets up the vertex, index, and VAO buffers.
+	void SetupBuffers();
+
+	// Loads and sets the current texture.
+	void SetTexture(std::string texturePath);
+
+	// Destructor.
 	virtual ~MeshRenderer();
 
+	// Overwritten functions.
 	void Update(float deltaTime) override;
 	void Draw() override;
 	bool HandleMessage(unsigned int senderID, std::string message) override;
@@ -31,73 +42,11 @@ private:
 	GLuint m_vertexArrayObjectID;
 	
 	// This mesh's texture.
-	std::shared_ptr<Texture> m_texture;
+	std::unique_ptr<Texture> m_texture;
+	
+	// This mesh's vertices.
+	std::vector<Vertex> m_vertices;
 
-	std::vector<meshmanager::Vertex> m_vertices;
+	// This mesh's indices.
 	std::vector<GLuint> m_indices;
-
-	// -- Testing Purposes --
-	GLfloat m_verticesCube[24 * 5] = {
-		// Front
-		0.5, -0.5, 0.5,    1, 0,
-		0.5,  0.5, 0.5,    1, 1,
-		-0.5,  0.5, 0.5,   0, 1,
-		-0.5, -0.5, 0.5,   0, 0,
-
-		// Back
-		-0.5, -0.5, -0.5,  1, 0,
-		-0.5,  0.5, -0.5,  1, 1,
-		0.5,  0.5, -0.5,   0, 1,
-		0.5, -0.5, -0.5,   0, 0,
-
-		// Left
-		-0.5, -0.5,  0.5,  1, 0,
-		-0.5,  0.5,  0.5,  1, 1,
-		-0.5,  0.5, -0.5,  0, 1,
-		-0.5, -0.5, -0.5,  0, 0,
-
-		// Right
-		0.5, -0.5, -0.5,   1, 0,
-		0.5,  0.5, -0.5,   1, 1,
-		0.5,  0.5,  0.5,   0, 1,
-		0.5, -0.5,  0.5,   0, 0,
-
-		// Top
-		0.5,  0.5,  0.5,   1, 0,
-		0.5,  0.5, -0.5,   1, 1,
-		-0.5,  0.5, -0.5,  0, 1,
-		-0.5,  0.5,  0.5,  0, 0,
-
-		// Bottom
-		0.5, -0.5, -0.5,   1, 0,
-		0.5, -0.5,  0.5,   1, 1,
-		-0.5, -0.5,  0.5,  0, 1,
-		-0.5, -0.5, -0.5,  0, 0
-	};
-
-	unsigned int m_indicesCube[12 * 3] = {
-		// Front
-		0, 1, 2,
-		2, 3, 0,
-
-		// Back
-		4, 5, 6,
-		6, 7, 4,
-
-		// Left
-		8, 9, 10,
-		10, 11, 8,
-
-		// Right
-		12, 13, 14,
-		14, 15, 12,
-
-		// Top
-		16, 17, 18,
-		18, 19, 16,
-
-		// Bottom
-		20, 21, 22,
-		22, 23, 20
-	};
 };

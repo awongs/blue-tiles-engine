@@ -11,6 +11,8 @@ Shader::Shader(GLuint programHandle)
 
 Shader::~Shader()
 {
+	DebugLog::Info("Cleaning up Shader #" + std::to_string(m_programHandle));
+
 	// Tell OpenGL that we no longer need this shader
 	glDeleteShader(m_programHandle);
 }
