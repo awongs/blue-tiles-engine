@@ -4,10 +4,15 @@
 #include "../../util/FileManager.h"
 #include "../debugbt/DebugLog.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 TextRenderer::TextRenderer(int windowWidth, int windowHeight)
 	: m_width(windowWidth)
 	, m_height(windowHeight)
 {
+	DebugLog::Info("Setting up TextRenderer...");
+
 	m_shaderManager = new ShaderManager();
 
 	SetupTextShader();
@@ -17,6 +22,7 @@ TextRenderer::TextRenderer(int windowWidth, int windowHeight)
 
 TextRenderer::~TextRenderer()
 {
+	// TODO
 }
 
 void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
@@ -71,13 +77,15 @@ void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat sc
 
 void TextRenderer::SetupTextShader()
 {
+	DebugLog::Info("Compiling shader program for TextRenderer...");
+
 	// id of shader programs
 	GLuint vertexShader;
 	GLuint fragmentShader;
 
 	// file
-	std::string vertex = filemanager::LoadFile("../Assets/shaders/ShaderText.vsh");
-	std::string fragment = filemanager::LoadFile("../Assets/shaders/ShaderText.fsh");
+	std::string vertex = filemanager::LoadFile("../Assets/shaders/TextShader.vsh");
+	std::string fragment = filemanager::LoadFile("../Assets/shaders/TextShader.fsh");
 
 	// shader compiling
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, vertex.c_str());
@@ -109,7 +117,7 @@ void TextRenderer::SetupFreeText()
 
 	// Load font as face
 	FT_Face face;
-	if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
+	if (FT_New_Face(ft, "../Assets/fonts/OpenSans-Regular.ttf", 0, &face))
 	{
 		DebugLog::Info("ERROR::FREETYPE: Failed to load font");
 	}
@@ -120,13 +128,15 @@ void TextRenderer::SetupFreeText()
 	// Disable byte-alignment restriction
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+	DebugLog::Info("Generating 128 ascii characters for TextRenderer...");
+
 	// Load first 128 characters of ASCII set
 	for (GLubyte c = 0; c < 128; c++)
 	{
 		// Load character glyph 
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER))
 		{
-			DebugLog::Info("ERROR::FREETYTPE: Failed to load Glyph");
+			DebugLog::Info("ERROR::FREETYTPE: Failed to load Glyph " + std::to_string(c));
 			continue;
 		}
 
@@ -166,6 +176,8 @@ void TextRenderer::SetupFreeText()
 	// Destroy FreeType once we're finished
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
+
+	DebugLog::Info("Generating buffers for TextRenderer...");
 
 	// Configure VAO/VBO for texture quads
 	glGenVertexArrays(1, &m_vao);

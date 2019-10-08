@@ -17,8 +17,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // FreeType
-#include <ft2build.h>
-#include FT_FREETYPE_H
+struct Character;
 
 class ShaderManager;
 class Shader;
