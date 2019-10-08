@@ -114,6 +114,9 @@
     <ClCompile Include="engine\graphics\GeometryBuffer.cpp">
       <Filter>Source Files\engine\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="engine\graphics\TextRenderer.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -186,6 +189,9 @@
       <Filter>Source Files\util</Filter>
     </ClInclude>
     <ClInclude Include="engine\graphics\GeometryBuffer.h">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\TextRenderer.h">
       <Filter>Source Files\engine\graphics</Filter>
     </ClInclude>
   </ItemGroup>
