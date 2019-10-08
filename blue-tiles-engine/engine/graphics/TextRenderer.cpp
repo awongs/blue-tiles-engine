@@ -27,6 +27,10 @@ TextRenderer::~TextRenderer()
 
 void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
 {
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// Activate corresponding render state	
 	m_shaderManager->UseShaderProgram(m_shader->GetProgramHandle());
 	m_shader->SetUniform3f("textColor", color);
@@ -72,6 +76,9 @@ void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat sc
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
 }
 
 
@@ -101,12 +108,7 @@ void TextRenderer::SetupTextShader()
 }
 
 void TextRenderer::SetupFreeText()
-{
-	// Set OpenGL options
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+{	
 	// FreeType
 	FT_Library ft;
 	// All functions return a value different than 0 whenever an error occurred

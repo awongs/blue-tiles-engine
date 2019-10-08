@@ -11,6 +11,7 @@
 #include "../behaviours/MeshRenderer.h"
 #include "Texture.h"
 #include "GeometryBuffer.h"
+#include "TextRenderer.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
@@ -30,6 +31,9 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
+
+	// text rendering
+	m_textRenderer = new TextRenderer(800, 600);
 
 	DebugLog::Info("Renderer initialization completed!\n");
 }
@@ -114,6 +118,9 @@ void Renderer::Render(Scene& currentScene)
 		// Tell the game object to draw
 		gameObject->Draw();
 	}
+
+	// test text rendering
+	m_textRenderer->RenderText("Hello World", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 }
 
 void Renderer::Display()
