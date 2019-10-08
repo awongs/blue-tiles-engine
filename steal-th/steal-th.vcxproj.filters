@@ -16,6 +16,9 @@
     <Filter Include="Source Files\gameobjects">
       <UniqueIdentifier>{4f67cba8-7d92-4ab4-b181-158d667d55ba}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\scenes">
+      <UniqueIdentifier>{bd9da87c-2c46-4029-9cf4-1319f2497586}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -36,6 +39,9 @@
     <ClCompile Include="Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="scenes\LevelScene.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Door.h">
@@ -52,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="Level.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scenes\LevelScene.h">
+      <Filter>Source Files\scenes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

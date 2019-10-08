@@ -1,8 +1,10 @@
 #define SDL_MAIN_HANDLED
+#include <memory>
 #include <engine/GameWindow.h>
 #include <engine/GameEngine.h>
 #include <engine/input/Input.h>
 #include "Level.h"
+#include "scenes/LevelScene.h"
 
 
 
@@ -41,6 +43,10 @@ int main()
 	SDL_Event windowEvent;
 
 	Level* l = new Level("level0");
+
+	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l);
+
+	engine->m_currentScene = std::move(level);
 
 	// Empty loop to prevent the window from closing immediately.
 	while (true)

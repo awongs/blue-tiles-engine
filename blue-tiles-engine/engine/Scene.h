@@ -28,9 +28,9 @@ public:
 
 	// Returns a world game object that matches the id in the list of world game objects
 	std::unique_ptr<GameObject> const& getWorldGameObjectById(const GLuint id) const;
-private:
-	Scene() {};
 
+protected:
+	Scene() {};
 	std::vector<std::unique_ptr<GameObject>> m_worldGameObjects;
 	std::vector<std::unique_ptr<GameObject>> m_screenGameObjects;
 };

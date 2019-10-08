@@ -42,6 +42,7 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 
 	DebugLog::Info("Engine initialization completed!");
 
+	/*
 	// -- Testing --
 	srand(time(0));
 	std::vector<std::unique_ptr<GameObject>> worldGameObjects;
@@ -76,6 +77,7 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	m_currentScene = std::make_unique<Scene>(worldGameObjects, screenGameObjects);
 
 	DebugLog::Info("Test scene initialization completed!");
+	*/
 }
 
 GameEngine::~GameEngine()
@@ -90,6 +92,7 @@ void GameEngine::HandleInput(Input *input, SDL_Event windowEvent)
 
 	input->HandleInput(windowEvent);
 
+	/*
 	const std::unique_ptr<GameObject> &obj = m_currentScene->getWorldGameObjectByIndex(0);
 	PhysicsObject *physObj = static_cast<PhysicsObject *>(obj->GetBehaviour(BehaviourType::PhysicsObject));
 
@@ -122,6 +125,7 @@ void GameEngine::HandleInput(Input *input, SDL_Event windowEvent)
 		DebugLog::Info("Middle mouse button pressed.");
 
 	physObj->GetCollider()->SetPosition(obj->position);
+	*/
 }
 
 void GameEngine::Update()

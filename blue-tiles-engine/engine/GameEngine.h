@@ -35,9 +35,11 @@ public:
 	// Renderer thing
 	Renderer* renderer;
 
-private:
 	// The current scene.
 	std::unique_ptr<Scene> m_currentScene;
+
+private:
+	
 
 	// Updates the FPS counter
 	void UpdateFPSCounter();

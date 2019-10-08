@@ -16,5 +16,5 @@ void main()
 	vec4 colour = texture(gColour, fragTexCoord);
 
 	// -- Testing -- Mash everything together for now
-	fragColor = position * normal * colour;
+	fragColor = colour;
 }
