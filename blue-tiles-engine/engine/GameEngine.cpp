@@ -142,9 +142,9 @@ void GameEngine::Draw()
 {
 	renderer->Render(*m_currentScene);
 
-	textRenderer->RenderText("Hello World", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-
 	renderer->Display();
+
+	textRenderer->RenderText("Hello World", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 
 	// swap buffer
 	SDL_GL_SwapWindow(m_window);
