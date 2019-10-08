@@ -4,49 +4,76 @@
 #include <functional>
 #include "sound/Music.h"
 
-GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours)
+GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours)
 {
-	id = -1;
-	name = "GameObject";
-	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
-	position = glm::vec3(0, 0, 0);
-	rotation = glm::vec3(0, 0, 0);
-	scale = glm::vec3(1, 1, 1);
-}
-
-GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n)
-{
-	id = -1;
+	id = _id;
 	name = n;
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
+	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	{
+		//behaviour->gameObject = this;
+	}
 	position = glm::vec3(0, 0, 0);
 	rotation = glm::vec3(0, 0, 0);
 	scale = glm::vec3(1, 1, 1);
 }
 
-GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos)
+GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos)
 {
-	id = -1;
+	id = _id;
+	name = n;
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
+	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	{
+		//behaviour->gameObject = this;
+	}
 	position = pos;
 	rotation = glm::vec3(0, 0, 0);
 	scale = glm::vec3(1, 1, 1);
 }
-GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos, glm::vec3 rot)
+GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot)
 {
-	id = -1;
+	id = _id;
+	name = n;
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
+	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	{
+		//behaviour->gameObject = this;
+	}
 	position = pos;
 	rotation = rot;
 	scale = glm::vec3(1, 1, 1);
 }
-GameObject::GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
+GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
 {
-	id = -1;
+	id = _id;
+	name = n;
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
+	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	{
+		//behaviour->gameObject = this;
+	}
 	position = pos;
 	rotation = rot;
 	scale = sca;
+}
+
+GameObject::GameObject(int _id, std::string n)
+{
+	id = _id;
+	name = n;
+	position = glm::vec3(0, 0, 0);
+	rotation = glm::vec3(0, 0, 0);
+	scale = glm::vec3(1, 1, 1);
+}
+
+GameObject::GameObject(int _id, std::string n, glm::vec3 pos)
+{
+	id = _id;
+	name = n;
+	position = pos;
+	rotation = glm::vec3(0, 0, 0);
+	scale = glm::vec3(1, 1, 1);
 }
 
 GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot)
@@ -55,6 +82,16 @@ GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot)
 	name = n;
 	position = pos;
 	rotation = rot;
+	scale = glm::vec3(1, 1, 1);
+}
+
+GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
+{
+	id = _id;
+	name = n;
+	position = pos;
+	rotation = rot;
+	scale = sca;
 }
 
 GameObject::~GameObject()
@@ -105,3 +142,10 @@ bool GameObject::HandleMessage(unsigned int senderID, std::string message, Behav
 
 	return behav != nullptr ? behav->HandleMessage(senderID, message) : false;
 }
+
+/*void GameObject::AddBehaviour(std::unique_ptr<Behaviour> behaviour)
+{
+	behaviour.get()->SetId(this->id);
+	//behaviour.get()->gameObject = this;
+	m_Behaviours.push_back(behaviour);
+}*/
