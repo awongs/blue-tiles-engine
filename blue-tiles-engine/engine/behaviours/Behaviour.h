@@ -1,11 +1,10 @@
 #pragma once
 #include <string>
-#include "..//GameObject.h"
 #include <glad/glad.h>
 
 // Available Behaviour Types
 enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource, MeshRenderer };
-
+class GameObject;
 class Behaviour
 {
 public:
@@ -27,7 +26,7 @@ public:
 
 	void SetId(int _id);
 
-	//GameObject* gameObject;
+	GameObject* gameObject;
 
 protected:
 	// The id of the game object that this component belongs to.

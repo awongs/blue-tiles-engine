@@ -11,7 +11,7 @@ GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behav
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
 	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
 	{
-		//behaviour->gameObject = this;
+		behaviour->gameObject = this;
 	}
 	position = glm::vec3(0, 0, 0);
 	rotation = glm::vec3(0, 0, 0);
@@ -25,7 +25,7 @@ GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behav
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
 	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
 	{
-		//behaviour->gameObject = this;
+		behaviour->gameObject = this;
 	}
 	position = pos;
 	rotation = glm::vec3(0, 0, 0);
@@ -38,7 +38,7 @@ GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behav
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
 	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
 	{
-		//behaviour->gameObject = this;
+		behaviour->gameObject = this;
 	}
 	position = pos;
 	rotation = rot;
@@ -51,7 +51,7 @@ GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behav
 	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
 	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
 	{
-		//behaviour->gameObject = this;
+		behaviour->gameObject = this;
 	}
 	position = pos;
 	rotation = rot;
@@ -143,9 +143,9 @@ bool GameObject::HandleMessage(unsigned int senderID, std::string message, Behav
 	return behav != nullptr ? behav->HandleMessage(senderID, message) : false;
 }
 
-/*void GameObject::AddBehaviour(std::unique_ptr<Behaviour> behaviour)
+void GameObject::AddBehaviour(Behaviour* behaviour)
 {
-	behaviour.get()->SetId(this->id);
-	//behaviour.get()->gameObject = this;
-	m_Behaviours.push_back(behaviour);
-}*/
+	behaviour->SetId(this->id);
+	behaviour->gameObject = this;
+	m_Behaviours.push_back(std::move(std::unique_ptr<Behaviour>(behaviour)));
+}

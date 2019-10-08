@@ -64,7 +64,8 @@ public:
 	Behaviour* GetBehaviour(BehaviourType type);
 
 	// Adds a behaviour
-	//void AddBehaviour(std::unique_ptr<Behaviour> behaviour);
+	void AddBehaviour(Behaviour* behaviour);
+
 private:
 	std::vector<std::unique_ptr<Behaviour>> m_Behaviours;
 };
