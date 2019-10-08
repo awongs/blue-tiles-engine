@@ -9,7 +9,6 @@ class MeshRenderer;
 class ShaderManager;
 class Shader;
 class Scene;
-class TextRenderer;
 
 /*
 	This renders the game engine.
@@ -52,7 +51,4 @@ private:
 
 	// Quad to render the frame onto.
 	std::unique_ptr<MeshRenderer> m_screenQuad;
-	
-	// A Renderer for text
-	TextRenderer* m_textRenderer;
 };

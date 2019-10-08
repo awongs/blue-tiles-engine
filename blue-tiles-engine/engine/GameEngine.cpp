@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "physics/PhysicsObject.h"
 #include "input/Input.h"
+#include "graphics/TextRenderer.h"
 
 GameEngine::GameEngine(SDL_Window* targetWindow)
 	: m_window(targetWindow)
@@ -33,6 +34,10 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	SDL_GL_GetDrawableSize(m_window, &vpWidth, &vpHeight);
 	glViewport(0, 0, vpWidth, vpHeight);
 
+	// text rendering (NOTE: must be created before any buffers!)
+	textRenderer = new TextRenderer(800, 600);
+
+	// 3d rendering
 	renderer = new Renderer(&targetContext);
 
 	m_lastFrameTime = SDL_GetTicks();
@@ -136,6 +141,8 @@ void GameEngine::Update()
 void GameEngine::Draw()
 {
 	renderer->Render(*m_currentScene);
+
+	textRenderer->RenderText("Hello World", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
 
 	renderer->Display();
 
