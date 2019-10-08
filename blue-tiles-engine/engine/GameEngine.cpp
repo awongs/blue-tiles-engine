@@ -144,7 +144,7 @@ void GameEngine::Draw()
 
 	renderer->Display();
 
-	textRenderer->RenderText("Hello World", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+	textRenderer->RenderScreenText(*m_currentScene);
 
 	// swap buffer
 	SDL_GL_SwapWindow(m_window);

@@ -3,6 +3,9 @@
 #include "Shader.h"
 #include "../../util/FileManager.h"
 #include "../debugbt/DebugLog.h"
+#include "../Scene.h"
+#include "../GameObject.h"
+#include "../behaviours/TextBehaviour.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -81,6 +84,17 @@ void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat sc
 	glDisable(GL_BLEND);
 }
 
+void TextRenderer::RenderScreenText(Scene& scene)
+{
+	for (const std::unique_ptr<GameObject>& sceneObject : scene.getScreenGameObject())
+	{
+		TextBehaviour* behav = static_cast<TextBehaviour*>(sceneObject->GetBehaviour(BehaviourType::TextBehaviour));
+		
+		if (behav == nullptr) continue;
+
+		behav->DrawTextWithRenderer(this);
+	}
+}
 
 void TextRenderer::SetupTextShader()
 {

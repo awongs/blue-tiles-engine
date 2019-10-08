@@ -21,6 +21,7 @@ struct Character;
 
 class ShaderManager;
 class Shader;
+class Scene;
 
 struct Character {
 	GLuint TextureID;   // ID handle of the glyph texture
@@ -37,6 +38,8 @@ public:
 	~TextRenderer();
 
 	void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color);
+
+	void RenderScreenText(Scene& scene);
 
 private:
 

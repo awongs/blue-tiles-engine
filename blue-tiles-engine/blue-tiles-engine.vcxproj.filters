@@ -117,6 +117,9 @@
     <ClCompile Include="engine\graphics\TextRenderer.cpp">
       <Filter>Source Files\engine\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="engine\behaviours\TextBehaviour.cpp">
+      <Filter>Source Files\engine\behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="engine\graphics\TextRenderer.h">
       <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\TextBehaviour.h">
+      <Filter>Source Files\engine\behaviours</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
