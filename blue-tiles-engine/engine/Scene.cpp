@@ -78,21 +78,22 @@ GameObject* Scene::GetWorldGameObjectById(const GLuint id)
 
 bool Scene::AddWorldGameObject(GameObject* gameObject)
 {
-	auto it = find_if(m_worldGameObjects.begin(), m_worldGameObjects.end(), [&](GameObject& obj) { return obj.id == gameObject->id; });
+	auto it = find_if(m_worldGameObjects.begin(), m_worldGameObjects.end(), [&](std::unique_ptr<GameObject>& obj) { return obj->id == gameObject->id; });
 
 	if (it != m_worldGameObjects.end())
 	{
 		DebugLog::Error("A GameObject with that id already exists.");
 		return false;
 	}
-	m_worldGameObjects.push_back(std::make_unique<GameObject>(gameObject));
+
+	m_worldGameObjects.push_back(std::unique_ptr<GameObject>(gameObject));
 	return true;
 }
 
 
 bool Scene::RemoveWorldGameObject(const GLuint id)
 {
-	auto it = find_if(m_worldGameObjects.begin(), m_worldGameObjects.end(), [&](GameObject& obj) { return obj.id == id; });
+	auto it = find_if(m_worldGameObjects.begin(), m_worldGameObjects.end(), [&](std::unique_ptr<GameObject>& obj) { return obj->id == id; });
 
 	if (it != m_worldGameObjects.end())
 	{
@@ -125,21 +126,21 @@ GameObject* Scene::GetScreenGameObjectById(const GLuint id)
 
 bool Scene::AddScreenGameObject(GameObject* gameObject)
 {
-	auto it = find_if(m_screenGameObjects.begin(), m_screenGameObjects.end(), [&](GameObject& obj) { return obj.id == gameObject->id; });
+	auto it = find_if(m_screenGameObjects.begin(), m_screenGameObjects.end(), [&](std::unique_ptr<GameObject>& obj) { return obj->id == gameObject->id; });
 
 	if (it != m_screenGameObjects.end())
 	{
 		DebugLog::Error("A GameObject with that id already exists.");
 		return false;
 	}
-	m_screenGameObjects.push_back(std::make_unique<GameObject>(gameObject));
+	m_screenGameObjects.push_back(std::unique_ptr<GameObject>(gameObject));
 	return true;
 }
 
 
 bool Scene::RemoveScreenGameObject(const GLuint id)
 {
-	auto it = find_if(m_screenGameObjects.begin(), m_screenGameObjects.end(), [&](GameObject& obj) { return obj.id == id; });
+	auto it = find_if(m_screenGameObjects.begin(), m_screenGameObjects.end(), [&](std::unique_ptr<GameObject>& obj) { return obj->id == id; });
 
 	if (it != m_screenGameObjects.end())
 	{
