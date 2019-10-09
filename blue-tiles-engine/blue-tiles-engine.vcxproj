@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClCompile Include="engine\behaviours\Behaviour.cpp" />
     <ClCompile Include="engine\behaviours\MeshRenderer.cpp" />
+    <ClCompile Include="engine\behaviours\TextBehaviour.cpp" />
     <ClCompile Include="engine\debugbt\DebugLog.cpp" />
     <ClCompile Include="engine\GameEngine.cpp" />
     <ClCompile Include="engine\GameWindow.cpp" />
@@ -161,6 +162,7 @@
     <ClCompile Include="engine\graphics\Renderer.cpp" />
     <ClCompile Include="engine\graphics\Shader.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
+    <ClCompile Include="engine\graphics\TextRenderer.cpp" />
     <ClCompile Include="engine\graphics\Texture.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
     <ClCompile Include="engine\physics\Collider.cpp" />
@@ -179,6 +181,7 @@
   <ItemGroup>
     <ClInclude Include="engine\behaviours\Behaviour.h" />
     <ClInclude Include="engine\behaviours\MeshRenderer.h" />
+    <ClInclude Include="engine\behaviours\TextBehaviour.h" />
     <ClInclude Include="engine\debugbt\DebugLog.h" />
     <ClInclude Include="engine\GameEngine.h" />
     <ClInclude Include="engine\GameWindow.h" />
@@ -188,6 +191,7 @@
     <ClInclude Include="engine\graphics\Renderer.h" />
     <ClInclude Include="engine\graphics\Shader.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
+    <ClInclude Include="engine\graphics\TextRenderer.h" />
     <ClInclude Include="engine\graphics\Texture.h" />
     <ClInclude Include="engine\input\Input.h" />
     <ClInclude Include="engine\physics\Collider.h" />
