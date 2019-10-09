@@ -77,7 +77,7 @@ namespace MessageSystem
 			ObjectMessage msg = messageQueue.front();
 			messageQueue.pop();
 
-			auto& go = targetScene->getWorldGameObjectById(msg.targetID);
+			GameObject* go = targetScene->GetWorldGameObjectById(msg.targetID);
 
 			// ignore message if no target game object found
 			if (go != nullptr) go->HandleMessage(msg.senderID, msg.message, msg.targetBehaviour);
@@ -97,7 +97,7 @@ namespace MessageSystem
 	{
 		processing = true;
 
-		std::vector<std::unique_ptr<GameObject>> const& objects = targetScene->getWorldGameObjects();
+		std::vector<std::unique_ptr<GameObject>> const& objects = targetScene->GetWorldGameObjects();
 
 		while (broadcastQueue.size() != 0)
 		{

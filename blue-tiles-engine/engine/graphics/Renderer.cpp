@@ -140,7 +140,7 @@ void Renderer::Display(Scene& currentScene)
 	std::vector<SpotLight*> spotLights;
 
 	// Unoptimized, looping through all objects in scene to find lights
-	for (const std::unique_ptr<GameObject>& light : currentScene.getWorldGameObjects())
+	for (const std::unique_ptr<GameObject>& light : currentScene.GetWorldGameObjects())
 	{
 		DirectionalLight* dirLight = static_cast<DirectionalLight*>(light->GetBehaviour(BehaviourType::DirectionalLight));
 

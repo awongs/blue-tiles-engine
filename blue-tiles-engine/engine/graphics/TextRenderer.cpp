@@ -96,7 +96,7 @@ void TextRenderer::RenderText(std::string text, glm::vec2& pos, GLfloat scale, g
 
 void TextRenderer::RenderScreenText(Scene& scene)
 {
-	for (const std::unique_ptr<GameObject>& sceneObject : scene.getScreenGameObject())
+	for (const std::unique_ptr<GameObject>& sceneObject : scene.GetScreenGameObjects())
 	{
 		TextBehaviour* behav = static_cast<TextBehaviour*>(sceneObject->GetBehaviour(BehaviourType::TextBehaviour));
 		
