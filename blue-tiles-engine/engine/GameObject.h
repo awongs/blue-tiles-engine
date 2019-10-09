@@ -51,6 +51,9 @@ public:
 
 	glm::vec3 scale;
 
+	// The game object's forward vector.
+	glm::vec3 forward;
+
 	// Update
 	virtual void Update(float deltaTime);
 
