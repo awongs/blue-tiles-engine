@@ -1,3 +1,6 @@
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "TextRenderer.h"
 #include "ShaderManager.h"
 #include "Shader.h"
@@ -6,9 +9,6 @@
 #include "../Scene.h"
 #include "../GameObject.h"
 #include "../behaviours/TextBehaviour.h"
-
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 TextRenderer::TextRenderer(int windowWidth, int windowHeight)
 	: m_width(windowWidth)
@@ -25,10 +25,10 @@ TextRenderer::TextRenderer(int windowWidth, int windowHeight)
 
 TextRenderer::~TextRenderer()
 {
-	// TODO
+	delete m_shaderManager;
 }
 
-void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color)
+void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3& color)
 {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
@@ -82,6 +82,16 @@ void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat sc
 
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
+}
+
+void TextRenderer::RenderText(std::string text, glm::vec3& pos, GLfloat scale, glm::vec3& color)
+{
+	RenderText(text, pos.x, pos.y, scale, color);
+}
+
+void TextRenderer::RenderText(std::string text, glm::vec2& pos, GLfloat scale, glm::vec3& color)
+{
+	RenderText(text, pos.x, pos.y, scale, color);
 }
 
 void TextRenderer::RenderScreenText(Scene& scene)
