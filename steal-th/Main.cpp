@@ -34,82 +34,37 @@ int main()
 	// create game engine
 	GameEngine* engine = new GameEngine(gameWin.GetWindow());
 
+	// Create the level
+	Level* l = new Level("level0");
+	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l);
+	
 	// -- Testing --
-  /*
 	srand(time(0));
-	std::vector<std::unique_ptr<GameObject>> worldGameObjects;
-	std::vector<std::unique_ptr<GameObject>> screenGameObjects;
-	for (int i = 0; i < 256; i++)
-	{
-		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/cube.obj");
-		meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
-
-		// Add the physics component to the game object.
-		Collider* col{ new Collider(glm::vec3(2.f)) };
-
-		PhysicsObject* physObj = new PhysicsObject(col, [](const PhysicsObject& other) {});
-
-		// Register this physics component to the physics engine.
-		//m_physEngine->AddPhysicsObject(physObj);
-
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(i);
-		ga->AddBehaviour(meshRenderer);
-		ga->AddBehaviour(physObj);
-
-		ga->position += glm::vec3(glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f));
-
-		// Update the collider's position.
-		col->SetPosition(ga->position);
-
-		worldGameObjects.push_back(std::move(ga));
-	}
 
 	// Add a directional light
-	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(420);
-	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -1.0f, -1.0f), 0.0f, 0.3f, 0.5f));
+	GameObject* ga = new GameObject(420);
+	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -1.0f, -1.0f), 0.0f, 0.4f, 0.5f));
+	level->AddWorldGameObject(ga);
 
 	// Add point lights
 	for (int i = 0; i < 64; i++)
 	{
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(999 + i);
-		ga->position += glm::vec3(glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f));
+		GameObject* ga = new GameObject(999 + i);
+		ga->position = level->GetWorldGameObjectByIndex(i)->position;
 
 		glm::vec3 randomColour = glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f));
 
-		ga->AddBehaviour(new PointLight(randomColour));
-		worldGameObjects.push_back(std::move(ga));
+		ga->AddBehaviour(new PointLight(randomColour, 1.0f, 1.0f, 1.0f, 0.2f, 0.3f, 0.5f));
+		level->AddWorldGameObject(ga);
 	}
 
-	// Add spot lights
-	for (int i = 0; i < 32; i++)
-	{
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(1628 + i);
-		ga->position += glm::vec3(glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f));
-
-		glm::vec3 randomColour = glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f));
-		glm::vec3 randomDirection = glm::normalize(glm::vec3(glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f)));
-
-		ga->AddBehaviour(new SpotLight(randomColour, randomDirection, 2, 2.5));
-		worldGameObjects.push_back(std::move(ga));
-	}
-
-	worldGameObjects.push_back(std::move(ga));
-
-	engine->SetScene(new Scene(worldGameObjects, screenGameObjects));
-
-	DebugLog::Info("Test scene initialization completed!");
-  */
+	// Set the scene in engine
+	engine->SetScene(level.release());
 
 	// Create the input manager.
 	Input* input{ new Input() };
 
 	SDL_Event windowEvent;
-
-	Level* l = new Level("level0");
-
-	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l);
-
-	engine->m_currentScene = std::move(level);
 
 	// Empty loop to prevent the window from closing immediately.
 	while (true)

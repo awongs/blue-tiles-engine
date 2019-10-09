@@ -14,15 +14,13 @@ LevelScene::LevelScene(Level* level)
 		// Create floors
 		for (unsigned int j = 0;j < level->length; j++)
 		{
-			std::vector<std::unique_ptr<Behaviour>> behaviours;
-			std::unique_ptr<MeshRenderer> meshRenderer = std::make_unique<MeshRenderer>(0, "../Assets/models/quad.obj");
+			MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/quad.obj");
 			meshRenderer->SetTexture("../Assets/textures/panel.png");
 
-			behaviours.push_back(std::move(meshRenderer));
-
 			glm::vec3 position = glm::vec3((double)i*9+4.5, -0.5, (double)j*9+4.5);
+			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "FLOOR", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(4.5, 4.5, 4.5));
 
-			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "FLOOR", behaviours, position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(4.5, 4.5, 4.5));
+			ga->AddBehaviour(meshRenderer);
 
 			m_count++;
 			m_worldGameObjects.push_back(std::move(ga));
@@ -67,33 +65,31 @@ LevelScene::LevelScene(Level* level)
 	// Create the objects
 	for (Object& obj : level->objects)
 	{
-		std::vector<std::unique_ptr<Behaviour>> behaviours;
-		std::unique_ptr<MeshRenderer> meshRenderer;
+		MeshRenderer* meshRenderer;
 
 		glm::vec3 scale = glm::vec3(0.5, 0.5, 0.5);
+		glm::vec3 position = glm::vec3(((double)(obj.location % level->width) - 1) * 9 + 4.5, 0, (double)(obj.location / level->length) * 9 + 4.5);
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, position, glm::vec3(0, glm::radians(obj.rotation), 0), scale);
+
+		
 		if (obj.name.find("key") != std::string::npos)
 		{
-			meshRenderer = std::make_unique<MeshRenderer>(0, "../Assets/models/key.obj");
+			meshRenderer = new MeshRenderer("../Assets/models/key.obj");
 			meshRenderer->SetTexture("../Assets/textures/key.png");
 		}
 		else if (obj.name.find("block") != std::string::npos) {
-			meshRenderer = std::make_unique<MeshRenderer>(0, "../Assets/models/cube.obj");
+			meshRenderer = new MeshRenderer("../Assets/models/cube.obj");
 			meshRenderer->SetTexture("../Assets/textures/crate.jpg");
 			scale = glm::vec3(8, 8, 8);
 		}
 		else
 		{
-			meshRenderer = std::make_unique<MeshRenderer>(0, "../Assets/models/golden_goose.obj");
+			meshRenderer = new MeshRenderer("../Assets/models/golden_goose.obj");
 			meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
 		}
 
-		behaviours.push_back(std::move(meshRenderer));
+		ga->AddBehaviour(meshRenderer);
 
-		glm::vec3 position = glm::vec3(((double)(obj.location % level->width)-1)*9 + 4.5, 0, (double)(obj.location / level->length) * 9 + 4.5);
-		
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, behaviours, position, glm::vec3(0, glm::radians(obj.rotation), 0), scale);
-
-		
 		m_count++;
 		m_worldGameObjects.push_back(std::move(ga));
 	}
@@ -101,34 +97,27 @@ LevelScene::LevelScene(Level* level)
 	// Create the guards
 	for (Guard& guard : level->guards)
 	{
-		std::vector<std::unique_ptr<Behaviour>> behaviours;
-		std::unique_ptr<MeshRenderer> meshRenderer;
-		meshRenderer = std::make_unique<MeshRenderer>(0, "../Assets/models/robot_kyle.obj");
+		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
 		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
 
-		behaviours.push_back(std::move(meshRenderer));
-
 		glm::vec3 position = glm::vec3(((double)(guard.location % level->width) - 1) * 9 + 4.5, 0, (double)(guard.location / level->length) * 9 + 4.5);
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "guard", position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "guard", behaviours, position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
-
+		ga->AddBehaviour(meshRenderer);
 
 		m_count++;
 		m_worldGameObjects.push_back(std::move(ga));
 	}
 
 	// Create player
-	std::vector<std::unique_ptr<Behaviour>> behaviours;
-	std::unique_ptr<MeshRenderer> meshRenderer;
-	meshRenderer = std::make_unique<MeshRenderer>(0, "../Assets/models/unity_chan.obj");
+	MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/unity_chan.obj");
 	meshRenderer->SetTexture("../Assets/textures/unity_chan.png");
-
-	behaviours.push_back(std::move(meshRenderer));
 
 	glm::vec3 position = glm::vec3(((double)(level->startPos % level->width) - 1) * 9 + 4.5, 0, (double)(level->startPos / level->length) * 9 + 4.5);
 
-	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "player", behaviours, position, glm::vec3(0, 0, 0), glm::vec3(2, 2, 2));
+	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "player", position, glm::vec3(0, 0, 0), glm::vec3(2, 2, 2));
 
+	ga->AddBehaviour(meshRenderer);
 
 	m_count++;
 	m_worldGameObjects.push_back(std::move(ga));
@@ -136,11 +125,9 @@ LevelScene::LevelScene(Level* level)
 
 void LevelScene::AddWall(std::string facing, int location, int width, int length)
 {
-	std::vector<std::unique_ptr<Behaviour>> behaviours;
-	std::unique_ptr<MeshRenderer> meshRenderer = std::make_unique<MeshRenderer>(0, "../Assets/models/wall.obj");
+	MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
 	meshRenderer->SetTexture("../Assets/textures/wall.jpg");
 
-	behaviours.push_back(std::move(meshRenderer));
 	glm::vec3 position;
 	glm::vec3 rotation;
 
@@ -165,7 +152,8 @@ void LevelScene::AddWall(std::string facing, int location, int width, int length
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
 	}
 
-	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "WALL", behaviours, position, rotation, glm::vec3(9, 9, 9));
+	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "WALL", position, rotation, glm::vec3(9, 9, 9));
+	ga->AddBehaviour(meshRenderer);
 
 	m_count++;
 	m_worldGameObjects.push_back(std::move(ga));

@@ -12,7 +12,7 @@ class Scene
 public:
 	Scene();
 	Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::vector<std::unique_ptr<GameObject>>& screenGameObjects);
-	~Scene();
+	virtual ~Scene();
 
 	// Updates game objects
 	void Update(float deltaTime);
@@ -53,7 +53,7 @@ public:
 	// Removes a screen game object from the screen game objects vector by id
 	bool RemoveScreenGameObject(const GLuint id);
   
-private:
+protected:
 	std::vector<std::unique_ptr<GameObject>> m_worldGameObjects;
 	std::vector<std::unique_ptr<GameObject>> m_screenGameObjects;
 };
