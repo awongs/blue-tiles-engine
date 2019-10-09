@@ -67,3 +67,8 @@ std::unique_ptr<GameObject> const& Scene::getWorldGameObjectById(const GLuint id
 			return worldGameObject;
 	return nullptr;
 }
+
+std::vector<std::unique_ptr<GameObject>> const& Scene::getScreenGameObject() const
+{
+	return m_screenGameObjects;
+}

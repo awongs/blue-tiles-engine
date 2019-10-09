@@ -5,6 +5,7 @@
 
 #include "physics/PhysicsEngine.h"
 
+class TextRenderer;
 class Renderer;
 class Scene;
 class Input;
@@ -34,6 +35,9 @@ public:
 
 	// Renderer thing
 	Renderer* renderer;
+
+	// Text Renderering thing
+	TextRenderer* textRenderer;
 
 private:
 	// The current scene.
