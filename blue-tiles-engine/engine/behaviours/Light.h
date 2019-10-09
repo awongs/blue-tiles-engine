@@ -12,7 +12,7 @@ public:
 	virtual bool HandleMessage(unsigned int senderID, std::string message) override;
 
 protected:
-	Light(int gameObjectID, glm::vec3 colour, float ambient, float diffuse, float specular);
+	Light(glm::vec3 colour, float ambient, float diffuse, float specular);
 
 	// The colour of the light
 	glm::vec3 colour;

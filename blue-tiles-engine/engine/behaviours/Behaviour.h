@@ -10,7 +10,7 @@ class GameObject;
 class Behaviour
 {
 public:
-	Behaviour(int gameObjectId, BehaviourType type);
+	Behaviour(BehaviourType type);
 
 	~Behaviour();
 
@@ -26,13 +26,9 @@ public:
 	// Get this behaviour's type.
 	BehaviourType GetType() const;
 
-	void SetId(int _id);
-
 	GameObject* gameObject;
 
 protected:
-	// The id of the game object that this component belongs to.
-	int m_gameObjectId;
 
 	// Behaviour's type
 	BehaviourType m_type;

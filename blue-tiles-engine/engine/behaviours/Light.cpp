@@ -11,8 +11,8 @@ bool Light::HandleMessage(unsigned int senderID, std::string message)
 	return false;
 }
 
-Light::Light(int gameObjectID, glm::vec3 colour, float ambient, float diffuse, float specular)
-	: Behaviour(gameObjectID, BehaviourType::Light)
+Light::Light(glm::vec3 colour, float ambient, float diffuse, float specular)
+	: Behaviour(BehaviourType::Light)
 	, colour(colour)
 	, ambient(ambient)
 	, diffuse(diffuse)

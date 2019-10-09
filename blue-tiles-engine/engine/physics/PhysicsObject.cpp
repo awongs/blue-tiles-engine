@@ -3,7 +3,7 @@
 
 PhysicsObject::PhysicsObject(GLuint gameObjectId, Collider *collider,
 	std::function<void(const PhysicsObject &)> onCollision) :
-	Behaviour(gameObjectId, BehaviourType::PhysicsObject),
+	Behaviour(BehaviourType::PhysicsObject),
 	m_collider(collider), m_onCollision(onCollision)
 {
 
@@ -32,11 +32,6 @@ bool PhysicsObject::HandleMessage(unsigned int senderID, std::string message)
 void PhysicsObject::OnCollision(const PhysicsObject &other)
 {
 	m_onCollision(other);
-}
-
-GLuint PhysicsObject::GetId() const
-{
-	return m_gameObjectId;
 }
 
 Collider *PhysicsObject::GetCollider() const

@@ -42,29 +42,28 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 
 	DebugLog::Info("Engine initialization completed!");
 
+	
 	// -- Testing --
 	srand(time(0));
 	std::vector<std::unique_ptr<GameObject>> worldGameObjects;
 	std::vector<std::unique_ptr<GameObject>> screenGameObjects;
 	for (int i = 0; i < 2; i++)
 	{
-		std::vector<std::unique_ptr<Behaviour>> behaviours;
-		std::unique_ptr<MeshRenderer> meshRenderer = std::make_unique<MeshRenderer>(i, "../Assets/models/golden_goose.obj");
+		MeshRenderer* meshRenderer = new MeshRenderer(i, "../Assets/models/golden_goose.obj");
 		meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
-
-		behaviours.push_back(std::move(meshRenderer));
 
 		// Add the physics component to the game object.
 		Collider *col{ new Collider(glm::vec3(2.f)) };
-		std::unique_ptr<PhysicsObject> physObj{ std::make_unique<PhysicsObject>(i, 
-			col, [](const PhysicsObject &other) {}) };
+
+		PhysicsObject* physObj = new PhysicsObject(i, col, [](const PhysicsObject &other) {});
 
 		// Register this physics component to the physics engine.
-		m_physEngine->AddPhysicsObject(physObj.get());
+		m_physEngine->AddPhysicsObject(physObj);
 
-		behaviours.push_back(std::move(physObj));
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(0);
+		ga->AddBehaviour(meshRenderer);
+		ga->AddBehaviour(physObj);
 
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(0, "gameObject", behaviours);
 		ga->position += glm::vec3(glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f), 0.0f);
 
 		// Update the collider's position.
@@ -76,6 +75,7 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	m_currentScene = std::make_unique<Scene>(worldGameObjects, screenGameObjects);
 
 	DebugLog::Info("Test scene initialization completed!");
+	
 }
 
 GameEngine::~GameEngine()
@@ -90,6 +90,7 @@ void GameEngine::HandleInput(Input *input, SDL_Event windowEvent)
 
 	input->HandleInput(windowEvent);
 
+	/*
 	const std::unique_ptr<GameObject> &obj = m_currentScene->getWorldGameObjectByIndex(0);
 	PhysicsObject *physObj = static_cast<PhysicsObject *>(obj->GetBehaviour(BehaviourType::PhysicsObject));
 
@@ -122,6 +123,7 @@ void GameEngine::HandleInput(Input *input, SDL_Event windowEvent)
 		DebugLog::Info("Middle mouse button pressed.");
 
 	physObj->GetCollider()->SetPosition(obj->position);
+	*/
 }
 
 void GameEngine::Update()

@@ -4,7 +4,7 @@
 #include "../graphics/Texture.h"
 
 MeshRenderer::MeshRenderer(GLuint gameObjectId, std::string objFilePath)
-	: Behaviour(gameObjectId, BehaviourType::MeshRenderer)
+	: Behaviour(BehaviourType::MeshRenderer)
 	, m_vertexBufferObjectID(0)
 	, m_indicesBufferObjectID(0)
 	, m_vertexArrayObjectID(0)

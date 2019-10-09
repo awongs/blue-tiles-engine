@@ -93,21 +93,11 @@ void Renderer::Render(Scene& currentScene)
 	// Render the scene
 	for (const std::unique_ptr<GameObject>& gameObject : currentScene.getWorldGameObjects())
 	{
-		glm::mat4 modelMatrix = glm::mat4(1);
-
-		// Translate
-		modelMatrix = glm::translate(modelMatrix, gameObject->position);
-
-		// Rotate
-		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.x, glm::vec3(1, 0, 0));
-		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.y, glm::vec3(0, 1, 0));
-		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.z, glm::vec3(0, 0, 1));
-
-		// Scale
-		modelMatrix = glm::scale(modelMatrix, gameObject->scale);
+		// This doesn't change every frame for most game objects - can be optimized
+		gameObject->UpdateTransformMatrix();
 
 		// Set model matrix in shader
-		m_deferredGeometryShader->SetUniformMatrix4fv("model", modelMatrix);
+		m_deferredGeometryShader->SetUniformMatrix4fv("model", gameObject->GetTransformMatrix());
 
 		// Note: Not explicitly setting the value of uTexture since it's already at the correct value of 0
 
