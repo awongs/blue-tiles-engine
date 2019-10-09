@@ -12,24 +12,30 @@ class GameObject
 {
 
 public: 
-	// Constructor only behaviour
-	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours);
 
 	// Constructor behaviours + name
-	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n);
+	GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours);
 
 	// Constructor behaviours + name + position
-	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos);
+	GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos);
 
 	// Constructor behaviours + name + position + rotation
-	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos, glm::vec3 rot);
+	GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot);
 
 	// Constructor behaviours + name + position + rotation + scale
-	GameObject(std::vector<std::unique_ptr<Behaviour>>& behaviours, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca);
+	GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca);
 
-	// Constructor id + name + position + rotation
+	// Constructor name only
+	GameObject(int _id, std::string n);
+
+	// Constructor name + position
+	GameObject(int _id, std::string n, glm::vec3 pos);
+
+	// Constructor name + position + rotation
 	GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot);
 
+	// Constructor name + position + rotation + scale
+	GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca);
 	// Deconstructor
 	~GameObject();
 
@@ -56,6 +62,10 @@ public:
 
 	// Gets behaviour of BehaviourType; Returns nullptr if doesn't exist
 	Behaviour* GetBehaviour(BehaviourType type);
+
+	// Adds a behaviour
+	void AddBehaviour(Behaviour* behaviour);
+
 private:
 	std::vector<std::unique_ptr<Behaviour>> m_Behaviours;
 };

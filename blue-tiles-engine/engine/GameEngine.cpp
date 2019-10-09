@@ -69,7 +69,7 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 
 		behaviours.push_back(std::move(physObj));
 
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(behaviours);
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(0, "gameObject", behaviours);
 		ga->position += glm::vec3(glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f), 0.0f);
 
 		// Update the collider's position.
