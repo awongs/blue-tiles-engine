@@ -1,15 +1,14 @@
 #pragma once
 #include <string>
-
 #include <glad/glad.h>
 
 // Available Behaviour Types
 enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource, MeshRenderer };
-
+class GameObject;
 class Behaviour
 {
 public:
-	Behaviour(GLuint gameObjectId, BehaviourType type);
+	Behaviour(int gameObjectId, BehaviourType type);
 
 	~Behaviour();
 
@@ -25,9 +24,13 @@ public:
 	// Get this behaviour's type.
 	BehaviourType GetType() const;
 
+	void SetId(int _id);
+
+	GameObject* gameObject;
+
 protected:
 	// The id of the game object that this component belongs to.
-	GLuint m_gameObjectId;
+	int m_gameObjectId;
 
 	// Behaviour's type
 	BehaviourType m_type;
