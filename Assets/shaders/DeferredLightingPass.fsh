@@ -95,7 +95,6 @@ void main()
         lighting += calcSpotLighting(spotLights[i], normal, position, viewDir);
     }
 
-	// -- Testing -- Mash everything together for now
 	fragColour = colour * lighting;
 }
 
@@ -189,6 +188,4 @@ lowp vec4 calcSpotLighting(SpotLight spotLight, vec3 normal, vec3 fragPosition, 
     
     // Combine results
     return vec4((ambientColour + diffuseColour + specularColour) * vec3(intensity), 1.0);
-        
-    
 }

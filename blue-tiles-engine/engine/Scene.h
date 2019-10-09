@@ -52,8 +52,8 @@ public:
 
 	// Removes a screen game object from the screen game objects vector by id
 	bool RemoveScreenGameObject(const GLuint id);
+  
 private:
-
 	std::vector<std::unique_ptr<GameObject>> m_worldGameObjects;
 	std::vector<std::unique_ptr<GameObject>> m_screenGameObjects;
 };

@@ -43,6 +43,7 @@ public:
 	TextRenderer* textRenderer;
 
 private:
+
 	// The current scene.
 	std::unique_ptr<Scene> m_currentScene;
 

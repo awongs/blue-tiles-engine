@@ -3,21 +3,58 @@
     "level": 0,
 	"startPos" : 1,
 	"width" : 10,
-	"height" : 10
+	"length" : 10
   },
   "rooms": [
     {
-      "roomid": 0,
+		"roomid": 0,
 	    "gridUsed" : [1,2,3,11,12,13,21,22,23],
 	    "doors" : [
-        {
-          "doorid" : 0,
-          "location" : 22,
-          "keyRequired" : "key1",
-          "facing" : "down",
-		  "exit" : true
-        }
-      ]
+			{
+			  "doorid" : 0,
+			  "location" : 22,
+			  "keyRequired" : "key1",
+			  "facing" : "down",
+			  "exit" : true
+			}
+		],
+		"walls" : [
+			{
+				"doorid" : 0,
+				"location" : 1,
+				"facing" : "upleft"
+			},
+			{
+				"doorid" : 1,
+				"location" : 2,
+				"facing" : "up"
+			},
+			{
+				"doorid" : 2,
+				"location" : 3,
+				"facing" : "upright"
+			},
+			{
+				"doorid" : 3,
+				"location" : 11,
+				"facing" : "left"
+			},
+			{
+				"doorid" : 4,
+				"location" : 13,
+				"facing" : "right"
+			},
+			{
+				"doorid" : 5,
+				"location" : 21,
+				"facing" : "downleft"
+			},
+			{
+				"doorid" : 6,
+				"location" : 23,
+				"facing" : "downright"
+			}
+		]
 	}
   ],
   "objects" : [

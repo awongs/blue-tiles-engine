@@ -1,7 +1,9 @@
 #define SDL_MAIN_HANDLED
+
 #include <ctime>
 #include <glm/gtc/random.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <memory>
 
 #include <engine/GameWindow.h>
 #include <engine/GameEngine.h>
@@ -16,6 +18,7 @@
 #include <engine/graphics/Camera.h>
 
 #include "Level.h"
+#include "scenes/LevelScene.h"
 
 int main()
 {
@@ -32,6 +35,7 @@ int main()
 	GameEngine* engine = new GameEngine(gameWin.GetWindow());
 
 	// -- Testing --
+  /*
 	srand(time(0));
 	std::vector<std::unique_ptr<GameObject>> worldGameObjects;
 	std::vector<std::unique_ptr<GameObject>> screenGameObjects;
@@ -94,6 +98,7 @@ int main()
 	engine->SetScene(new Scene(worldGameObjects, screenGameObjects));
 
 	DebugLog::Info("Test scene initialization completed!");
+  */
 
 	// Create the input manager.
 	Input* input{ new Input() };
@@ -101,6 +106,10 @@ int main()
 	SDL_Event windowEvent;
 
 	Level* l = new Level("level0");
+
+	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l);
+
+	engine->m_currentScene = std::move(level);
 
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
