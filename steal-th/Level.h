@@ -29,6 +29,9 @@ class Level
 		// Length of level <------>
 		int length;
 
+		// Starting position of the player
+		int startPos;
+
 		// Number of grids in the level (width * length)
 		int numGrids;
 

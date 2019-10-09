@@ -108,7 +108,7 @@ void GameObject::Update(float deltaTime)
 	}
 
 	// -- Testing Purposes --
-	rotation.y += 3.14f * deltaTime;
+	//rotation.y += 3.14f * deltaTime;
 	
 	// Shared pointer to a music object.
 	auto music = SoundManager::getInstance().getMusic("alarm");

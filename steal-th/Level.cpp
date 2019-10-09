@@ -19,6 +19,7 @@ void Level::LoadLevel(std::string jsonFile)
 	levelNum	= _levelJSON["info"].value("level", -1);
 	width		= _levelJSON["info"].value("width", -1);
 	length		= _levelJSON["info"].value("length", -1);
+	startPos = _levelJSON["info"].value("startPos", -1);
 	numGrids	= width * length;
 
 	// To clear objects vector
@@ -51,6 +52,16 @@ void Level::LoadLevel(std::string jsonFile)
 			);
 		}
 
+		std::vector<Wall> walls;
+		for (auto wall : room["walls"]) {
+			walls.push_back(*new Wall(
+				wall.value("wallid", -1),
+				wall.value("location", -1),
+				wall.value("facing", "")
+			)
+			);
+		}
+
 		std::vector<int> gridNums;
 		for (auto num : room["gridUsed"]) {
 			gridNums.push_back(num);
@@ -58,7 +69,8 @@ void Level::LoadLevel(std::string jsonFile)
 		rooms.push_back(*new Room(
 			room.value("roomid", -1),
 			gridNums,
-			doors
+			doors,
+			walls
 		)
 		);
 	}
