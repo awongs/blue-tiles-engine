@@ -13,7 +13,7 @@ TextBehaviour::TextBehaviour(GLuint gameObjectId, std::string text, float scale,
 
 void TextBehaviour::DrawTextWithRenderer(TextRenderer* textRenderer)
 {
-	textRenderer->RenderText(m_text, gameObject->position.x, gameObject->position.y, m_scale, m_colour);
+	textRenderer->RenderText(m_text, gameObject->position, m_scale, m_colour);
 }
 
 void TextBehaviour::Update(float deltaTime)
