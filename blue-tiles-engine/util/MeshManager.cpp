@@ -175,7 +175,7 @@ namespace meshmanager
 
 			GLuint hv = -1, ht = -1, hn = -1;
 
-			for (std::vector<Vertex>::iterator hvit = out_vertices.begin(); hvit != out_vertices.end(); ++hvit)
+		/*	for (std::vector<Vertex>::iterator hvit = out_vertices.begin(); hvit != out_vertices.end(); ++hvit)
 			{
 				if ((*hvit).position.x == vertex.position.x &&
 					(*hvit).position.y == vertex.position.y &&
@@ -197,7 +197,7 @@ namespace meshmanager
 					hn = hvit - out_vertices.begin();
 				}
 			}
-
+*/
 			if (ht != -1 && hv == ht && hn == ht)
 			{
 				out_indices.push_back(hv);
