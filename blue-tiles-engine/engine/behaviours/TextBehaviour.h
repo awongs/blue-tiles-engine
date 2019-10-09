@@ -12,6 +12,7 @@ public:
 
 	TextBehaviour(GLuint gameObjectId, std::string text, float scale, glm::vec3 colour);
 
+	// Called by text renderer
 	void DrawTextWithRenderer(TextRenderer* textRenderer);
 
 	// Overwritten functions.
@@ -21,9 +22,12 @@ public:
 
 private:
 
+	// The string to display on screen.
 	std::string m_text;
 
+	// The scale of the text.
 	float m_scale;
 
+	// The colour of the text.
 	glm::vec3 m_colour;
 };
