@@ -33,9 +33,6 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 	m_screenQuad = std::make_unique<GameObject>(1337, "screenQuad", glm::vec3(), glm::vec3(0, glm::pi<float>(), glm::pi<float>()));
 	m_screenQuad->AddBehaviour(new MeshRenderer("../Assets/models/quad.obj"));
 
-	// Enable depth testing
-	glEnable(GL_DEPTH_TEST);
-
 	DebugLog::Info("Renderer initialization completed!\n");
 }
 
@@ -74,6 +71,9 @@ void Renderer::SetupShaders()
 
 void Renderer::Render(Scene& currentScene)
 {
+	// Enable depth testing
+	glEnable(GL_DEPTH_TEST);
+
 	// Bind the geometry buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, m_geometryBuffer->GetBufferID());
 
@@ -97,6 +97,9 @@ void Renderer::Render(Scene& currentScene)
  
 	// Draw the world
 	currentScene.DrawWorld(*m_deferredGeometryShader);
+  
+	// Disable depth testing
+	glDisable(GL_DEPTH_TEST);
 }
 
 void Renderer::Display(Scene& currentScene)

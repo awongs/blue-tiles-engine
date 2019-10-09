@@ -83,7 +83,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>blue-tiles-engine.lib;SDL2.lib;SDL2_mixer.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>blue-tiles-engine.lib;SDL2.lib;SDL2_mixer.lib;SDL2_image.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d "..\libraries\libs\*.dll" "$(OutDir)"

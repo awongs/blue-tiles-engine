@@ -30,6 +30,9 @@ public:
 
 	// Returns a world game object that matches the id in the list of world game objects
 	std::unique_ptr<GameObject> const& getWorldGameObjectById(const GLuint id) const;
+
+	// Returns the vector of world game objects
+	std::vector<std::unique_ptr<GameObject>> const& getScreenGameObject() const;
 private:
 	Scene() {};
 

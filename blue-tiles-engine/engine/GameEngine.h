@@ -5,6 +5,7 @@
 
 #include "physics/PhysicsEngine.h"
 
+class TextRenderer;
 class Renderer;
 class Scene;
 class Input;
@@ -37,6 +38,9 @@ public:
 
 	// Setter for the current scene.
 	void SetScene(Scene* scene);
+
+	// Text Renderering thing
+	TextRenderer* textRenderer;
 
 private:
 	// The current scene.
