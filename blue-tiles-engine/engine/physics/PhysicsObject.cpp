@@ -1,7 +1,7 @@
 #include "PhysicsObject.h"
 #include "SphereCollider.h"
 
-PhysicsObject::PhysicsObject(GLuint gameObjectId, Collider *collider,
+PhysicsObject::PhysicsObject(Collider *collider,
 	std::function<void(const PhysicsObject &)> onCollision) :
 	Behaviour(BehaviourType::PhysicsObject),
 	m_collider(collider), m_onCollision(onCollision)
@@ -19,7 +19,7 @@ void PhysicsObject::Update(float deltaTime)
 
 }
 
-void PhysicsObject::Draw()
+void PhysicsObject::Draw(Shader& shader)
 {
 
 }

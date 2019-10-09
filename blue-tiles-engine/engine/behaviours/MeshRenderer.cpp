@@ -2,8 +2,10 @@
 #include "../debugbt/DebugLog.h"
 #include "../../util/FileManager.h"
 #include "../graphics/Texture.h"
+#include "../graphics/Shader.h"
+#include "../GameObject.h"
 
-MeshRenderer::MeshRenderer(GLuint gameObjectId, std::string objFilePath)
+MeshRenderer::MeshRenderer(std::string objFilePath)
 	: Behaviour(BehaviourType::MeshRenderer)
 	, m_vertexBufferObjectID(0)
 	, m_indicesBufferObjectID(0)
@@ -74,16 +76,24 @@ void MeshRenderer::Update(float deltaTime)
 {
 }
 
-void MeshRenderer::Draw()
+void MeshRenderer::Draw(Shader& shader)
 {
 	// Bind this mesh's buffers
 	glBindVertexArray(m_vertexArrayObjectID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObjectID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesBufferObjectID);
 
+	// Update transform matrix
+	gameObject->UpdateTransformMatrix();
+
+	// Set model matrix in shader
+	shader.SetUniformMatrix4fv("model", gameObject->GetTransformMatrix());
+	
+
 	// Bind the texture
 	if (m_texture != nullptr)
 	{
+		shader.SetUniform1i("uTexture", 0);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_texture->GetTextureID());
 	}

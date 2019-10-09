@@ -4,16 +4,19 @@
 
 #include "Behaviour.h"
 
+// Default light is treated as a directional light
 class Light : public Behaviour
 {
 public:
+	// Constuctor.
+	Light(glm::vec3 colour, float ambient, float diffuse, float specular);
+
 	// Overwritten functions.
 	virtual void Update(float deltaTime) override;
+	virtual void Draw(Shader& shader) override;
 	virtual bool HandleMessage(unsigned int senderID, std::string message) override;
 
 protected:
-	Light(glm::vec3 colour, float ambient, float diffuse, float specular);
-
 	// The colour of the light
 	glm::vec3 colour;
 

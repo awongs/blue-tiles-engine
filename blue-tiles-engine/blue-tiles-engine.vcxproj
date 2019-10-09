@@ -179,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\behaviours\Behaviour.h" />
+    <ClInclude Include="engine\behaviours\DirectionalLight.h" />
     <ClInclude Include="engine\behaviours\Light.h" />
     <ClInclude Include="engine\behaviours\MeshRenderer.h" />
     <ClInclude Include="engine\debugbt\DebugLog.h" />

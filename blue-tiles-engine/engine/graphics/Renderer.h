@@ -5,7 +5,7 @@
 
 
 class GeometryBuffer;
-class MeshRenderer;
+class GameObject;
 class ShaderManager;
 class Shader;
 class Scene;
@@ -50,5 +50,5 @@ private:
 	std::shared_ptr<Shader> m_deferredLightingShader;
 
 	// Quad to render the frame onto.
-	std::unique_ptr<MeshRenderer> m_screenQuad;
+	std::unique_ptr<GameObject> m_screenQuad;
 };

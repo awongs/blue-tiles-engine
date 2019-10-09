@@ -11,6 +11,7 @@
 #include "../behaviours/MeshRenderer.h"
 #include "Texture.h"
 #include "GeometryBuffer.h"
+#include "../GameObject.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
@@ -26,7 +27,8 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 	m_geometryBuffer = std::make_unique<GeometryBuffer>(800, 600);
 
 	// Create the screen quad
-	m_screenQuad = std::make_unique<MeshRenderer>(9001, "../Assets/models/quad.obj");
+	m_screenQuad = std::make_unique<GameObject>(1337, "screenQuad", glm::vec3(), glm::vec3(0, glm::pi<float>(), glm::pi<float>()));
+	m_screenQuad->AddBehaviour(new MeshRenderer("../Assets/models/quad.obj"));
 
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
@@ -90,20 +92,8 @@ void Renderer::Render(Scene& currentScene)
 	m_deferredGeometryShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
 	m_deferredGeometryShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
  
-	// Render the scene
-	for (const std::unique_ptr<GameObject>& gameObject : currentScene.getWorldGameObjects())
-	{
-		// This doesn't change every frame for most game objects - can be optimized
-		gameObject->UpdateTransformMatrix();
-
-		// Set model matrix in shader
-		m_deferredGeometryShader->SetUniformMatrix4fv("model", gameObject->GetTransformMatrix());
-
-		// Note: Not explicitly setting the value of uTexture since it's already at the correct value of 0
-
-		// Tell the game object to draw
-		gameObject->Draw();
-	}
+	// Draw the world
+	currentScene.DrawWorld(*m_deferredGeometryShader);
 }
 
 void Renderer::Display()
@@ -130,19 +120,11 @@ void Renderer::Display()
 		return;
 	}
 
-	// TODO - This never changes, can be optimized
-	glm::mat4 modelMatrix = glm::mat4(1);
-	modelMatrix = glm::rotate(modelMatrix, glm::pi<float>(), glm::vec3(0, 1, 0));
-	modelMatrix = glm::rotate(modelMatrix, glm::pi<float>(), glm::vec3(0, 0, 1));
-
 	// Set samplers in shader to their respective texture IDs
 	m_deferredLightingShader->SetUniform1i("gPosition", 0);
 	m_deferredLightingShader->SetUniform1i("gNormal", 1);
 	m_deferredLightingShader->SetUniform1i("gColour", 2);
 
-	// Set model matrix in shader
-	m_deferredLightingShader->SetUniformMatrix4fv("model", modelMatrix);
-
 	// Draw onto the quad
-	m_screenQuad->Draw();
+	m_screenQuad->Draw(*m_deferredLightingShader);
 }

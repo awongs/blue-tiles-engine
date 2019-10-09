@@ -6,6 +6,11 @@ void Light::Update(float deltaTime)
 	// Do nothing
 }
 
+void Light::Draw(Shader& shader)
+{
+
+}
+
 bool Light::HandleMessage(unsigned int senderID, std::string message)
 {
 	return false;

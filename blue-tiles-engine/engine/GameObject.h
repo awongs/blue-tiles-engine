@@ -22,9 +22,9 @@ public:
 
 	// Update
 	virtual void Update(float deltaTime);
-
+	
 	// Draw
-	virtual void Draw();
+	virtual void Draw(Shader& shader);
 
 	// Handles messages
 	virtual bool HandleMessage(unsigned int senderID, std::string message, BehaviourType type);
@@ -52,8 +52,6 @@ public:
 	glm::vec3 rotation;
 
 	glm::vec3 scale;
-
-	
 
 protected:
 	// The game object's forward vector.

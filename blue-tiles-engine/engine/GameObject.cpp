@@ -5,7 +5,8 @@
 #include "GameObject.h"
 #include "sound/SoundManager.h"
 #include "sound/Music.h"
-#include "debugbt/DebugLog.h"
+#include "graphics/Shader.h"
+#include "behaviours/Behaviour.h"
 
 
 GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
@@ -14,6 +15,7 @@ GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot, glm
 	, position(pos)
 	, rotation(rot)
 	, scale(sca)
+	, m_transformMatrix(glm::mat4(1))
 {
 }
 
@@ -32,21 +34,18 @@ void GameObject::Update(float deltaTime)
 
 	// -- Testing Purposes --
 	rotation.y += 3.14f * deltaTime;
-
-	DebugLog::Info(std::to_string(m_forward.x) + ", " + std::to_string(m_forward.y) + ", " + std::to_string(m_forward.z));
-	
 	
 	// Shared pointer to a music object.
-	auto music = SoundManager::getInstance().getMusic("alarm");
+	//auto music = SoundManager::getInstance().getMusic("alarm");
 	//music->play();
 }
 
-void GameObject::Draw()
+void GameObject::Draw(Shader& shader)
 {
 	// Tell each behaviour to draw
 	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
 	{
-		behaviour->Draw();
+		behaviour->Draw(shader);
 	}
 }
 

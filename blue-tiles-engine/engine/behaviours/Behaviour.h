@@ -3,10 +3,11 @@
 #include <glad/glad.h>
 
 // Available Behaviour Types
-enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource, MeshRenderer, 
-	Light, PointLight, DirectionalLight };
+enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource, MeshRenderer, Light};
 
 class GameObject;
+class Shader;
+
 class Behaviour
 {
 public:
@@ -18,7 +19,7 @@ public:
 	virtual void Update(float deltaTime) = 0;
 
 	// Draw
-	virtual void Draw() = 0;
+	virtual void Draw(Shader& shader) = 0;
 
 	// Handles messages
 	virtual bool HandleMessage(unsigned int senderID, std::string message) = 0;
