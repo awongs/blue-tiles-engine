@@ -2,6 +2,7 @@
 #include "../debugbt/DebugLog.h"
 #include "SphereCollider.h"
 #include "PhysicsObject.h"
+#include "../GameObject.h"
 
 #include <glm/glm.hpp>
 
@@ -111,8 +112,8 @@ void PhysicsEngine::HandleCollisions()
 		PhysicsObject *second{ col.second };
 
 		DebugLog::Info("Collision detected between (" +
-			std::to_string(first->GetId()) + " " +
-			std::to_string(second->GetId()) + ").");
+			std::to_string(first->gameObject->id) + " " +
+			std::to_string(second->gameObject->id) + ").");
 
 		// Call OnCollision for both physics components.
 		first->OnCollision(*second);

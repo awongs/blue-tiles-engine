@@ -37,6 +37,9 @@
     <Filter Include="Source Files\engine\behaviours">
       <UniqueIdentifier>{9feadcdd-a8e0-4fdb-aae0-8d64d62255ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\behaviours\Lighting">
+      <UniqueIdentifier>{baf4a58e-998c-44dd-905b-cc6c5a4fdae8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -113,6 +116,18 @@
     </ClCompile>
     <ClCompile Include="engine\graphics\GeometryBuffer.cpp">
       <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\Light.cpp">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\PointLight.cpp">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\DirectionalLight.cpp">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\SpotLight.cpp">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
     </ClCompile>
     <ClCompile Include="engine\graphics\TextRenderer.cpp">
       <Filter>Source Files\engine\graphics</Filter>
@@ -193,6 +208,18 @@
     </ClInclude>
     <ClInclude Include="engine\graphics\GeometryBuffer.h">
       <Filter>Source Files\engine\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\Light.h">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\PointLight.h">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\DirectionalLight.h">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\SpotLight.h">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
     </ClInclude>
     <ClInclude Include="engine\graphics\TextRenderer.h">
       <Filter>Source Files\engine\graphics</Filter>

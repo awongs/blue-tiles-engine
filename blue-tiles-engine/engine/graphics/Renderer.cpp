@@ -11,6 +11,10 @@
 #include "../behaviours/MeshRenderer.h"
 #include "Texture.h"
 #include "GeometryBuffer.h"
+#include "../GameObject.h"
+#include "../behaviours/DirectionalLight.h"
+#include "../behaviours/PointLight.h"
+#include "../behaviours/SpotLight.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
@@ -26,7 +30,8 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 	m_geometryBuffer = std::make_unique<GeometryBuffer>(800, 600);
 
 	// Create the screen quad
-	m_screenQuad = std::make_unique<MeshRenderer>(9001, "../Assets/models/quad.obj");
+	m_screenQuad = std::make_unique<GameObject>(1337, "screenQuad", glm::vec3(), glm::vec3(0, glm::pi<float>(), glm::pi<float>()));
+	m_screenQuad->AddBehaviour(new MeshRenderer("../Assets/models/quad.obj"));
 
 	DebugLog::Info("Renderer initialization completed!\n");
 }
@@ -90,36 +95,14 @@ void Renderer::Render(Scene& currentScene)
 	m_deferredGeometryShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
 	m_deferredGeometryShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
  
-	// Render the scene
-	for (const std::unique_ptr<GameObject>& gameObject : currentScene.getWorldGameObjects())
-	{
-		glm::mat4 modelMatrix = glm::mat4(1);
-
-		// Translate
-		modelMatrix = glm::translate(modelMatrix, gameObject->position);
-
-		// Rotate
-		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.x, glm::vec3(1, 0, 0));
-		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.y, glm::vec3(0, 1, 0));
-		modelMatrix = glm::rotate(modelMatrix, gameObject->rotation.z, glm::vec3(0, 0, 1));
-
-		// Scale
-		modelMatrix = glm::scale(modelMatrix, gameObject->scale);
-
-		// Set model matrix in shader
-		m_deferredGeometryShader->SetUniformMatrix4fv("model", modelMatrix);
-
-		// Note: Not explicitly setting the value of uTexture since it's already at the correct value of 0
-
-		// Tell the game object to draw
-		gameObject->Draw();
-	}
-
+	// Draw the world
+	currentScene.DrawWorld(*m_deferredGeometryShader);
+  
 	// Disable depth testing
 	glDisable(GL_DEPTH_TEST);
 }
 
-void Renderer::Display()
+void Renderer::Display(Scene& currentScene)
 {
 	// Bind the default frame buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -143,19 +126,59 @@ void Renderer::Display()
 		return;
 	}
 
-	// TODO - This never changes, can be optimized
-	glm::mat4 modelMatrix = glm::mat4(1);
-	modelMatrix = glm::rotate(modelMatrix, glm::pi<float>(), glm::vec3(0, 1, 0));
-	modelMatrix = glm::rotate(modelMatrix, glm::pi<float>(), glm::vec3(0, 0, 1));
-
 	// Set samplers in shader to their respective texture IDs
 	m_deferredLightingShader->SetUniform1i("gPosition", 0);
 	m_deferredLightingShader->SetUniform1i("gNormal", 1);
 	m_deferredLightingShader->SetUniform1i("gColour", 2);
+	
+	// Set camera position
+	glm::vec3 position = Camera::GetInstance().GetPosition();
+	position.z = -position.z;
+	m_deferredLightingShader->SetUniform3f("cameraPosition", position);
 
-	// Set model matrix in shader
-	m_deferredLightingShader->SetUniformMatrix4fv("model", modelMatrix);
+	std::vector<PointLight*> pointLights;
+	std::vector<SpotLight*> spotLights;
+
+	// Unoptimized, looping through all objects in scene to find lights
+	for (const std::unique_ptr<GameObject>& light : currentScene.getWorldGameObjects())
+	{
+		DirectionalLight* dirLight = static_cast<DirectionalLight*>(light->GetBehaviour(BehaviourType::DirectionalLight));
+
+		if (dirLight != nullptr)
+		{
+			dirLight->Render(*m_deferredLightingShader);
+			continue;
+		}
+
+		PointLight* pointLight = static_cast<PointLight*>(light->GetBehaviour(BehaviourType::PointLight));
+
+		if (pointLight != nullptr)
+		{
+			pointLights.push_back(pointLight);
+		}
+
+		SpotLight* spotLight = static_cast<SpotLight*>(light->GetBehaviour(BehaviourType::SpotLight));
+
+		if (spotLight != nullptr)
+		{
+			spotLights.push_back(spotLight);
+		}
+	}
+
+	// Set point light count in shader
+	m_deferredLightingShader->SetUniform1i("totalPointLights", pointLights.size());
+	m_deferredLightingShader->SetUniform1i("totalSpotLights", spotLights.size());
+
+	for (int i = 0; i < pointLights.size(); i++)
+	{
+		pointLights[i]->Render(*m_deferredLightingShader, i);
+	}
+
+	for (int i = 0; i < spotLights.size(); i++)
+	{
+		spotLights[i]->Render(*m_deferredLightingShader, i);
+	}
 
 	// Draw onto the quad
-	m_screenQuad->Draw();
+	m_screenQuad->Draw(*m_deferredLightingShader);
 }

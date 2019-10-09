@@ -5,6 +5,8 @@
 
 #include "GameObject.h"
 
+class Shader;
+
 class Scene
 {
 public:
@@ -15,10 +17,10 @@ public:
 	void Update(float deltaTime);
 
 	// Draws world game objects
-	void DrawWorld();
+	void DrawWorld(Shader& shader);
 
 	// Draws screen game objects
-	void DrawScreen();
+	void DrawScreen(Shader& shader);
 
 	// Returns the vector of world game objects
 	std::vector<std::unique_ptr<GameObject>> const& getWorldGameObjects() const;

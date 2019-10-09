@@ -11,7 +11,7 @@
 class PhysicsObject : public Behaviour
 {
 public:
-	PhysicsObject(GLuint gameObjectId, Collider *collider, 
+	PhysicsObject(Collider *collider, 
 		std::function<void(const PhysicsObject &)> onCollision);
 
 	~PhysicsObject();
@@ -20,16 +20,13 @@ public:
 	virtual void Update(float deltaTime);
 
 	// Draw
-	virtual void Draw();
+	virtual void Draw(Shader& shader);
 
 	// Handles messages
 	virtual bool HandleMessage(unsigned int senderID, std::string message);
 
 	// The physics engine calls this when a collision is detected.
 	void OnCollision(const PhysicsObject &other);
-
-	// Get the game object's id.
-	GLuint GetId() const;
 	
 	// Get the physics object's collider.
 	Collider *GetCollider() const;

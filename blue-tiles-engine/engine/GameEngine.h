@@ -36,6 +36,9 @@ public:
 	// Renderer thing
 	Renderer* renderer;
 
+	// Setter for the current scene.
+	void SetScene(Scene* scene);
+
 	// Text Renderering thing
 	TextRenderer* textRenderer;
 

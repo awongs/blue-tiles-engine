@@ -3,16 +3,16 @@
 #include "../GameObject.h"
 #include "../graphics/TextRenderer.h"
 
-TextBehaviour::TextBehaviour(GLuint gameObjectId, std::string text, float scale, glm::vec3 colour)
-	: Behaviour(gameObjectId, BehaviourType::TextBehaviour)
+TextBehaviour::TextBehaviour(std::string text, float scale, glm::vec3 colour)
+	: Behaviour(BehaviourType::TextBehaviour)
 	, m_text(text)
 	, m_scale(scale)
 	, m_colour(colour)
 {
 }
 
-TextBehaviour::TextBehaviour(GLuint gameObjectId, std::string text, float scale, float r, float g, float b)
-	: Behaviour(gameObjectId, BehaviourType::TextBehaviour)
+TextBehaviour::TextBehaviour(std::string text, float scale, float r, float g, float b)
+	: Behaviour(BehaviourType::TextBehaviour)
 	, m_text(text)
 	, m_scale(scale)
 {
@@ -28,7 +28,7 @@ void TextBehaviour::Update(float deltaTime)
 {
 }
 
-void TextBehaviour::Draw()
+void TextBehaviour::Draw(Shader& shader)
 {
 }
 

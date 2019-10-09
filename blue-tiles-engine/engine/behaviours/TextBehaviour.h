@@ -5,6 +5,7 @@
 #include "Behaviour.h"
 
 class TextRenderer;
+class Shader;
 
 class TextBehaviour : public Behaviour
 {
@@ -12,18 +13,18 @@ public:
 
 	// TextBehaviour constructor
 	// Colour format = rgb -> 1.0 max
-	TextBehaviour(GLuint gameObjectId, std::string text, float scale, glm::vec3 colour);
+	TextBehaviour(std::string text, float scale, glm::vec3 colour);
 
 	// TextBehaviour constructor
 	// Colour format = rgb -> 1.0 max
-	TextBehaviour(GLuint gameObjectId, std::string text, float scale, float r, float g, float b);
+	TextBehaviour(std::string text, float scale, float r, float g, float b);
 
 	// Called by text renderer
 	void DrawTextWithRenderer(TextRenderer* textRenderer);
 
 	// Overwritten functions.
 	void Update(float deltaTime) override;
-	void Draw() override;
+	void Draw(Shader& shader) override;
 	bool HandleMessage(unsigned int senderID, std::string message) override;
 
 private:

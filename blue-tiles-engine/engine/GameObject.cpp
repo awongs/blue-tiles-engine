@@ -1,97 +1,22 @@
-#include "GameObject.h"
-#include "sound/SoundManager.h"
 #include <algorithm>
 #include <functional>
+#include <glm/ext/matrix_transform.hpp>
+
+#include "GameObject.h"
+#include "sound/SoundManager.h"
 #include "sound/Music.h"
+#include "graphics/Shader.h"
+#include "behaviours/Behaviour.h"
 
-GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours)
-{
-	id = _id;
-	name = n;
-	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
-	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
-	{
-		behaviour->gameObject = this;
-	}
-	position = glm::vec3(0, 0, 0);
-	rotation = glm::vec3(0, 0, 0);
-	scale = glm::vec3(1, 1, 1);
-}
-
-GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos)
-{
-	id = _id;
-	name = n;
-	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
-	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
-	{
-		behaviour->gameObject = this;
-	}
-	position = pos;
-	rotation = glm::vec3(0, 0, 0);
-	scale = glm::vec3(1, 1, 1);
-}
-GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot)
-{
-	id = _id;
-	name = n;
-	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
-	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
-	{
-		behaviour->gameObject = this;
-	}
-	position = pos;
-	rotation = rot;
-	scale = glm::vec3(1, 1, 1);
-}
-GameObject::GameObject(int _id, std::string n, std::vector<std::unique_ptr<Behaviour>>& behaviours, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
-{
-	id = _id;
-	name = n;
-	std::move(begin(behaviours), end(behaviours), std::inserter(m_Behaviours, end(m_Behaviours)));
-	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
-	{
-		behaviour->gameObject = this;
-	}
-	position = pos;
-	rotation = rot;
-	scale = sca;
-}
-
-GameObject::GameObject(int _id, std::string n)
-{
-	id = _id;
-	name = n;
-	position = glm::vec3(0, 0, 0);
-	rotation = glm::vec3(0, 0, 0);
-	scale = glm::vec3(1, 1, 1);
-}
-
-GameObject::GameObject(int _id, std::string n, glm::vec3 pos)
-{
-	id = _id;
-	name = n;
-	position = pos;
-	rotation = glm::vec3(0, 0, 0);
-	scale = glm::vec3(1, 1, 1);
-}
-
-GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot)
-{
-	id = _id;
-	name = n;
-	position = pos;
-	rotation = rot;
-	scale = glm::vec3(1, 1, 1);
-}
 
 GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
+	: id(_id)
+	, name(n)
+	, position(pos)
+	, rotation(rot)
+	, scale(sca)
+	, m_transformMatrix(glm::mat4(1))
 {
-	id = _id;
-	name = n;
-	position = pos;
-	rotation = rot;
-	scale = sca;
 }
 
 GameObject::~GameObject()
@@ -111,17 +36,39 @@ void GameObject::Update(float deltaTime)
 	rotation.y += 3.14f * deltaTime;
 	
 	// Shared pointer to a music object.
-	auto music = SoundManager::getInstance().getMusic("alarm");
+	//auto music = SoundManager::getInstance().getMusic("alarm");
 	//music->play();
 }
 
-void GameObject::Draw()
+void GameObject::Draw(Shader& shader)
 {
 	// Tell each behaviour to draw
 	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
 	{
-		behaviour->Draw();
+		behaviour->Draw(shader);
 	}
+}
+
+glm::mat4 GameObject::GetTransformMatrix() const
+{
+	return m_transformMatrix;
+}
+
+void GameObject::UpdateTransformMatrix()
+{
+	// Rotation
+	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1), rotation.x, glm::vec3(1, 0, 0));
+	rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0, 1, 0));
+	rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0, 0, 1));
+
+	// Translation
+	glm::mat4 translationMatrix = glm::translate(glm::mat4(1), position);
+
+	// Set transformation matrix after scaling
+	m_transformMatrix = glm::scale((translationMatrix * rotationMatrix), scale);
+
+	// Forward vector is equal to the z column in the rotation matrix
+	forward = glm::normalize(glm::vec3(-rotationMatrix[0][2], -rotationMatrix[1][2], -rotationMatrix[2][2]));
 }
 
 Behaviour* GameObject::GetBehaviour(BehaviourType type)
@@ -145,7 +92,6 @@ bool GameObject::HandleMessage(unsigned int senderID, std::string message, Behav
 
 void GameObject::AddBehaviour(Behaviour* behaviour)
 {
-	behaviour->SetId(this->id);
 	behaviour->gameObject = this;
 	m_Behaviours.push_back(std::move(std::unique_ptr<Behaviour>(behaviour)));
 }
