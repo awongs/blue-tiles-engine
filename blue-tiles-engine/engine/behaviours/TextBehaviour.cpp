@@ -11,6 +11,14 @@ TextBehaviour::TextBehaviour(GLuint gameObjectId, std::string text, float scale,
 {
 }
 
+TextBehaviour::TextBehaviour(GLuint gameObjectId, std::string text, float scale, float r, float g, float b)
+	: Behaviour(gameObjectId, BehaviourType::TextBehaviour)
+	, m_text(text)
+	, m_scale(scale)
+{
+	m_colour = glm::vec3(r, g, b);
+}
+
 void TextBehaviour::DrawTextWithRenderer(TextRenderer* textRenderer)
 {
 	textRenderer->RenderText(m_text, gameObject->position, m_scale, m_colour);

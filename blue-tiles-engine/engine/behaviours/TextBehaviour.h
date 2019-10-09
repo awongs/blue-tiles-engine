@@ -10,7 +10,13 @@ class TextBehaviour : public Behaviour
 {
 public:
 
+	// TextBehaviour constructor
+	// Colour format = rgb -> 1.0 max
 	TextBehaviour(GLuint gameObjectId, std::string text, float scale, glm::vec3 colour);
+
+	// TextBehaviour constructor
+	// Colour format = rgb -> 1.0 max
+	TextBehaviour(GLuint gameObjectId, std::string text, float scale, float r, float g, float b);
 
 	// Called by text renderer
 	void DrawTextWithRenderer(TextRenderer* textRenderer);
