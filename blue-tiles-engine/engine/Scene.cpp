@@ -2,6 +2,11 @@
 #include "debugbt/DebugLog.h"
 #include "MessageSystem.h"
 
+Scene::Scene()
+{
+
+}
+
 Scene::Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::vector<std::unique_ptr<GameObject>>& screenGameObjects)
 {
 	for (int i = 0; i < static_cast<int>(worldGameObjects.size()) - 2; ++i)
@@ -52,18 +57,96 @@ void Scene::DrawScreen()
 	for (auto& screenGameObj : m_screenGameObjects) screenGameObj->Draw();
 }
 
-std::vector<std::unique_ptr<GameObject>> const& Scene::getWorldGameObjects() const {
+std::vector<std::unique_ptr<GameObject>> const& Scene::GetWorldGameObjects() const
+{
 	return m_worldGameObjects;
 }
 
 
-std::unique_ptr<GameObject> const& Scene::getWorldGameObjectByIndex(const size_t index) const {
-	return m_worldGameObjects.at(index);
+GameObject* Scene::GetWorldGameObjectByIndex(const size_t index)
+{
+	return m_worldGameObjects.at(index).get();
 }
 
-std::unique_ptr<GameObject> const& Scene::getWorldGameObjectById(const GLuint id) const {
+GameObject* Scene::GetWorldGameObjectById(const GLuint id)
+{
 	for (auto& worldGameObject : m_worldGameObjects)
 		if (worldGameObject->id == id)
-			return worldGameObject;
+			return worldGameObject.get();
 	return nullptr;
+}
+
+bool Scene::AddWorldGameObject(GameObject* gameObject)
+{
+	auto it = find_if(m_worldGameObjects.begin(), m_worldGameObjects.end(), [&](GameObject& obj) { return obj.id == gameObject->id; });
+
+	if (it != m_worldGameObjects.end())
+	{
+		DebugLog::Error("A GameObject with that id already exists.");
+		return false;
+	}
+	m_worldGameObjects.push_back(std::make_unique<GameObject>(gameObject));
+	return true;
+}
+
+
+bool Scene::RemoveWorldGameObject(const GLuint id)
+{
+	auto it = find_if(m_worldGameObjects.begin(), m_worldGameObjects.end(), [&](GameObject& obj) { return obj.id == id; });
+
+	if (it != m_worldGameObjects.end())
+	{
+		auto retval = std::move(*it);
+		m_worldGameObjects.erase(it);
+		return true;
+	}
+	DebugLog::Error("A GameObject with that id does not exist.");
+	return false;
+}
+
+std::vector<std::unique_ptr<GameObject>> const& Scene::GetScreenGameObjects() const
+{
+	return m_screenGameObjects;
+}
+
+
+GameObject* Scene::GetScreenGameObjectByIndex(const size_t index)
+{
+	return m_screenGameObjects.at(index).get();
+}
+
+GameObject* Scene::GetScreenGameObjectById(const GLuint id)
+{
+	for (auto& screenGameObject : m_screenGameObjects)
+		if (screenGameObject->id == id)
+			return screenGameObject.get();
+	return nullptr;
+}
+
+bool Scene::AddScreenGameObject(GameObject* gameObject)
+{
+	auto it = find_if(m_screenGameObjects.begin(), m_screenGameObjects.end(), [&](GameObject& obj) { return obj.id == gameObject->id; });
+
+	if (it != m_screenGameObjects.end())
+	{
+		DebugLog::Error("A GameObject with that id already exists.");
+		return false;
+	}
+	m_screenGameObjects.push_back(std::make_unique<GameObject>(gameObject));
+	return true;
+}
+
+
+bool Scene::RemoveScreenGameObject(const GLuint id)
+{
+	auto it = find_if(m_screenGameObjects.begin(), m_screenGameObjects.end(), [&](GameObject& obj) { return obj.id == id; });
+
+	if (it != m_screenGameObjects.end())
+	{
+		auto retval = std::move(*it);
+		m_screenGameObjects.erase(it);
+		return true;
+	}
+	DebugLog::Error("A GameObject with that id does not exist.");
+	return false;
 }
