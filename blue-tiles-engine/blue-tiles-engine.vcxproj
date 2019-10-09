@@ -155,6 +155,7 @@
     <ClCompile Include="engine\behaviours\Light.cpp" />
     <ClCompile Include="engine\behaviours\MeshRenderer.cpp" />
     <ClCompile Include="engine\behaviours\PointLight.cpp" />
+    <ClCompile Include="engine\behaviours\SpotLight.cpp" />
     <ClCompile Include="engine\debugbt\DebugLog.cpp" />
     <ClCompile Include="engine\GameEngine.cpp" />
     <ClCompile Include="engine\GameWindow.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="engine\behaviours\PointLight.h" />
     <ClInclude Include="engine\behaviours\Light.h" />
     <ClInclude Include="engine\behaviours\MeshRenderer.h" />
+    <ClInclude Include="engine\behaviours\SpotLight.h" />
     <ClInclude Include="engine\debugbt\DebugLog.h" />
     <ClInclude Include="engine\GameEngine.h" />
     <ClInclude Include="engine\GameWindow.h" />

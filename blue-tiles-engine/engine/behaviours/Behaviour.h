@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 
 // Available Behaviour Types
-enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource, MeshRenderer, DirectionalLight, PointLight};
+enum class BehaviourType { PhysicsObject, Collider, BoxCollider, SphereCollider, AudioSource, MeshRenderer, DirectionalLight, PointLight, SpotLight};
 
 class GameObject;
 class Shader;

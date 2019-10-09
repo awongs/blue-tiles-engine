@@ -14,6 +14,7 @@
 #include "../GameObject.h"
 #include "../behaviours/DirectionalLight.h"
 #include "../behaviours/PointLight.h"
+#include "../behaviours/SpotLight.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
@@ -133,6 +134,7 @@ void Renderer::Display(Scene& currentScene)
 	m_deferredLightingShader->SetUniform3f("cameraPosition", position);
 
 	std::vector<PointLight*> pointLights;
+	std::vector<SpotLight*> spotLights;
 
 	// Unoptimized, looping through all objects in scene to find lights
 	for (const std::unique_ptr<GameObject>& light : currentScene.getWorldGameObjects())
@@ -151,14 +153,27 @@ void Renderer::Display(Scene& currentScene)
 		{
 			pointLights.push_back(pointLight);
 		}
+
+		SpotLight* spotLight = static_cast<SpotLight*>(light->GetBehaviour(BehaviourType::SpotLight));
+
+		if (spotLight != nullptr)
+		{
+			spotLights.push_back(spotLight);
+		}
 	}
 
 	// Set point light count in shader
 	m_deferredLightingShader->SetUniform1i("totalPointLights", pointLights.size());
+	m_deferredLightingShader->SetUniform1i("totalSpotLights", spotLights.size());
 
 	for (int i = 0; i < pointLights.size(); i++)
 	{
 		pointLights[i]->Render(*m_deferredLightingShader, i);
+	}
+
+	for (int i = 0; i < spotLights.size(); i++)
+	{
+		spotLights[i]->Render(*m_deferredLightingShader, i);
 	}
 
 	// Draw onto the quad

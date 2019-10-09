@@ -10,6 +10,7 @@
 #include <engine/behaviours/MeshRenderer.h>
 #include <engine/behaviours/DirectionalLight.h>
 #include <engine/behaviours/PointLight.h>
+#include <engine/behaviours/SpotLight.h>
 #include <engine/physics/PhysicsObject.h>
 #include <engine/physics/PhysicsEngine.h>
 #include <engine/graphics/Camera.h>
@@ -66,10 +67,25 @@ int main()
 	// Add point lights
 	for (int i = 0; i < 64; i++)
 	{
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(421 + i);
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(999 + i);
 		ga->position += glm::vec3(glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f));
 
-		ga->AddBehaviour(new PointLight(glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f))));
+		glm::vec3 randomColour = glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f));
+
+		ga->AddBehaviour(new PointLight(randomColour));
+		worldGameObjects.push_back(std::move(ga));
+	}
+
+	// Add spot lights
+	for (int i = 0; i < 32; i++)
+	{
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(1628 + i);
+		ga->position += glm::vec3(glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f));
+
+		glm::vec3 randomColour = glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f));
+		glm::vec3 randomDirection = glm::normalize(glm::vec3(glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f)));
+
+		ga->AddBehaviour(new SpotLight(randomColour, randomDirection, 2, 2.5));
 		worldGameObjects.push_back(std::move(ga));
 	}
 
