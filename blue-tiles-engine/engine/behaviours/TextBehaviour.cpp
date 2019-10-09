@@ -1,5 +1,6 @@
 #include "TextBehaviour.h"
 #include "Behaviour.h"
+#include "../GameObject.h"
 #include "../graphics/TextRenderer.h"
 
 TextBehaviour::TextBehaviour(GLuint gameObjectId, std::string text, float scale, glm::vec3 colour)
@@ -12,7 +13,7 @@ TextBehaviour::TextBehaviour(GLuint gameObjectId, std::string text, float scale,
 
 void TextBehaviour::DrawTextWithRenderer(TextRenderer* textRenderer)
 {
-	textRenderer->RenderText(m_text, 10, 10, m_scale, m_colour);
+	textRenderer->RenderText(m_text, gameObject->position.x, gameObject->position.y, m_scale, m_colour);
 }
 
 void TextBehaviour::Update(float deltaTime)
