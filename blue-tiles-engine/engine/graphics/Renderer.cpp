@@ -12,6 +12,8 @@
 #include "Texture.h"
 #include "GeometryBuffer.h"
 #include "../GameObject.h"
+#include "../behaviours/DirectionalLight.h"
+#include "../behaviours/PointLight.h"
 
 Renderer::Renderer(SDL_GLContext* targetContext)
 	: m_context(targetContext)
@@ -96,7 +98,7 @@ void Renderer::Render(Scene& currentScene)
 	currentScene.DrawWorld(*m_deferredGeometryShader);
 }
 
-void Renderer::Display()
+void Renderer::Display(Scene& currentScene)
 {
 	// Bind the default frame buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -124,6 +126,40 @@ void Renderer::Display()
 	m_deferredLightingShader->SetUniform1i("gPosition", 0);
 	m_deferredLightingShader->SetUniform1i("gNormal", 1);
 	m_deferredLightingShader->SetUniform1i("gColour", 2);
+	
+	// Set camera position
+	glm::vec3 position = Camera::GetInstance().GetPosition();
+	position.z = -position.z;
+	m_deferredLightingShader->SetUniform3f("cameraPosition", position);
+
+	std::vector<PointLight*> pointLights;
+
+	// Unoptimized, looping through all objects in scene to find lights
+	for (const std::unique_ptr<GameObject>& light : currentScene.getWorldGameObjects())
+	{
+		DirectionalLight* dirLight = static_cast<DirectionalLight*>(light->GetBehaviour(BehaviourType::DirectionalLight));
+
+		if (dirLight != nullptr)
+		{
+			dirLight->Render(*m_deferredLightingShader);
+			continue;
+		}
+
+		PointLight* pointLight = static_cast<PointLight*>(light->GetBehaviour(BehaviourType::PointLight));
+
+		if (pointLight != nullptr)
+		{
+			pointLights.push_back(pointLight);
+		}
+	}
+
+	// Set point light count in shader
+	m_deferredLightingShader->SetUniform1i("totalPointLights", pointLights.size());
+
+	for (int i = 0; i < pointLights.size(); i++)
+	{
+		pointLights[i]->Render(*m_deferredLightingShader, i);
+	}
 
 	// Draw onto the quad
 	m_screenQuad->Draw(*m_deferredLightingShader);

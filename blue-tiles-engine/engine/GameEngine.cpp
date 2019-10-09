@@ -1,5 +1,4 @@
 #include <vector>
-#include <glm/gtc/random.hpp>
 
 #include "GameEngine.h"
 #include "graphics/Renderer.h"
@@ -41,41 +40,6 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	m_physEngine = std::make_unique<PhysicsEngine>();
 
 	DebugLog::Info("Engine initialization completed!");
-
-	
-	// -- Testing --
-	srand(time(0));
-	std::vector<std::unique_ptr<GameObject>> worldGameObjects;
-	std::vector<std::unique_ptr<GameObject>> screenGameObjects;
-	for (int i = 0; i < 2; i++)
-	{
-		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/golden_goose.obj");
-		meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
-
-		// Add the physics component to the game object.
-		Collider *col{ new Collider(glm::vec3(2.f)) };
-
-		PhysicsObject* physObj = new PhysicsObject(col, [](const PhysicsObject &other) {});
-
-		// Register this physics component to the physics engine.
-		m_physEngine->AddPhysicsObject(physObj);
-
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(i);
-		ga->AddBehaviour(meshRenderer);
-		ga->AddBehaviour(physObj);
-
-		ga->position += glm::vec3(glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f), 0.0f);
-
-		// Update the collider's position.
-		col->SetPosition(ga->position);
-
-		worldGameObjects.push_back(std::move(ga));
-	}
-
-	m_currentScene = std::make_unique<Scene>(worldGameObjects, screenGameObjects);
-
-	DebugLog::Info("Test scene initialization completed!");
-	
 }
 
 GameEngine::~GameEngine()
@@ -139,10 +103,15 @@ void GameEngine::Draw()
 {
 	renderer->Render(*m_currentScene);
 
-	renderer->Display();
+	renderer->Display(*m_currentScene);
 
 	// swap buffer
 	SDL_GL_SwapWindow(m_window);
+}
+
+void GameEngine::SetScene(Scene* scene)
+{
+	m_currentScene = std::unique_ptr<Scene>(scene);
 }
 
 void GameEngine::UpdateFPSCounter()

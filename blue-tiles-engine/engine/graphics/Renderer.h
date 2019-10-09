@@ -30,7 +30,7 @@ public:
 	void Render(Scene& currentScene);
 
 	// Displays the frame to the context
-	void Display();
+	void Display(Scene& currentScene);
 
 private:
 

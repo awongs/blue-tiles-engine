@@ -35,6 +35,9 @@ public:
 	// Renderer thing
 	Renderer* renderer;
 
+	// Setter for the current scene.
+	void SetScene(Scene* scene);
+
 private:
 	// The current scene.
 	std::unique_ptr<Scene> m_currentScene;

@@ -120,6 +120,12 @@
     <ClCompile Include="engine\behaviours\Light.cpp">
       <Filter>Source Files\engine\behaviours\Lighting</Filter>
     </ClCompile>
+    <ClCompile Include="engine\behaviours\PointLight.cpp">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\DirectionalLight.cpp">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -195,6 +201,9 @@
       <Filter>Source Files\engine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="engine\behaviours\Light.h">
+      <Filter>Source Files\engine\behaviours\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\PointLight.h">
       <Filter>Source Files\engine\behaviours\Lighting</Filter>
     </ClInclude>
     <ClInclude Include="engine\behaviours\DirectionalLight.h">

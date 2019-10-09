@@ -53,9 +53,8 @@ public:
 
 	glm::vec3 scale;
 
-protected:
 	// The game object's forward vector.
-	glm::vec3 m_forward;
+	glm::vec3 forward;
 
 private:
 	std::vector<std::unique_ptr<Behaviour>> m_Behaviours;

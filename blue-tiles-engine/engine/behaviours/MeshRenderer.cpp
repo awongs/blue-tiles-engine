@@ -88,7 +88,6 @@ void MeshRenderer::Draw(Shader& shader)
 
 	// Set model matrix in shader
 	shader.SetUniformMatrix4fv("model", gameObject->GetTransformMatrix());
-	
 
 	// Bind the texture
 	if (m_texture != nullptr)
