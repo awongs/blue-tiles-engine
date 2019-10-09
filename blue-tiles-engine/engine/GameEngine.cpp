@@ -1,5 +1,4 @@
 #include <vector>
-#include <glm/gtc/random.hpp>
 
 #include "GameEngine.h"
 #include "graphics/Renderer.h"
@@ -9,6 +8,7 @@
 #include "Scene.h"
 #include "physics/PhysicsObject.h"
 #include "input/Input.h"
+#include "graphics/TextRenderer.h"
 
 GameEngine::GameEngine(SDL_Window* targetWindow)
 	: m_window(targetWindow)
@@ -33,6 +33,10 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	SDL_GL_GetDrawableSize(m_window, &vpWidth, &vpHeight);
 	glViewport(0, 0, vpWidth, vpHeight);
 
+	// text rendering (NOTE: must be created before any buffers!)
+	textRenderer = new TextRenderer(800, 600);
+
+	// 3d rendering
 	renderer = new Renderer(&targetContext);
 
 	m_lastFrameTime = SDL_GetTicks();
@@ -41,41 +45,6 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	m_physEngine = std::make_unique<PhysicsEngine>();
 
 	DebugLog::Info("Engine initialization completed!");
-
-	// -- Testing --
-	srand(time(0));
-	std::vector<std::unique_ptr<GameObject>> worldGameObjects;
-	std::vector<std::unique_ptr<GameObject>> screenGameObjects;
-	for (int i = 0; i < 2; i++)
-	{
-		std::vector<std::unique_ptr<Behaviour>> behaviours;
-		std::unique_ptr<MeshRenderer> meshRenderer = std::make_unique<MeshRenderer>(i, "../Assets/models/golden_goose.obj");
-		meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
-
-		behaviours.push_back(std::move(meshRenderer));
-
-		// Add the physics component to the game object.
-		Collider *col{ new Collider(glm::vec3(2.f)) };
-		std::unique_ptr<PhysicsObject> physObj{ std::make_unique<PhysicsObject>(i, 
-			col, [](const PhysicsObject &other) {}) };
-
-		// Register this physics component to the physics engine.
-		m_physEngine->AddPhysicsObject(physObj.get());
-
-		behaviours.push_back(std::move(physObj));
-
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(0, "gameObject", behaviours);
-		ga->position += glm::vec3(glm::linearRand<float>(-10.0f, 10.0f), glm::linearRand<float>(-10.0f, 10.0f), 0.0f);
-
-		// Update the collider's position.
-		col->SetPosition(ga->position);
-
-		worldGameObjects.push_back(std::move(ga));
-	}
-
-	m_currentScene = std::make_unique<Scene>(worldGameObjects, screenGameObjects);
-
-	DebugLog::Info("Test scene initialization completed!");
 }
 
 GameEngine::~GameEngine()
@@ -90,6 +59,7 @@ void GameEngine::HandleInput(Input *input, SDL_Event windowEvent)
 
 	input->HandleInput(windowEvent);
 
+	/*
 	const std::unique_ptr<GameObject> &obj = m_currentScene->getWorldGameObjectByIndex(0);
 	PhysicsObject *physObj = static_cast<PhysicsObject *>(obj->GetBehaviour(BehaviourType::PhysicsObject));
 
@@ -122,6 +92,7 @@ void GameEngine::HandleInput(Input *input, SDL_Event windowEvent)
 		DebugLog::Info("Middle mouse button pressed.");
 
 	physObj->GetCollider()->SetPosition(obj->position);
+	*/
 }
 
 void GameEngine::Update()
@@ -137,10 +108,17 @@ void GameEngine::Draw()
 {
 	renderer->Render(*m_currentScene);
 
-	renderer->Display();
+	renderer->Display(*m_currentScene);
+
+	textRenderer->RenderScreenText(*m_currentScene);
 
 	// swap buffer
 	SDL_GL_SwapWindow(m_window);
+}
+
+void GameEngine::SetScene(Scene* scene)
+{
+	m_currentScene = std::unique_ptr<Scene>(scene);
 }
 
 void GameEngine::UpdateFPSCounter()

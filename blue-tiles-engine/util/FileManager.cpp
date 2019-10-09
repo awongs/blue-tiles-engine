@@ -18,7 +18,7 @@ namespace filemanager
 		inputStream.open(filePath);
 		if (inputStream.is_open())
 		{
-			DebugLog::Info("Successfully loaded " + filePath);
+			DebugLog::Info("Successfully opened " + filePath);
 
 			// Read all file contents into the string buffer
 			stringBuffer << inputStream.rdbuf();
@@ -28,7 +28,7 @@ namespace filemanager
 		}
 		else
 		{
-			DebugLog::Error("Failed to load " + filePath);
+			DebugLog::Error("Failed to open " + filePath);
 
 			// Return empty string if not successful
 			return std::string();
@@ -74,7 +74,7 @@ namespace filemanager
 		}
 		else
 		{
-			DebugLog::Error("Failed to load " + filePath);
+			DebugLog::Error("Failed to open " + filePath);
 			DebugLog::Error(IMG_GetError());
 			return nullptr;
 		}

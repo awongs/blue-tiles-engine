@@ -15,7 +15,7 @@ class MeshRenderer : public Behaviour
 {
 public:
 	// Constructor.
-	MeshRenderer(GLuint gameObjectId, std::string objFilePath);
+	MeshRenderer(std::string objFilePath);
 	
 	// Sets up the vertex, index, and VAO buffers.
 	void SetupBuffers();
@@ -28,7 +28,7 @@ public:
 
 	// Overwritten functions.
 	void Update(float deltaTime) override;
-	void Draw() override;
+	void Draw(Shader& shader) override;
 	bool HandleMessage(unsigned int senderID, std::string message) override;
 
 private:

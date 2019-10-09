@@ -5,7 +5,7 @@
 
 
 class GeometryBuffer;
-class MeshRenderer;
+class GameObject;
 class ShaderManager;
 class Shader;
 class Scene;
@@ -30,7 +30,7 @@ public:
 	void Render(Scene& currentScene);
 
 	// Displays the frame to the context
-	void Display();
+	void Display(Scene& currentScene);
 
 private:
 
@@ -50,5 +50,5 @@ private:
 	std::shared_ptr<Shader> m_deferredLightingShader;
 
 	// Quad to render the frame onto.
-	std::unique_ptr<MeshRenderer> m_screenQuad;
+	std::unique_ptr<GameObject> m_screenQuad;
 };

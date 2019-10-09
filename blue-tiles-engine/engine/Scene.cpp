@@ -47,14 +47,14 @@ void Scene::Update(float deltaTime)
 	MessageSystem::ProcessAllMessages(this);
 }
 
-void Scene::DrawWorld()
+void Scene::DrawWorld(Shader& shader)
 {
-	for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Draw();
+	for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Draw(shader);
 }
 
-void Scene::DrawScreen()
+void Scene::DrawScreen(Shader& shader)
 {
-	for (auto& screenGameObj : m_screenGameObjects) screenGameObj->Draw();
+	for (auto& screenGameObj : m_screenGameObjects) screenGameObj->Draw(shader);
 }
 
 std::vector<std::unique_ptr<GameObject>> const& Scene::GetWorldGameObjects() const
