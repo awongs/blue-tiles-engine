@@ -34,9 +34,9 @@ protected:
 
 	bool ProcessAction(float deltaTime, SimpleGuardMovementAction& action);
 
-	bool ProcessMoveAction(SimpleGuardMovementAction& action);
+	bool ProcessMoveAction(float deltaTime, SimpleGuardMovementAction& action);
 
-	bool ProcessTurnAction(SimpleGuardMovementAction& action);
+	bool ProcessTurnAction(float deltaTime, SimpleGuardMovementAction& action);
 
 	float m_movementSpeed;
 
