@@ -132,11 +132,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="gameobjects\Door.cpp" />
-    <ClCompile Include="gameobjects\Guard.cpp" />
-    <ClCompile Include="gameobjects\Object.cpp" />
-    <ClCompile Include="gameobjects\Room.cpp" />
-    <ClCompile Include="gameobjects\Wall.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="scenes\LevelScene.cpp" />
