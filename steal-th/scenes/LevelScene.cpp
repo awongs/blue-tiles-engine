@@ -8,25 +8,7 @@ LevelScene::LevelScene(Level* level)
 	: Scene()
 {
 	m_count = 0;
-	// Create the world
-	for (unsigned int i = 0; i < level->width; i++)
-	{
-		// Create floors
-		for (unsigned int j = 0;j < level->length; j++)
-		{
-			MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/quad.obj");
-			meshRenderer->SetTexture("../Assets/textures/panel.png");
-
-			glm::vec3 position = glm::vec3((double)i*9+4.5, -0.5, (double)j*9+4.5);
-			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "FLOOR", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(4.5, 4.5, 4.5));
-
-			ga->AddBehaviour(meshRenderer);
-
-			m_count++;
-			m_worldGameObjects.push_back(std::move(ga));
-		}
-	}
-
+	std::vector<int> gridsUsed;
 	for (Room& room : level->rooms)
 	{
 		for (Wall& wall : room.walls)
@@ -58,7 +40,54 @@ LevelScene::LevelScene(Level* level)
 		}
 		for (Door& door : room.doors)
 		{
+			AddDoor(door.facing, "door" + door.doorid, door.location, level->width, level->length);
+		}
 
+		for (int x : room.gridUsed)
+		{
+			gridsUsed.push_back(x);
+		}
+	}
+
+	// Create the world
+	for (unsigned int i = 0; i < level->width; i++)
+	{
+		// Create floors
+		for (unsigned int j = 0; j < level->length; j++)
+		{
+			MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/quad.obj");
+			meshRenderer->SetTexture("../Assets/textures/panel.png");
+
+			glm::vec3 position = glm::vec3((double)i * 9 + 4.5, -0.5, (double)j * 9 + 4.5);
+			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "FLOOR", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(4.5, 4.5, 4.5));
+
+			ga->AddBehaviour(meshRenderer);
+
+			m_count++;
+			m_worldGameObjects.push_back(std::move(ga));
+
+			int currGrid = i + (j * 10);
+			if (find(gridsUsed.begin(), gridsUsed.end(), currGrid) == gridsUsed.end())
+			{
+				if (j == 0)
+				{
+					AddWall("up", currGrid, level->width, level->length);
+					//DebugLog::Info("Adding wall to: " + std::to_string(currGrid));
+				}
+				if (j == level->length-1)
+				{
+					AddWall("down", currGrid, level->width, level->length);
+					//DebugLog::Info("Adding wall to: " + std::to_string(currGrid));
+				}
+				if (i == 0)
+				{
+					AddWall("left", currGrid, level->width, level->length);
+				}
+				if (i == level->width-1)
+				{
+					AddWall("right", currGrid, level->width, level->length);
+				}
+			}
 		}
 	}
 
@@ -67,15 +96,13 @@ LevelScene::LevelScene(Level* level)
 	{
 		MeshRenderer* meshRenderer;
 
-		glm::vec3 scale = glm::vec3(0.5, 0.5, 0.5);
-		glm::vec3 position = glm::vec3(((double)(obj.location % level->width) - 1) * 9 + 4.5, 0, (double)(obj.location / level->length) * 9 + 4.5);
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, position, glm::vec3(0, glm::radians(obj.rotation), 0), scale);
-
+		glm::vec3 scale;
 		
 		if (obj.name.find("key") != std::string::npos)
 		{
 			meshRenderer = new MeshRenderer("../Assets/models/key.obj");
 			meshRenderer->SetTexture("../Assets/textures/key.png");
+			scale = glm::vec3(0.5, 0.5, 0.5);
 		}
 		else if (obj.name.find("block") != std::string::npos) {
 			meshRenderer = new MeshRenderer("../Assets/models/cube.obj");
@@ -86,8 +113,10 @@ LevelScene::LevelScene(Level* level)
 		{
 			meshRenderer = new MeshRenderer("../Assets/models/golden_goose.obj");
 			meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
+			scale = glm::vec3(0.5, 0.5, 0.5);
 		}
-
+		glm::vec3 position = glm::vec3((double)(obj.location % level->width) * 9 + 4.5, 0, (double)(obj.location / level->length) * 9 + 4.5);
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, position, glm::vec3(0, glm::radians(obj.rotation), 0), scale);
 		ga->AddBehaviour(meshRenderer);
 
 		m_count++;
@@ -100,7 +129,7 @@ LevelScene::LevelScene(Level* level)
 		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
 		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
 
-		glm::vec3 position = glm::vec3(((double)(guard.location % level->width) - 1) * 9 + 4.5, 0, (double)(guard.location / level->length) * 9 + 4.5);
+		glm::vec3 position = glm::vec3((double)(guard.location % level->width) * 9 + 4.5, 0, (double)(guard.location / level->length) * 9 + 4.5);
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "guard", position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
 		ga->AddBehaviour(meshRenderer);
@@ -113,7 +142,7 @@ LevelScene::LevelScene(Level* level)
 	MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/unity_chan.obj");
 	meshRenderer->SetTexture("../Assets/textures/unity_chan.png");
 
-	glm::vec3 position = glm::vec3(((double)(level->startPos % level->width) - 1) * 9 + 4.5, 0, (double)(level->startPos / level->length) * 9 + 4.5);
+	glm::vec3 position = glm::vec3((double)(level->startPos % level->width) * 9 + 4.5, 0, (double)(level->startPos / level->length) * 9 + 4.5);
 
 	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "player", position, glm::vec3(0, 0, 0), glm::vec3(2, 2, 2));
 
@@ -133,26 +162,62 @@ void LevelScene::AddWall(std::string facing, int location, int width, int length
 
 	if (facing == "up")
 	{
-		position = glm::vec3(((double)(location % width) - 1) * 9 + 4.5, 0, (double)(location / length) * 9);
+		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9);
 		rotation = glm::vec3(0, 0, 0);
 	}
 	else if (facing == "down")
 	{
-		position = glm::vec3(((double)(location % width) - 1) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
+		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
 		rotation = glm::vec3(0, 0, 0);
 	}
 	else if (facing == "left")
 	{
-		position = glm::vec3(((double)(location % width) - 1) * 9, 0, (double)(location / length) * 9 + 4.5);
+		position = glm::vec3((double)(location % width) * 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
 	}
 	else if (facing == "right")
 	{
-		position = glm::vec3(((double)(location % width) - 1) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
+		position = glm::vec3((double)(location % width) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
 	}
 
 	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "WALL", position, rotation, glm::vec3(9, 9, 9));
+	ga->AddBehaviour(meshRenderer);
+
+	m_count++;
+	m_worldGameObjects.push_back(std::move(ga));
+}
+
+void LevelScene::AddDoor(std::string facing, std::string name, int location, int width, int length)
+{
+	MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/door.obj");
+	meshRenderer->SetTexture("../Assets/textures/door.png");
+
+	glm::vec3 position;
+	glm::vec3 rotation;
+
+	if (facing == "up")
+	{
+		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9);
+		rotation = glm::vec3(0, 0, 0);
+	}
+	else if (facing == "down")
+	{
+		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
+		rotation = glm::vec3(0, 0, 0);
+	}
+	else if (facing == "left")
+	{
+		position = glm::vec3((double)(location % width) * 9, 0, (double)(location / length) * 9 + 4.5);
+		rotation = glm::vec3(0, glm::radians(90.0), 0);
+	}
+	else if (facing == "right")
+	{
+		position = glm::vec3((double)(location % width) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
+		rotation = glm::vec3(0, glm::radians(90.0), 0);
+	}
+
+	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, name, position, rotation, glm::vec3(9, 9, 9));
 	ga->AddBehaviour(meshRenderer);
 
 	m_count++;

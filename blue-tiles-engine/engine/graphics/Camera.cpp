@@ -9,10 +9,10 @@ Camera::Camera()
 	, m_projectionMatrix()
 {
 	// -- Testing -- Point the camera diagonally towards the origin
-	SetPosition(glm::vec3(20.0f, 20.0f, 40.0f));
-	SetOrientation(glm::vec3(glm::quarter_pi<float>(), 0.0f, 0.0f));
+	SetPosition(glm::vec3(20.0f, 40.0f, 40.0f));
+	SetOrientation(glm::vec3(glm::radians(60.0f), 0.0f, 0.0f));
 	// -- Testing -- Point Camera straight down on 50,50
-	//SetPosition(glm::vec3(0.0f, 50.0f, 0.0f));
+	//SetPosition(glm::vec3(50.0f, 100.0f, 50.0f));
 	//SetOrientation(glm::vec3(glm::half_pi<float>(), 0.0f, 0.0f));
 
 

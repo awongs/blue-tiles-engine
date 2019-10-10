@@ -18,7 +18,7 @@ namespace filemanager
 		inputStream.open(filePath);
 		if (inputStream.is_open())
 		{
-			DebugLog::Info("Successfully opened " + filePath);
+			//DebugLog::Info("Successfully opened " + filePath);
 
 			// Read all file contents into the string buffer
 			stringBuffer << inputStream.rdbuf();
@@ -44,7 +44,7 @@ namespace filemanager
 		outputStream.open(filePath, std::ios_base::app);
 		if (outputStream.is_open())
 		{
-			DebugLog::Info("Successfully opened " + filePath);
+			//DebugLog::Info("Successfully opened " + filePath);
 
 			// Append content to the file
 			outputStream << content << std::endl;

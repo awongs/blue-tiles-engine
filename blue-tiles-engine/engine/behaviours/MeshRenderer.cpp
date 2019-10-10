@@ -24,7 +24,7 @@ void MeshRenderer::SetupBuffers()
 		return;
 	}
 
-	DebugLog::Info("Generating buffers for MeshRenderer");
+	//DebugLog::Info("Generating buffers for MeshRenderer");
 
 	// Generate the buffers
 	glGenBuffers(1, &m_vertexBufferObjectID);

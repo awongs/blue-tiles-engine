@@ -10,6 +10,6 @@ public:
 	LevelScene(Level* level);
 private:
 	void AddWall(std::string facing, int location, int width, int length);
-
+	void AddDoor(std::string facing, std::string name, int location, int width, int length);
 	int m_count;
 };
