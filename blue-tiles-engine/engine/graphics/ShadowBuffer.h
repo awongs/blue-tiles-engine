@@ -4,8 +4,8 @@
 class ShadowBuffer
 {
 public:
-	// Constructor.
-	ShadowBuffer(int screenWidth, int screenHeight);
+	// Constructor. Takes a width and height for the shadow texture.
+	ShadowBuffer(int width, int height);
 
 	// Destructor.
 	virtual ~ShadowBuffer();

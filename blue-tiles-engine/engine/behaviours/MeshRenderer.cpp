@@ -92,7 +92,6 @@ void MeshRenderer::Draw(Shader& shader)
 	// Bind the texture
 	if (m_texture != nullptr)
 	{
-		shader.SetUniform1i("uTexture", 0);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_texture->GetTextureID());
 	}

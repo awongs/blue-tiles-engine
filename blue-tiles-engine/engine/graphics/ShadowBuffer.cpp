@@ -1,18 +1,18 @@
 #include "ShadowBuffer.h"
 #include "../debugbt/DebugLog.h"
 
-ShadowBuffer::ShadowBuffer(int screenWidth, int screenHeight)
+ShadowBuffer::ShadowBuffer(int width, int height)
 {
 	DebugLog::Info("Setting up shadow buffer \n");
 
 	// Generate the frame buffer
 	glGenFramebuffers(1, &m_bufferID);
-	glBindFramebuffer(GLenum(GL_FRAMEBUFFER), m_bufferID);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_bufferID);
 
 	// Generate the depth texture
 	glGenTextures(1, &m_depthTexture);
 	glBindTexture(GL_TEXTURE_2D, m_depthTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, screenWidth, screenHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
 
 	// Set texture parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

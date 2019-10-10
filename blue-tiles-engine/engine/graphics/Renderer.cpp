@@ -55,10 +55,17 @@ void Renderer::SetupShaders()
 	GLuint fragmentShader;
 
 	// Load shader files into strings
+	std::string shadowVertex = filemanager::LoadFile("../Assets/shaders/ShadowShader.vsh");
+	std::string shadowFragment = filemanager::LoadFile("../Assets/shaders/ShadowShader.fsh");
 	std::string deferredGeometryVertex = filemanager::LoadFile("../Assets/shaders/DeferredGeometryPass.vsh");
 	std::string deferredGeometryFragment = filemanager::LoadFile("../Assets/shaders/DeferredGeometryPass.fsh");
 	std::string deferredLightingVertex = filemanager::LoadFile("../Assets/shaders/DeferredLightingPass.vsh");
 	std::string deferredLightingFragment = filemanager::LoadFile("../Assets/shaders/DeferredLightingPass.fsh");
+
+	// Compile shadow shader
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, shadowVertex.c_str());
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, shadowFragment.c_str());
+	m_shadowShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
 	// Compile geometry shader
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, deferredGeometryVertex.c_str());
@@ -75,13 +82,38 @@ void Renderer::ShadowPass(Scene& currentScene)
 {
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
+
+	// Bind the shadow buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowBuffer->GetBufferID());
+
+	// Clear screen and depth buffer
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	// Render only back faces, this avoids self shadowing
+	glCullFace(GL_FRONT);
+
+	// Use shadow shader
+	m_shaderManager->UseShaderProgram(m_shadowShader->GetProgramHandle());
+
+	// Set camera matrices in shader
+	//m_shadowShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
+	
+	glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, 0.1f, 200.0f);
+
+	glm::mat4 lightView = glm::lookAt(glm::vec3(5.0f, 50.0f, 5.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f));
+
+	glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+	m_shadowShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
+
+	// Draw the world
+	currentScene.DrawWorld(*m_shadowShader);
 }
 
 void Renderer::GeometryPass(Scene& currentScene)
 {
-	// Enable depth testing
-	glEnable(GL_DEPTH_TEST);
-
 	// Bind the geometry buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, m_geometryBuffer->GetBufferID());
 
@@ -99,15 +131,27 @@ void Renderer::GeometryPass(Scene& currentScene)
 		return;
 	}
 
+	glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, 0.1f, 200.0f);
+
+	glm::mat4 lightView = glm::lookAt(glm::vec3(5.0f, 50.0f, 5.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f));
+
+	glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
 	// Set camera matrices in shader
 	m_deferredGeometryShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
 	m_deferredGeometryShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
+	m_deferredGeometryShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
+	
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_shadowBuffer->GetDepthTexture());
+	m_deferredGeometryShader->SetUniform1i("uShadowMap", 1);
  
 	// Draw the world
 	currentScene.DrawWorld(*m_deferredGeometryShader);
   
-	// Disable depth testing
-	glDisable(GL_DEPTH_TEST);
+	
 }
 
 void Renderer::Render(Scene& currentScene)
@@ -157,7 +201,7 @@ void Renderer::Render(Scene& currentScene)
 
 		if (dirLight != nullptr)
 		{
-			dirLight->Render(*m_deferredLightingShader);
+			//dirLight->Render(*m_deferredLightingShader);
 			continue;
 		}
 
@@ -176,10 +220,11 @@ void Renderer::Render(Scene& currentScene)
 		}
 	}
 
+	
 	// Set point light count in shader
 	m_deferredLightingShader->SetUniform1i("totalPointLights", pointLights.size());
 	m_deferredLightingShader->SetUniform1i("totalSpotLights", spotLights.size());
-
+	
 	for (int i = 0; i < pointLights.size(); i++)
 	{
 		pointLights[i]->Render(*m_deferredLightingShader, i);
@@ -189,7 +234,11 @@ void Renderer::Render(Scene& currentScene)
 	{
 		spotLights[i]->Render(*m_deferredLightingShader, i);
 	}
+	
 
 	// Draw onto the quad
 	m_screenQuad->Draw(*m_deferredLightingShader);
+
+	// Disable depth testing
+	glDisable(GL_DEPTH_TEST);
 }
