@@ -13,8 +13,12 @@ public:
 	// The type of action
 	SGMAType actionType;
 
+	//
+	// -- Parameters used by Wait actions --
+	//
+
 	// The duration of the action.
-	float duration;
+	float waitDuration;
 
 	//
 	// -- Parameters used by Move actions --
