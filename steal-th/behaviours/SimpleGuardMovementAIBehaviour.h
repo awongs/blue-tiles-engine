@@ -28,7 +28,9 @@ public:
 
 protected:
 
-	static float closeFloat;
+	static float epsilon;
+
+	static float epsilonSqr;
 
 	bool ProcessAction(float deltaTime, SimpleGuardMovementAction& action);
 
@@ -49,4 +51,6 @@ protected:
 	std::vector<SimpleGuardMovementAction> m_actions;
 };
 
-float SimpleGuardMovementAIBehaviour::closeFloat = 0.05f;
+float SimpleGuardMovementAIBehaviour::epsilon = 0.05f;
+
+float SimpleGuardMovementAIBehaviour::epsilonSqr = epsilon * epsilon;
