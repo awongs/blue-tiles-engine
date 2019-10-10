@@ -108,8 +108,6 @@ void GameEngine::Draw()
 {
 	renderer->Render(*m_currentScene);
 
-	renderer->Display(*m_currentScene);
-
 	textRenderer->RenderScreenText(*m_currentScene);
 
 	// swap buffer

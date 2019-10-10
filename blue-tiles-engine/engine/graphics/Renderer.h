@@ -5,6 +5,7 @@
 
 
 class GeometryBuffer;
+class ShadowBuffer;
 class GameObject;
 class ShaderManager;
 class Shader;
@@ -26,11 +27,14 @@ public:
 	// Sets up shaders for rendering
 	void SetupShaders();
 
+	// Performs a shadow pass by rendering objects and storing depth information.
+	void ShadowPass(Scene& currentScene);
+
+	// Performs a geometry pass in the deferred rendering process.
+	void GeometryPass(Scene& currentScene);
+
 	// Renders the frame
 	void Render(Scene& currentScene);
-
-	// Displays the frame to the context
-	void Display(Scene& currentScene);
 
 private:
 
@@ -40,8 +44,14 @@ private:
 	// Pointer to a shader manager
 	ShaderManager* m_shaderManager;
 
+	// Pointer to the shadow buffer.
+	std::unique_ptr<ShadowBuffer> m_shadowBuffer;
+
 	// Pointer to the geometry buffer.
 	std::unique_ptr<GeometryBuffer> m_geometryBuffer;
+
+	// Pointer to the shadow shader.
+	std::shared_ptr<Shader> m_shadowShader;
 
 	// Pointer to the deferred geometry shader.
 	std::shared_ptr<Shader> m_deferredGeometryShader;

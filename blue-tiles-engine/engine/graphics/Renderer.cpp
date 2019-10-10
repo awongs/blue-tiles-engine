@@ -11,6 +11,7 @@
 #include "../behaviours/MeshRenderer.h"
 #include "Texture.h"
 #include "GeometryBuffer.h"
+#include "ShadowBuffer.h"
 #include "../GameObject.h"
 #include "../behaviours/DirectionalLight.h"
 #include "../behaviours/PointLight.h"
@@ -28,6 +29,7 @@ Renderer::Renderer(SDL_GLContext* targetContext)
 
 	// TODO: Hardcoded screen width and height
 	m_geometryBuffer = std::make_unique<GeometryBuffer>(800, 600);
+	m_shadowBuffer = std::make_unique<ShadowBuffer>(800, 600);
 
 	// Create the screen quad
 	m_screenQuad = std::make_unique<GameObject>(1337, "screenQuad", glm::vec3(), glm::vec3(0, glm::pi<float>(), glm::pi<float>()));
@@ -69,7 +71,13 @@ void Renderer::SetupShaders()
 	m_deferredLightingShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 }
 
-void Renderer::Render(Scene& currentScene)
+void Renderer::ShadowPass(Scene& currentScene)
+{
+	// Enable depth testing
+	glEnable(GL_DEPTH_TEST);
+}
+
+void Renderer::GeometryPass(Scene& currentScene)
 {
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
@@ -102,8 +110,11 @@ void Renderer::Render(Scene& currentScene)
 	glDisable(GL_DEPTH_TEST);
 }
 
-void Renderer::Display(Scene& currentScene)
+void Renderer::Render(Scene& currentScene)
 {
+	ShadowPass(currentScene);
+	GeometryPass(currentScene);
+
 	// Bind the default frame buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
