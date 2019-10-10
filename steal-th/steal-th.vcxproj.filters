@@ -51,6 +51,9 @@
     <ClCompile Include="behaviours\PlayerMovement.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="behaviours\FollowGameObject.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Door.h">
@@ -75,6 +78,9 @@
       <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
     <ClInclude Include="behaviours\PlayerMovement.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\FollowGameObject.h">
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
   </ItemGroup>
