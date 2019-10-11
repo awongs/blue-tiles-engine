@@ -130,21 +130,21 @@ LevelScene::LevelScene(Level* level)
 		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
 		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
 
-		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(5.0f, glm::radians(45.0f));
+		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
 
 		// move to box
 		sgmaib->AddMoveTileAction(1, 2);
 		sgmaib->AddTurnAction(180);
 		sgmaib->AddMoveTileAction(1, 1);
 		sgmaib->AddTurnAction(0);
-		sgmaib->AddWaitAction(4);
+		sgmaib->AddWaitAction(2);
 
 		// move back
 		sgmaib->AddMoveTileAction(1, 2);
 		sgmaib->AddTurnAction(90);
 		sgmaib->AddMoveTileAction(2, 2);
 		sgmaib->AddTurnAction(-90);
-		sgmaib->AddWaitAction(4);
+		sgmaib->AddWaitAction(2);
 
 		glm::vec3 position = glm::vec3((double)(guard.location % level->width) * 9 + 4.5, 0, (double)(guard.location / level->length) * 9 + 4.5);
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "guard", position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
