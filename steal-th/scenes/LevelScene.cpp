@@ -4,9 +4,10 @@
 
 #include "LevelScene.h"
 
-LevelScene::LevelScene(Level* level)
+LevelScene::LevelScene(Level* _level)
 	: Scene()
 {
+	level = _level;
 	m_count = 0;
 	std::vector<int> gridsUsed;
 	for (Room& room : level->rooms)
@@ -60,6 +61,15 @@ LevelScene::LevelScene(Level* level)
 
 			glm::vec3 position = glm::vec3((double)i * 9 + 4.5, -0.5, (double)j * 9 + 4.5);
 			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "FLOOR", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(4.5, 4.5, 4.5));
+
+			// Set tile center
+			tiles[i * level->width + j].center = position;
+
+			// Set tile coords
+			tiles[i * level->width + j].startX = (double)i * 9;
+			tiles[i * level->width + j].endX = (double)i * 9 + 9;
+			tiles[i * level->width + j].startZ = (double)j * 9;
+			tiles[i * level->width + j].endZ = (double)j * 9 + 9;
 
 			ga->AddBehaviour(meshRenderer);
 
@@ -115,6 +125,7 @@ LevelScene::LevelScene(Level* level)
 			meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
 			scale = glm::vec3(0.5, 0.5, 0.5);
 		}
+		tiles[obj.location].on = obj.name;
 		glm::vec3 position = glm::vec3((double)(obj.location % level->width) * 9 + 4.5, 0, (double)(obj.location / level->length) * 9 + 4.5);
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, position, glm::vec3(0, glm::radians(obj.rotation), 0), scale);
 		ga->AddBehaviour(meshRenderer);
@@ -164,21 +175,25 @@ void LevelScene::AddWall(std::string facing, int location, int width, int length
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9);
 		rotation = glm::vec3(0, 0, 0);
+		tiles[location].up = "wall";
 	}
 	else if (facing == "down")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
 		rotation = glm::vec3(0, 0, 0);
+		tiles[location].down = "wall";
 	}
 	else if (facing == "left")
 	{
 		position = glm::vec3((double)(location % width) * 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
+		tiles[location].left = "wall";
 	}
 	else if (facing == "right")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
+		tiles[location].right = "wall";
 	}
 
 	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "WALL", position, rotation, glm::vec3(9, 9, 9));
@@ -200,21 +215,25 @@ void LevelScene::AddDoor(std::string facing, std::string name, int location, int
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9);
 		rotation = glm::vec3(0, 0, 0);
+		tiles[location].up = "door";
 	}
 	else if (facing == "down")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
 		rotation = glm::vec3(0, 0, 0);
+		tiles[location].down = "door";
 	}
 	else if (facing == "left")
 	{
 		position = glm::vec3((double)(location % width) * 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
+		tiles[location].left = "door";
 	}
 	else if (facing == "right")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
+		tiles[location].right = "door";
 	}
 
 	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, name, position, rotation, glm::vec3(9, 9, 9));
