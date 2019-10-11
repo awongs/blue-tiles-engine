@@ -47,7 +47,7 @@ int main()
 	level->AddWorldGameObject(ga);
 
 	// Add point lights
-	for (int i = 0; i < 64; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		GameObject* ga = new GameObject(999 + i);
 		ga->position = level->GetWorldGameObjectByIndex(i)->position;
