@@ -16,7 +16,8 @@ enum class BehaviourType
 	PointLight,
 	SpotLight, 
 	PlayerMovement, 
-	FollowGameObject
+	FollowGameObject,
+	Inventory
 };
 
 class GameObject;
