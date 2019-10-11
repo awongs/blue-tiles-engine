@@ -33,10 +33,11 @@ int main()
 
 	// create game engine
 	GameEngine* engine = new GameEngine(gameWin.GetWindow());
+	PhysicsEngine *physEngine{ engine->GetPhysicsEngine() };
 
 	// Create the level
 	Level* l = new Level("level0");
-	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l);
+	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l, physEngine);
 	
 	// -- Testing --
 	srand(time(0));
