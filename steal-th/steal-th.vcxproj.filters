@@ -51,9 +51,6 @@
     <ClCompile Include="behaviours\SimpleGuardMovementAIBehaviour.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
-    <ClCompile Include="behaviours\SimpleGuardMovementAction.cpp">
-      <Filter>Source Files\behaviours</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Door.h">

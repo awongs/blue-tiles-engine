@@ -1,7 +1,10 @@
 #include "SimpleGuardMovementAIBehaviour.h"
-#include "SimpleGuardMovementAction.h"
 #include "../../blue-tiles-engine/engine/GameObject.h"
 #include <glm/glm.hpp>
+
+float SimpleGuardMovementAIBehaviour::epsilon = 0.05f;
+
+float SimpleGuardMovementAIBehaviour::epsilonSqr = epsilon * epsilon;
 
 SimpleGuardMovementAIBehaviour::SimpleGuardMovementAIBehaviour(float movementSpeed, float rotationSpeed)
 	: Behaviour(BehaviourType::SimpleGuardMovementBehaviour)
@@ -33,7 +36,7 @@ void SimpleGuardMovementAIBehaviour::AddAction(SimpleGuardMovementAction actionT
 
 void SimpleGuardMovementAIBehaviour::AddActions(std::vector<SimpleGuardMovementAction> actionsToAdd)
 {
-	for (int i = 0; i < actionsToAdd.size; i++)
+	for (int i = 0; i < actionsToAdd.size(); i++)
 	{
 		m_actions.push_back(actionsToAdd[i]);
 	}
@@ -47,9 +50,57 @@ void SimpleGuardMovementAIBehaviour::AddActions(SimpleGuardMovementAction* actio
 	}
 }
 
+void SimpleGuardMovementAIBehaviour::AddWaitAction(float duration)
+{
+	AddAction(SimpleGuardMovementAction{
+		SGMAType::Wait,	// type
+		duration,		// duration
+		0,				// x
+		0,				// z
+		0				// roty
+	});
+}
+
+void SimpleGuardMovementAIBehaviour::AddMoveAction(float x, float z)
+{
+	AddAction(SimpleGuardMovementAction{
+		SGMAType::Move,	// type
+		0,				// duration
+		x,				// x
+		z,				// z
+		0				// roty
+		});
+}
+
+void SimpleGuardMovementAIBehaviour::AddMoveTileAction(int x, int z)
+{
+	AddAction(SimpleGuardMovementAction{
+		SGMAType::Move,	// type
+		0,				// duration
+		(x * 9.0f) + 4.5f,		// x
+		(z * 9.0f) + 4.5f,		// z
+		0				// roty
+		});
+}
+
+void SimpleGuardMovementAIBehaviour::AddTurnAction(float rotYDegree)
+{
+	AddAction(SimpleGuardMovementAction{
+		SGMAType::Turn,	// type
+		0,				// duration
+		0,				// x
+		0,				// z
+		glm::radians(rotYDegree) // roty
+		});
+}
+
 void SimpleGuardMovementAIBehaviour::Update(float deltaTime)
 {
 	if (m_isPaused) return;
+
+	if (m_actions.size() == 0) return;
+
+	if (deltaTime > 0.1f) return;
 
 	bool isDone = ProcessAction(deltaTime, m_actions[m_actionIndex]);
 
@@ -57,7 +108,7 @@ void SimpleGuardMovementAIBehaviour::Update(float deltaTime)
 	{
 		m_actionIndex++;
 
-		if (m_actionIndex >= m_actions.size)
+		if (m_actionIndex >= m_actions.size())
 		{
 			m_actionIndex = 0;
 		}

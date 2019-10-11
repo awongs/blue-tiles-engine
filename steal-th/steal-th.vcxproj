@@ -132,7 +132,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="behaviours\SimpleGuardMovementAction.cpp" />
     <ClCompile Include="behaviours\SimpleGuardMovementAIBehaviour.cpp" />
     <ClCompile Include="gameobjects\Door.cpp" />
     <ClCompile Include="gameobjects\Guard.cpp" />
