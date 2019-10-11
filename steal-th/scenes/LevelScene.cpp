@@ -3,6 +3,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "LevelScene.h"
+#include "../behaviours/PlayerMovement.h"
+#include "../behaviours/FollowGameObject.h"
 
 LevelScene::LevelScene(Level* level)
 	: Scene()
@@ -147,6 +149,8 @@ LevelScene::LevelScene(Level* level)
 	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "player", position, glm::vec3(0, 0, 0), glm::vec3(2, 2, 2));
 
 	ga->AddBehaviour(meshRenderer);
+	ga->AddBehaviour(new PlayerMovement(10));
+	ga->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 20.0f)));
 
 	m_count++;
 	m_worldGameObjects.push_back(std::move(ga));

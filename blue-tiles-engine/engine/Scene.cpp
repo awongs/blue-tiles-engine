@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
 #include "MessageSystem.h"
-
+#include <algorithm>
 Scene::Scene()
 {
 

@@ -47,7 +47,7 @@ int main()
 	level->AddWorldGameObject(ga);
 
 	// Add point lights
-	for (int i = 0; i < 64; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		GameObject* ga = new GameObject(999 + i);
 		ga->position = level->GetWorldGameObjectByIndex(i)->position;
@@ -61,9 +61,6 @@ int main()
 	// Set the scene in engine
 	engine->SetScene(level.release());
 
-	// Create the input manager.
-	Input* input{ new Input() };
-
 	SDL_Event windowEvent;
 
 	// Empty loop to prevent the window from closing immediately.
@@ -71,12 +68,11 @@ int main()
 	{
 		if (SDL_PollEvent(&windowEvent))
 		{
+			Input::GetInstance().HandleInput(windowEvent);
 			if (windowEvent.type == SDL_QUIT) break;
 
-			engine->HandleInput(input, windowEvent);
-
 			// Quit the game with cancel key.
-			if (input->IsKeyDown(Input::INPUT_CANCEL))
+			if (Input::GetInstance().IsKeyDown(Input::INPUT_CANCEL))
 				break;
 		}
 
@@ -86,10 +82,6 @@ int main()
 	}
 
 	std::cout << "End of engine life." << std::endl;
-
-	// Delete the input manager.
-	delete input;
-	input = nullptr;
 
 	// destroy engine
 	delete engine;

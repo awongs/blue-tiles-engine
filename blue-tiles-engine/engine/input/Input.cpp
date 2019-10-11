@@ -14,6 +14,12 @@ Input::Input()
 	m_keyMappings[INPUT_RIGHT] = SDL_SCANCODE_D;
 }
 
+Input& Input::GetInstance()
+{
+	static Input input;
+	return input;
+}
+
 void Input::HandleInput(const SDL_Event &inputEvent)
 {
 	switch (inputEvent.type)
