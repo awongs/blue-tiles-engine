@@ -110,11 +110,10 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			meshRenderer->SetTexture("../Assets/textures/key.png");
 			scale = glm::vec3(0.5, 0.5, 0.5);
 
-			// TODO: REMOVE THIS LATER LUL
 			Collider *keyCol{ new Collider(glm::vec3(2.f)) };
 			PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, keyCol, [this](GLuint other)
 				{
-					// Do nothing for now.
+
 				}) };
 			ga->AddBehaviour(physBehaviour);
 		}
@@ -170,7 +169,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			GameObject *otherObj{ GetWorldGameObjectById(other) };
 			if (otherObj->name.find("key") != std::string::npos)
 			{
-				DebugLog::Info("WE GOT THE KEY!!");
+				// KILL IT
+				RemoveWorldGameObject(other);
 			}
 		}) };
 	ga->AddBehaviour(physBehaviour);

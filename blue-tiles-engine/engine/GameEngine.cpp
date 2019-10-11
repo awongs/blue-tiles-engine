@@ -9,6 +9,7 @@
 #include "physics/PhysicsObject.h"
 #include "input/Input.h"
 #include "graphics/TextRenderer.h"
+#include "MessageSystem.h"
 
 GameEngine::GameEngine(SDL_Window* targetWindow)
 	: m_window(targetWindow)
@@ -98,6 +99,9 @@ void GameEngine::HandleInput(Input *input, SDL_Event windowEvent)
 void GameEngine::Update()
 {
 	UpdateFPSCounter();
+
+	// Update the message system before updating anything else.
+	MessageSystem::ProcessAllMessages(m_currentScene.get());
 
 	m_currentScene->Update(m_deltaTime);
 

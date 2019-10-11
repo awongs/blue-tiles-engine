@@ -124,9 +124,13 @@ public:
 	// Check for collisions between each of the physics components.
 	void Update();
 
-	// Add a physics component for a game object to the vector.
+	// Add a PhysicsObject for a GameObject to the vector.
 	PhysicsObject *AddPhysicsObject();
 
+	// Remove the PhysicsObject corresponding to a given GameObject id.
+	void RemovePhysicsObject(GLuint gameObjectId);
+
+	// The message to send via MessageSystem to handle collisions.
 	static const std::string COLLISION_MESSAGE_STR;
 
 private:

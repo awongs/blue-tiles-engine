@@ -36,7 +36,7 @@ public:
 	bool AddWorldGameObject(GameObject* gameObject);
 
 	// Removes a world game object from the world game objects vector by id
-	bool RemoveWorldGameObject(const GLuint id);
+	void RemoveWorldGameObject(const GLuint id);
 
 	// Returns the vector of screen game objects
 	std::vector<std::unique_ptr<GameObject>> const& GetScreenGameObjects() const;
@@ -56,4 +56,10 @@ public:
 protected:
 	std::vector<std::unique_ptr<GameObject>> m_worldGameObjects;
 	std::vector<std::unique_ptr<GameObject>> m_screenGameObjects;
+
+	// Remove all world game objects that were flagged.
+	void RemoveWorldGameObjects();
+
+	// Hold the ids of all world GameObjects to remove in the next update.
+	std::vector<GLuint> m_worldGameObjectsToRemove;
 };

@@ -21,9 +21,17 @@ PhysicsBehaviour::PhysicsBehaviour(PhysicsEngine *physEngine,
 	}
 }
 
+PhysicsBehaviour::~PhysicsBehaviour()
+{
+	// Unregister its corresponding PhysicsObject from the PhysicsEngine.
+	if (m_physEngine != nullptr && gameObject != nullptr)
+		m_physEngine->RemovePhysicsObject(gameObject->id);
+}
+
 void PhysicsBehaviour::Update(float deltaTime)
 {
-	m_collider->SetPosition(gameObject->position);
+	if (m_collider != nullptr)
+		m_collider->SetPosition(gameObject->position);
 }
 
 void PhysicsBehaviour::Draw(Shader &shader)

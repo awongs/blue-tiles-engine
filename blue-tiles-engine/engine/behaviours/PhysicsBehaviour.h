@@ -14,6 +14,8 @@ public:
 		GLuint gameObjectId, Collider *collider,
 		std::function<void(GLuint)> onCollision);
 
+	~PhysicsBehaviour();
+
 	// Update
 	virtual void Update(float deltaTime);
 

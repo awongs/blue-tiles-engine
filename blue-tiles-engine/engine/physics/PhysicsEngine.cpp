@@ -30,6 +30,18 @@ PhysicsObject *PhysicsEngine::AddPhysicsObject()
 	return m_physObjects.back().get();
 }
 
+void PhysicsEngine::RemovePhysicsObject(GLuint gameObjectId)
+{
+	for (int i = 0; i < m_physObjects.size(); ++i)
+	{
+		if (m_physObjects[i]->GetGameObjectId() == gameObjectId)
+		{
+			m_physObjects.erase(m_physObjects.begin() + i);
+			break;
+		}
+	}
+}
+
 void PhysicsEngine::DoBroadPhase()
 {
 	// Broad phase follows a producer/consumer pattern (sort/sweep).
