@@ -120,25 +120,21 @@ bool SimpleGuardMovementAIBehaviour::ProcessMoveAction(float deltaTime, SimpleGu
 
 	if (dist < epsilon) return true;
 
-	// move towards it based on position
-
-	// movement vector	(normalize(dest - pos))
-	glm::vec3 movement = glm::normalize(dest - gameObject->position) * (m_movementSpeed * deltaTime);
-
-	glm::vec3 nextPos = gameObject->position + movement;
+	// move towards destination
 
 	// check for overshoot
-	float nowAndThenDifference = glm::distance(gameObject->position, nextPos);
+	float scaledSpeed = m_movementSpeed * deltaTime;
 
 	// went past the destination
-	if (nowAndThenDifference > dist)
+	if (scaledSpeed > dist)
 	{
-		dest.y = gameObject->position.y;
-		gameObject->position = dest;
+		gameObject->position.x = dest.x;
+		gameObject->position.y = dest.y;
 	}
 	else
 	{
-		gameObject->position = nextPos;
+		glm::vec3 direction = glm::normalize(dest - gameObject->position);
+		gameObject->position = gameObject->position +  (direction * (m_movementSpeed * deltaTime));
 	}
 
 	return false;
@@ -146,5 +142,30 @@ bool SimpleGuardMovementAIBehaviour::ProcessMoveAction(float deltaTime, SimpleGu
 
 bool SimpleGuardMovementAIBehaviour::ProcessTurnAction(float deltaTime, SimpleGuardMovementAction& action)
 {
+	// difference between desired and current
+	float diff = action.rotationY - gameObject->rotation.y;
+
+	// abs diff
+	diff = diff > 0 ? diff : -diff;
+
+	if (diff < epsilon) return true;
+
+	// rotate towards desired rotation
+
+	float scaledRotation = m_rotationSpeed * deltaTime;
+
+	// check for overshoot
+	if (scaledRotation > diff)
+	{
+		gameObject->rotation.y = action.rotationY;
+	}
+	else
+	{
+		// rotate ccw (?)
+		if (action.rotationY > gameObject->rotation.y) gameObject->rotation.y += scaledRotation;
+		// rotate cw (?)
+		else gameObject->rotation.y -= scaledRotation;
+	}
+
 	return false;
 }
