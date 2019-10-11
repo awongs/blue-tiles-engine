@@ -68,5 +68,8 @@
     <ClInclude Include="gameobjects\Wall.h">
       <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
+    <ClInclude Include="gameobjects\Tile.h">
+      <Filter>Source Files\gameobjects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
