@@ -24,11 +24,11 @@ public:
     
 private:
     // Amount of red keys.
-    uint m_redKey;
+    unsigned int m_redKey;
 
     // Amount of blue keys.
-    uint m_blueKey;
+	unsigned int m_blueKey;
 
     // Amount of green keys.
-    uint m_greenKey;
+	unsigned int m_greenKey;
 };

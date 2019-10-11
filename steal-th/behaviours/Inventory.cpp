@@ -1,7 +1,7 @@
 #include "Inventory.h"
 #include <engine/debugbt/DebugLog.h>
 namespace {
-    void DecrementMinZero(uint & value) {
+    void DecrementMinZero(unsigned int & value) {
         if(value > 0) {
             value--;
         }
