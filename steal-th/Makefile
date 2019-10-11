@@ -1,5 +1,5 @@
 #OBJS All c or cpp files
-OBJS =  Main.cpp Level.cpp gameobjects/Door.cpp gameobjects/Guard.cpp gameobjects/Object.cpp gameobjects/Room.cpp ../blue-tiles-engine/glad.c scenes/LevelScene.cpp gameobjects/Wall.cpp behaviours/PlayerMovement.cpp behaviours/FollowGameObject.cpp 
+OBJS =  Main.cpp Level.cpp gameobjects/Door.cpp gameobjects/Guard.cpp gameobjects/Object.cpp gameobjects/Room.cpp ../blue-tiles-engine/glad.c scenes/LevelScene.cpp gameobjects/Wall.cpp behaviours/PlayerMovement.cpp behaviours/FollowGameObject.cpp behaviours/Inventory.cpp 
 
 #CC Which Compiler to use.
 CC = g++

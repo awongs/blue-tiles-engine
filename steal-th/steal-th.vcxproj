@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="behaviours\FollowGameObject.cpp" />
+    <ClCompile Include="behaviours\Inventory.cpp" />
     <ClCompile Include="behaviours\PlayerMovement.cpp" />
     <ClCompile Include="gameobjects\Door.cpp" />
     <ClCompile Include="gameobjects\Guard.cpp" />
@@ -150,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="behaviours\FollowGameObject.h" />
+    <ClInclude Include="behaviours\Inventory.h" />
     <ClInclude Include="behaviours\PlayerMovement.h" />
     <ClInclude Include="gameobjects\Door.h" />
     <ClInclude Include="gameobjects\Guard.h" />
