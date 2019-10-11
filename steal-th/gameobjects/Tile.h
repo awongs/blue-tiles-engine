@@ -3,8 +3,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 struct Tile
 {
+	public:
 		// Tile number
-		int num;
+		int num = -1;
 
 		// Center position of the tile (in actual coordinates)
 		glm::vec3 center = glm::vec3(0, 0, 0);
@@ -35,4 +36,16 @@ struct Tile
 
 		//What's on the tile? (Name of object... i.e. "none, "block", "key1", "key2")
 		std::string on = "none";
+
+		// Tile up from this tile
+		Tile* tileUp;
+
+		// Tile right from this tile
+		Tile* tileRight;
+
+		// Tile left from this tile
+		Tile* tileLeft;
+
+		// Tile down from this tile
+		Tile* tileDown;
 };

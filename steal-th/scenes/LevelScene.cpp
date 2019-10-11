@@ -10,6 +10,19 @@ LevelScene::LevelScene(Level* _level)
 	level = _level;
 	m_count = 0;
 	std::vector<int> gridsUsed;
+
+	// Initialize tiles
+	for (unsigned int i = 0; i < level->width; i++)
+	{
+		// Create tiles
+		for (unsigned int j = 0; j < level->length; j++)
+		{
+			Tile tile;
+			tiles.push_back(tile);
+		}
+	}
+
+	// Generate rooms
 	for (Room& room : level->rooms)
 	{
 		for (Wall& wall : room.walls)
@@ -62,14 +75,20 @@ LevelScene::LevelScene(Level* _level)
 			glm::vec3 position = glm::vec3((double)i * 9 + 4.5, -0.5, (double)j * 9 + 4.5);
 			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "FLOOR", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(4.5, 4.5, 4.5));
 
+			// Current location
+			int currLoc = i + j * level->length;
+
+			// Set tile num
+			tiles[currLoc].num = currLoc;
+
 			// Set tile center
-			tiles[i * level->width + j].center = position;
+			tiles[currLoc].center = position;
 
 			// Set tile coords
-			tiles[i * level->width + j].startX = (double)i * 9;
-			tiles[i * level->width + j].endX = (double)i * 9 + 9;
-			tiles[i * level->width + j].startZ = (double)j * 9;
-			tiles[i * level->width + j].endZ = (double)j * 9 + 9;
+			tiles[currLoc].startX = (double)i * 9;
+			tiles[currLoc].endX = (double)i * 9 + 9;
+			tiles[currLoc].startZ = (double)j * 9;
+			tiles[currLoc].endZ = (double)j * 9 + 9;
 
 			ga->AddBehaviour(meshRenderer);
 
@@ -77,6 +96,8 @@ LevelScene::LevelScene(Level* _level)
 			m_worldGameObjects.push_back(std::move(ga));
 
 			int currGrid = i + (j * 10);
+
+			// Add walls if to edge of world if not part of a room
 			if (find(gridsUsed.begin(), gridsUsed.end(), currGrid) == gridsUsed.end())
 			{
 				if (j == 0)
@@ -96,6 +117,49 @@ LevelScene::LevelScene(Level* _level)
 				if (i == level->width-1)
 				{
 					AddWall("right", currGrid, level->width, level->length);
+				}
+			}
+
+			// Make sure all tiles know of previous tile's walls/doors
+			if (i != 0)
+			{
+				// Set current tile as right tile of previous tile
+				tiles[currLoc - 1].tileRight = &tiles[currLoc];
+
+				// Set previous tile as left of current tile
+				tiles[currLoc].tileLeft = &tiles[currLoc - 1];
+
+				// Does the tile to the left have a wall/door on the right?
+				if (tiles[currLoc - 1].right != "none")
+				{
+					tiles[currLoc].left = tiles[currLoc].right;
+				}
+
+				// Does the current tile have a wall/door on the left?
+				if (tiles[currLoc].left != "none")
+				{
+					tiles[currLoc - 1].right = tiles[currLoc].left;
+				}
+			}
+
+			if (j != 0)
+			{
+				// Set current tile as down tile of previous tile
+				tiles[currLoc - level->length].tileDown = &tiles[currLoc];
+
+				// Set previous tile as up of current tile
+				tiles[currLoc].tileUp = &tiles[currLoc - level->length];
+
+				// Does the tile above have a wall/door on the bottom?
+				if (tiles[currLoc - level->length].down != "none")
+				{
+					tiles[currLoc].up = tiles[currLoc - level->length].down;
+				}
+
+				// Does the current tile have a wall/door on the top?
+				if (tiles[currLoc].up != "none")
+				{
+					tiles[currLoc - level->length].down = tiles[currLoc].up;
 				}
 			}
 		}
@@ -125,7 +189,10 @@ LevelScene::LevelScene(Level* _level)
 			meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
 			scale = glm::vec3(0.5, 0.5, 0.5);
 		}
+
+		// Set object on tile
 		tiles[obj.location].on = obj.name;
+
 		glm::vec3 position = glm::vec3((double)(obj.location % level->width) * 9 + 4.5, 0, (double)(obj.location / level->length) * 9 + 4.5);
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, position, glm::vec3(0, glm::radians(obj.rotation), 0), scale);
 		ga->AddBehaviour(meshRenderer);
