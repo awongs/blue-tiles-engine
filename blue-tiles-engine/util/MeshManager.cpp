@@ -7,6 +7,8 @@
 
 namespace meshmanager
 {
+	std::map<std::string, Mesh> cachedObjs;
+
 	/*
 	Code used from:
 	https://gamedev.stackexchange.com/a/104074
@@ -16,6 +18,22 @@ namespace meshmanager
 	{
 		std::string file = filemanager::LoadFile(filePath);
 		if (file.empty()) return false;
+
+		if (cachedObjs.find(filePath) != cachedObjs.end())
+		{
+			std::ostringstream oss;
+			oss << filePath << " is cached, reloading.";
+			DebugLog::Info(oss.str());
+			out_vertices = std::vector<Vertex>(cachedObjs[filePath].vertices);
+			out_indices = std::vector<GLuint>(cachedObjs[filePath].indices);
+			return true;
+		}
+		else
+		{
+			std::ostringstream oss;
+			oss << filePath << " is uncached, caching it..";
+			DebugLog::Info(oss.str());
+		}
 
 		std::vector<GLuint> vertexIndices, uvIndices, normalIndices;
 		std::vector<glm::vec3> temp_positions;
@@ -175,7 +193,9 @@ namespace meshmanager
 
 			GLuint hv = -1, ht = -1, hn = -1;
 
-		/*	for (std::vector<Vertex>::iterator hvit = out_vertices.begin(); hvit != out_vertices.end(); ++hvit)
+			/*
+			// This is an optimization to prevent the re-use of vertices in the same position, TAKES FOREVER
+			for (std::vector<Vertex>::iterator hvit = out_vertices.begin(); hvit != out_vertices.end(); ++hvit)
 			{
 				if ((*hvit).position.x == vertex.position.x &&
 					(*hvit).position.y == vertex.position.y &&
@@ -197,7 +217,7 @@ namespace meshmanager
 					hn = hvit - out_vertices.begin();
 				}
 			}
-*/
+			*/
 			if (ht != -1 && hv == ht && hn == ht)
 			{
 				out_indices.push_back(hv);
@@ -205,9 +225,12 @@ namespace meshmanager
 			else
 			{
 				out_vertices.push_back(vertex);
-				out_indices.push_back(out_vertices.size() - 1);
+				out_indices.push_back(static_cast<GLuint>(out_vertices.size()) - 1);
 			}
 		}
+
+		cachedObjs[filePath].vertices = std::vector<Vertex>(out_vertices);
+		cachedObjs[filePath].indices = std::vector<GLuint>(out_indices);
 		
 		return true;
 	}
