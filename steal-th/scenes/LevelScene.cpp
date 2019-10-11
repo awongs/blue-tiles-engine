@@ -1,13 +1,15 @@
 
 #include <engine/behaviours/MeshRenderer.h>
+#include <engine/behaviours/PhysicsBehaviour.h>
+#include <engine/physics/Collider.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "LevelScene.h"
 #include "../behaviours/PlayerMovement.h"
 #include "../behaviours/FollowGameObject.h"
 
-LevelScene::LevelScene(Level* level)
-	: Scene()
+LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
+	: Scene(), m_physEngine(physEngine)
 {
 	m_count = 0;
 	std::vector<int> gridsUsed;
@@ -98,13 +100,23 @@ LevelScene::LevelScene(Level* level)
 	{
 		MeshRenderer* meshRenderer;
 
+		glm::vec3 position = glm::vec3((double)(obj.location % level->width) * 9 + 4.5, 0, (double)(obj.location / level->length) * 9 + 4.5);
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, position, glm::vec3(0, glm::radians(obj.rotation), 0));
+
 		glm::vec3 scale;
-		
 		if (obj.name.find("key") != std::string::npos)
 		{
 			meshRenderer = new MeshRenderer("../Assets/models/key.obj");
 			meshRenderer->SetTexture("../Assets/textures/key.png");
 			scale = glm::vec3(0.5, 0.5, 0.5);
+
+			// TODO: REMOVE THIS LATER LUL
+			Collider *keyCol{ new Collider(glm::vec3(2.f)) };
+			PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, keyCol, [this](GLuint other)
+				{
+					// Do nothing for now.
+				}) };
+			ga->AddBehaviour(physBehaviour);
 		}
 		else if (obj.name.find("block") != std::string::npos) {
 			meshRenderer = new MeshRenderer("../Assets/models/cube.obj");
@@ -117,8 +129,7 @@ LevelScene::LevelScene(Level* level)
 			meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
 			scale = glm::vec3(0.5, 0.5, 0.5);
 		}
-		glm::vec3 position = glm::vec3((double)(obj.location % level->width) * 9 + 4.5, 0, (double)(obj.location / level->length) * 9 + 4.5);
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, position, glm::vec3(0, glm::radians(obj.rotation), 0), scale);
+		ga->scale = scale;
 		ga->AddBehaviour(meshRenderer);
 
 		m_count++;
@@ -151,6 +162,18 @@ LevelScene::LevelScene(Level* level)
 	ga->AddBehaviour(meshRenderer);
 	ga->AddBehaviour(new PlayerMovement(10));
 	ga->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 20.0f)));
+
+	Collider *playerCol{ new Collider(glm::vec3(2.f)) };
+	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, playerCol, [this](GLuint other)
+		{
+			// If this is a "key", then pick it up.
+			GameObject *otherObj{ GetWorldGameObjectById(other) };
+			if (otherObj->name.find("key") != std::string::npos)
+			{
+				DebugLog::Info("WE GOT THE KEY!!");
+			}
+		}) };
+	ga->AddBehaviour(physBehaviour);
 
 	m_count++;
 	m_worldGameObjects.push_back(std::move(ga));

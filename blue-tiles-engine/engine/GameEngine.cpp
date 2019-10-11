@@ -121,6 +121,14 @@ void GameEngine::SetScene(Scene* scene)
 	m_currentScene = std::unique_ptr<Scene>(scene);
 }
 
+PhysicsEngine *GameEngine::GetPhysicsEngine() const
+{
+	if (m_physEngine != nullptr)
+		return m_physEngine.get();
+
+	return nullptr;
+}
+
 void GameEngine::UpdateFPSCounter()
 {
 	// delta time

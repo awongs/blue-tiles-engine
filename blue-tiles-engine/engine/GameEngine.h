@@ -42,6 +42,11 @@ public:
 	// Text Renderering thing
 	TextRenderer* textRenderer;
 
+	// Get the raw pointer to the physics engine, so that the game engine 
+	// retains ownership of it.
+	// Return nullptr if it somehow doesn't already exist.
+	PhysicsEngine *GetPhysicsEngine() const;
+
 private:
 
 	// The current scene.
