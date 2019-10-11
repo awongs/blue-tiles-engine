@@ -148,7 +148,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="behaviours\SimpleGuardMovementAction.h" />
     <ClInclude Include="behaviours\SimpleGuardMovementAIBehaviour.h" />
     <ClInclude Include="gameobjects\Door.h" />
     <ClInclude Include="gameobjects\Guard.h" />

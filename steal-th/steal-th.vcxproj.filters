@@ -77,8 +77,5 @@
     <ClInclude Include="behaviours\SimpleGuardMovementAIBehaviour.h">
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
-    <ClInclude Include="behaviours\SimpleGuardMovementAction.h">
-      <Filter>Source Files\behaviours</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
