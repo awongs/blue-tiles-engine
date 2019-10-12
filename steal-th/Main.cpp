@@ -44,11 +44,11 @@ int main()
 
 	// Add a directional light
 	GameObject* ga = new GameObject(420);
-	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -1.0f, -1.0f), 0.0f, 0.4f, 0.5f));
+	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -10.0f, -1.0f), 0.0f, 0.4f, 0.5f));
 	level->AddWorldGameObject(ga);
 
 	// Add point lights
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 64; i++)
 	{
 		GameObject* ga = new GameObject(999 + i);
 		ga->position = level->GetWorldGameObjectByIndex(i)->position;

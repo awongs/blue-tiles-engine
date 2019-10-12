@@ -161,7 +161,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 	ga->AddBehaviour(meshRenderer);
 	ga->AddBehaviour(new PlayerMovement(10));
-	ga->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 20.0f)));
+	ga->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
 	ga->AddBehaviour(new Inventory());
 
 	Collider *playerCol{ new Collider(glm::vec3(2.f)) };
@@ -172,7 +172,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			GameObject *otherObj{ GetWorldGameObjectById(other) };
 			if (otherObj->name.find("key") != std::string::npos)
 			{
-				Inventory *tempInventory = static_cast<Inventory*>(tempPlayer->GetBehaviour(BehaviourType::Inventory));
+				auto tempInventory = static_pointer_cast<Inventory>(tempPlayer->GetBehaviour(BehaviourType::Inventory).lock());
 				if(tempInventory != 0) {
 					//TODO: Using red key for now.
 					tempInventory->AddItem(Inventory::ObjectType::RED_KEY);

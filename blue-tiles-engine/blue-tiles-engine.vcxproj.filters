@@ -135,6 +135,9 @@
     <ClCompile Include="engine\behaviours\TextBehaviour.cpp">
       <Filter>Source Files\engine\behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="engine\graphics\ShadowBuffer.cpp">
+      <Filter>Source Files\engine\graphics</Filter>
+    </ClCompile>
     <ClCompile Include="engine\behaviours\PhysicsBehaviour.cpp">
       <Filter>Source Files\engine\behaviours</Filter>
     </ClCompile>
@@ -229,6 +232,9 @@
     </ClInclude>
     <ClInclude Include="engine\behaviours\TextBehaviour.h">
       <Filter>Source Files\engine\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\graphics\ShadowBuffer.h">
+      <Filter>Source Files\engine\graphics</Filter>
     </ClInclude>
     <ClInclude Include="engine\behaviours\PhysicsBehaviour.h">
       <Filter>Source Files\engine\behaviours</Filter>
