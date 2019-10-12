@@ -9,6 +9,7 @@
 #include "physics/PhysicsObject.h"
 #include "input/Input.h"
 #include "graphics/TextRenderer.h"
+#include "MessageSystem.h"
 
 GameEngine::GameEngine(SDL_Window* targetWindow)
 	: m_window(targetWindow)
@@ -37,7 +38,7 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	textRenderer = new TextRenderer(800, 600);
 
 	// 3d rendering
-	renderer = new Renderer(&targetContext);
+	renderer = new Renderer(&targetContext, 800, 600);
 
 	m_lastFrameTime = SDL_GetTicks();
 
@@ -52,52 +53,12 @@ GameEngine::~GameEngine()
 	delete renderer;
 }
 
-void GameEngine::HandleInput(Input *input, SDL_Event windowEvent)
-{
-	// Update the inputs.
-	if (input == nullptr) return;
-
-	input->HandleInput(windowEvent);
-
-	/*
-	const std::unique_ptr<GameObject> &obj = m_currentScene->getWorldGameObjectByIndex(0);
-	PhysicsObject *physObj = static_cast<PhysicsObject *>(obj->GetBehaviour(BehaviourType::PhysicsObject));
-
-	// TODO: Input and collision testing. Remove this later.
-	if (input->IsKeyDown(Input::INPUT_UP))
-	{
-		//DebugLog::Info("Up key pressed.");
-		obj->position.y += 0.2f;
-	}
-	if (input->IsKeyDown(Input::INPUT_DOWN))
-	{
-		//DebugLog::Info("Down key pressed.");
-		obj->position.y -= 0.2f;
-	}
-	if (input->IsKeyDown(Input::INPUT_LEFT))
-	{
-		//DebugLog::Info("Left key pressed.");
-		obj->position.x -= 0.2f;
-	}
-	if (input->IsKeyDown(Input::INPUT_RIGHT))
-	{
-		//DebugLog::Info("Right key pressed.");
-		obj->position.x += 0.2f;
-	}
-	if (input->IsMouseButtonDown(SDL_BUTTON_LEFT))
-		DebugLog::Info("Left mouse button pressed.");
-	if (input->IsMouseButtonDown(SDL_BUTTON_RIGHT))
-		DebugLog::Info("Right mouse button pressed.");
-	if (input->IsMouseButtonDown(SDL_BUTTON_MIDDLE))
-		DebugLog::Info("Middle mouse button pressed.");
-
-	physObj->GetCollider()->SetPosition(obj->position);
-	*/
-}
-
 void GameEngine::Update()
 {
 	UpdateFPSCounter();
+
+	// Update the message system before updating anything else.
+	MessageSystem::ProcessAllMessages(m_currentScene.get());
 
 	m_currentScene->Update(m_deltaTime);
 
@@ -108,8 +69,6 @@ void GameEngine::Draw()
 {
 	renderer->Render(*m_currentScene);
 
-	renderer->Display(*m_currentScene);
-
 	textRenderer->RenderScreenText(*m_currentScene);
 
 	// swap buffer
@@ -118,7 +77,16 @@ void GameEngine::Draw()
 
 void GameEngine::SetScene(Scene* scene)
 {
+	renderer->SetupLighting(*scene);
 	m_currentScene = std::unique_ptr<Scene>(scene);
+}
+
+PhysicsEngine *GameEngine::GetPhysicsEngine() const
+{
+	if (m_physEngine != nullptr)
+		return m_physEngine.get();
+
+	return nullptr;
 }
 
 void GameEngine::UpdateFPSCounter()

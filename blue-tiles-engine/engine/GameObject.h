@@ -35,8 +35,8 @@ public:
 	// Updates the transform matrix.
 	void UpdateTransformMatrix();
 
-	// Gets behaviour of BehaviourType; Returns nullptr if doesn't exist
-	Behaviour* GetBehaviour(BehaviourType type);
+	// Gets behaviour of BehaviourType; Returns an empty weak pointer if doesn't exist
+	std::weak_ptr<Behaviour> GetBehaviour(BehaviourType type);
 
 	// Adds a behaviour
 	void AddBehaviour(Behaviour* behaviour);
@@ -57,7 +57,7 @@ public:
 	glm::vec3 forward;
 
 private:
-	std::vector<std::unique_ptr<Behaviour>> m_Behaviours;
+	std::vector<std::shared_ptr<Behaviour>> m_Behaviours;
 
 	// The game object's transform/model matrix.
 	glm::mat4 m_transformMatrix;

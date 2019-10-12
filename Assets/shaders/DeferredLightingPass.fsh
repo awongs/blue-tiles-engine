@@ -102,7 +102,8 @@ void main()
  * Calculates and returns the effect that directional lighting will have on this fragment.
  * normal - the normal vector of this fragment
  */
-vec4 calcDirLighting(vec3 normal, vec3 viewDir) {
+vec4 calcDirLighting(vec3 normal, vec3 viewDir) 
+{
     // Ambient
     vec3 ambientColour = dirLight.colour * dirLight.ambientIntensity;
     vec3 direction = normalize(dirLight.direction);
@@ -127,7 +128,8 @@ vec4 calcDirLighting(vec3 normal, vec3 viewDir) {
  * fragPosition - the position of the fragment
  * viewDir - the viewing direction from the camera to this fragment
  */
-vec4 calcPointLighting(PointLight pointLight, vec3 normal, vec3 fragPosition, vec3 viewDir) {
+vec4 calcPointLighting(PointLight pointLight, vec3 normal, vec3 fragPosition, vec3 viewDir) 
+{
     // Ambient
     vec3 ambientColour = pointLight.colour * pointLight.ambientIntensity;
     
@@ -158,7 +160,8 @@ vec4 calcPointLighting(PointLight pointLight, vec3 normal, vec3 fragPosition, ve
  * fragPosition - the position of the fragment
  * viewDir - the viewing direction from the camera to this fragment
  */
-lowp vec4 calcSpotLighting(SpotLight spotLight, vec3 normal, vec3 fragPosition, vec3 viewDir) {
+lowp vec4 calcSpotLighting(SpotLight spotLight, vec3 normal, vec3 fragPosition, vec3 viewDir) 
+{
     
     // Vector from the light source to the fragment
     lowp vec3 fragDirection = fragPosition - spotLight.position;
