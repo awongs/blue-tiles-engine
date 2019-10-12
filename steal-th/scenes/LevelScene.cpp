@@ -85,10 +85,10 @@ LevelScene::LevelScene(Level* _level)
 			tiles[currLoc].center = position;
 
 			// Set tile coords
-			tiles[currLoc].startX = (double)i * 9;
-			tiles[currLoc].endX = (double)i * 9 + 9;
-			tiles[currLoc].startZ = (double)j * 9;
-			tiles[currLoc].endZ = (double)j * 9 + 9;
+			tiles[currLoc].startX = (double)i * 9.0f;
+			tiles[currLoc].endX = (double)i * 9.0f + 9.0f;
+			tiles[currLoc].startZ = (double)j * 9.0f;
+			tiles[currLoc].endZ = (double)j * 9.0f + 9.0f;
 
 			ga->AddBehaviour(meshRenderer);
 
@@ -132,7 +132,7 @@ LevelScene::LevelScene(Level* _level)
 				// Does the tile to the left have a wall/door on the right?
 				if (tiles[currLoc - 1].right != "none")
 				{
-					tiles[currLoc].left = tiles[currLoc].right;
+					tiles[currLoc].left = tiles[currLoc - 1].right;
 				}
 
 				// Does the current tile have a wall/door on the left?
@@ -228,6 +228,24 @@ LevelScene::LevelScene(Level* _level)
 
 	m_count++;
 	m_worldGameObjects.push_back(std::move(ga));
+
+	// ----- For testing -----
+	/*int testTile = 13;
+	DebugLog::Info("center X = " + std::to_string(tiles[testTile].center.x));
+	DebugLog::Info("center Y = " + std::to_string(tiles[testTile].center.y));
+	DebugLog::Info("center Z = " + std::to_string(tiles[testTile].center.z));
+	DebugLog::Info("StartX = " + std::to_string(tiles[testTile].startX));
+	DebugLog::Info("EndX = " + std::to_string(tiles[testTile].endX));
+	DebugLog::Info("StartZ = " + std::to_string(tiles[testTile].startZ));
+	DebugLog::Info("endZ = " + std::to_string(tiles[testTile].endZ));
+	DebugLog::Info("Up = " + tiles[testTile].up);
+	DebugLog::Info("Down = " + tiles[testTile].down);
+	DebugLog::Info("Left = " + tiles[testTile].left);
+	DebugLog::Info("Right = " + tiles[testTile].right);
+	DebugLog::Info("TileUp = " + std::to_string(tiles[testTile].tileUp->num));
+	DebugLog::Info("TileDown = " + std::to_string(tiles[testTile].tileDown->num));
+	DebugLog::Info("TileLeft = " + std::to_string(tiles[testTile].tileLeft->num));
+	DebugLog::Info("TileRight = " + std::to_string(tiles[testTile].tileRight->num));*/
 }
 
 void LevelScene::AddWall(std::string facing, int location, int width, int length)
