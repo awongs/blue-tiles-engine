@@ -132,6 +132,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="behaviours\FollowGameObject.cpp" />
+    <ClCompile Include="behaviours\Inventory.cpp" />
+    <ClCompile Include="behaviours\PlayerMovement.cpp" />
     <ClCompile Include="gameobjects\Door.cpp" />
     <ClCompile Include="gameobjects\Guard.cpp" />
     <ClCompile Include="gameobjects\Object.cpp" />
@@ -147,6 +150,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="behaviours\FollowGameObject.h" />
+    <ClInclude Include="behaviours\Inventory.h" />
+    <ClInclude Include="behaviours\PlayerMovement.h" />
     <ClInclude Include="gameobjects\Door.h" />
     <ClInclude Include="gameobjects\Guard.h" />
     <ClInclude Include="gameobjects\Object.h" />

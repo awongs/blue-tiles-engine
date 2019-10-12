@@ -3,10 +3,13 @@
 #include "SphereCollider.h"
 #include "PhysicsObject.h"
 #include "../GameObject.h"
+#include "../MessageSystem.h"
 
 #include <glm/glm.hpp>
 
 #include <iostream>
+
+const std::string PhysicsEngine::COLLISION_MESSAGE_STR{ "HandleCollision" };
 
 void PhysicsEngine::Update()
 {
@@ -21,9 +24,22 @@ void PhysicsEngine::Update()
 	HandleCollisions();
 }
 
-void PhysicsEngine::AddPhysicsObject(PhysicsObject *obj)
+PhysicsObject *PhysicsEngine::AddPhysicsObject()
 {
-	m_physObjects.push_back(obj);
+	m_physObjects.push_back(std::move(std::make_unique<PhysicsObject>()));
+	return m_physObjects.back().get();
+}
+
+void PhysicsEngine::RemovePhysicsObject(GLuint gameObjectId)
+{
+	for (int i = 0; i < m_physObjects.size(); ++i)
+	{
+		if (m_physObjects[i]->GetGameObjectId() == gameObjectId)
+		{
+			m_physObjects.erase(m_physObjects.begin() + i);
+			break;
+		}
+	}
 }
 
 void PhysicsEngine::DoBroadPhase()
@@ -111,13 +127,16 @@ void PhysicsEngine::HandleCollisions()
 		PhysicsObject *first{ col.first };
 		PhysicsObject *second{ col.second };
 
-		DebugLog::Info("Collision detected between (" +
-			std::to_string(first->gameObject->id) + " " +
-			std::to_string(second->gameObject->id) + ").");
+		GLuint firstId{ first->GetGameObjectId() };
+		GLuint secondId{ second->GetGameObjectId() };
 
-		// Call OnCollision for both physics components.
-		first->OnCollision(*second);
-		second->OnCollision(*first);
+		DebugLog::Info("Collision detected between (" +
+			std::to_string(firstId) + " " +
+			std::to_string(secondId) + ").");
+
+		// Handle collisions for both physics components.
+		MessageSystem::SendMessageToObject(firstId, secondId, BehaviourType::Physics, COLLISION_MESSAGE_STR);
+		MessageSystem::SendMessageToObject(secondId, firstId, BehaviourType::Physics, COLLISION_MESSAGE_STR);
 	}
 
 	// Clear collisions list for next frame.
@@ -178,11 +197,12 @@ void PhysicsEngine::UpdateEndpoints()
 		// this interval.
 		int idMin{ 2 * physObjIndex };
 		int idMax{ idMin + 1 };
-
+		
+		// Since we're using 2D physics on the xz-plane, we'll use z in place of y.
 		m_endpointsX[m_lookupX[idMin]].setValue(pos.x - halfSizes.x);
-		m_endpointsY[m_lookupY[idMin]].setValue(pos.y - halfSizes.y);
+		m_endpointsY[m_lookupY[idMin]].setValue(pos.z - halfSizes.z);
 		m_endpointsX[m_lookupX[idMax]].setValue(pos.x + halfSizes.x);
-		m_endpointsY[m_lookupY[idMax]].setValue(pos.y + halfSizes.y);
+		m_endpointsY[m_lookupY[idMax]].setValue(pos.z + halfSizes.z);
 	}
 }
 
@@ -266,8 +286,8 @@ void PhysicsEngine::GenerateOverlapsSet()
 		else
 		{
 			m_broadCollisions.push_back(std::make_pair(
-				m_physObjects[it->first],
-				m_physObjects[it->second]));
+				m_physObjects[it->first].get(),
+				m_physObjects[it->second].get()));
 
 			++it;
 		}

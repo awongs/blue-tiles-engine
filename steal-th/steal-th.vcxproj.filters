@@ -19,6 +19,9 @@
     <Filter Include="Source Files\scenes">
       <UniqueIdentifier>{bd9da87c-2c46-4029-9cf4-1319f2497586}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\behaviours">
+      <UniqueIdentifier>{3ea05163-1a9f-4be5-a819-10546405d977}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -45,6 +48,15 @@
     <ClCompile Include="gameobjects\Wall.cpp">
       <Filter>Source Files\gameobjects</Filter>
     </ClCompile>
+    <ClCompile Include="behaviours\PlayerMovement.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="behaviours\FollowGameObject.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="behaviours\Inventory.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Door.h">
@@ -70,6 +82,15 @@
     </ClInclude>
     <ClInclude Include="gameobjects\Tile.h">
       <Filter>Source Files\gameobjects</Filter>
+	</ClInclude>
+    <ClInclude Include="behaviours\PlayerMovement.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\FollowGameObject.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\Inventory.h">
+      <Filter>Source Files\behaviours</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

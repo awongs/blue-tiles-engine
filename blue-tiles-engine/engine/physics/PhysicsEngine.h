@@ -5,6 +5,7 @@
 #include <memory>
 #include <set>
 #include <vector>
+#include <string>
 
 class Collider;
 class SphereCollider;
@@ -123,8 +124,14 @@ public:
 	// Check for collisions between each of the physics components.
 	void Update();
 
-	// Add a physics component for a game object to the vector.
-	void AddPhysicsObject(PhysicsObject *obj);
+	// Add a PhysicsObject for a GameObject to the vector.
+	PhysicsObject *AddPhysicsObject();
+
+	// Remove the PhysicsObject corresponding to a given GameObject id.
+	void RemovePhysicsObject(GLuint gameObjectId);
+
+	// The message to send via MessageSystem to handle collisions.
+	static const std::string COLLISION_MESSAGE_STR;
 
 private:
 	// Roughly check for potential collisions using bounding boxes.
@@ -163,7 +170,7 @@ private:
 	bool IsBoxSphereColliding(Collider *col1, SphereCollider *col2);
 
 	// Hold all the physics components.
-	std::vector<PhysicsObject *> m_physObjects;
+	std::vector<std::unique_ptr<PhysicsObject>> m_physObjects;
 
 	// Hold all endpoints in the x and y-directions, sorted in ascending order.
 	// Endpoints refer to the bounds of an AABB, projected onto an axis.
