@@ -2,6 +2,7 @@
 
 #include <sdl2/SDL.h>
 #include <glad/glad.h>
+#include <vector>
 
 
 class GeometryBuffer;
@@ -11,6 +12,10 @@ class ShaderManager;
 class Shader;
 class Scene;
 
+class DirectionalLight;
+class PointLight;
+class SpotLight;
+
 /*
 	This renders the game engine.
 */
@@ -19,13 +24,16 @@ class Renderer
 public:
 
 	// Creates a renderer that renders to the target context
-	Renderer(SDL_GLContext* targetContext);
+	Renderer(SDL_GLContext* targetContext, int windowWidth, int windowHeight);
 
 	// Deletes the renderer and deletes it's own shader manager
 	~Renderer();
 
 	// Sets up shaders for rendering
 	void SetupShaders();
+
+	// Updates the lists of lights.
+	void SetupLighting(Scene& currentScene);
 
 	// Performs a shadow pass by rendering objects and storing depth information.
 	void ShadowPass(Scene& currentScene);
@@ -37,6 +45,9 @@ public:
 	void Render(Scene& currentScene);
 
 private:
+
+	// Width and height of the screen.
+	int m_width, m_height;
 
 	// SDL context for the render target
 	SDL_GLContext* m_context;
@@ -61,4 +72,15 @@ private:
 
 	// Quad to render the frame onto.
 	std::unique_ptr<GameObject> m_screenQuad;
+
+	// List of all point lights in the scene.
+	// Needs to be updated if more lights are added to the scene.
+	std::vector<std::weak_ptr<PointLight>> m_pointLights;
+
+	// List of all spot lights in the scene.
+	// Needs to be updated if more lights are added to the scene.
+	std::vector<std::weak_ptr<SpotLight>> m_spotLights;
+
+	// The main directional light in the scene.
+	std::weak_ptr<DirectionalLight> m_directionalLight;
 };

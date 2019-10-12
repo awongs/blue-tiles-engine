@@ -16,10 +16,22 @@ public:
 	// Accessor for depth texture.
 	GLuint GetDepthTexture() const;
 
+	// Accessor for depth texture width.
+	int GetWidth() const;
+
+	// Accessor for depth texture height.
+	int GetHeight() const;
+
 private:
 	// The ID of this shadow buffer.
 	GLuint m_bufferID;
 
 	// Depth texture for calculating shadows.
 	GLuint m_depthTexture;
+
+	// Width of the depth texture.
+	int m_width;
+
+	// Height of the depth texture.
+	int m_height;
 };

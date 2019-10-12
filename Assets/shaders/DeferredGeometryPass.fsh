@@ -7,21 +7,24 @@ layout (location = 2) out vec3 gColour;
 uniform sampler2D uTexture;
 uniform sampler2D uShadowMap;
 
+// Direction TOWARDS the light
+uniform vec3 lightDirection;
+
 in vec3 fragPosition;
 in vec2 fragTexCoord;
 in vec3 fragNormal;
 in vec4 fragLightSpacePosition; // Shadow map coordinates
 
-float calcShadow();
+float calcShadow(vec3 lightDirection, vec3 normal);
 
 void main()
-{
+{   
 	gPosition = fragPosition;
 	gNormal = normalize(fragNormal);
-	gColour = texture(uTexture, fragTexCoord).rgb * calcShadow();
+	gColour = texture(uTexture, fragTexCoord).rgb * calcShadow(lightDirection, gNormal);
 }
 
-lowp float calcShadow() 
+float calcShadow(vec3 lightDirection, vec3 normal) 
 {
     // Convert shadow map coordinates into uv format (0 to 1)
     vec3 projCoords = fragLightSpacePosition.xyz / fragLightSpacePosition.w;
@@ -31,6 +34,8 @@ lowp float calcShadow()
     float closestDepth = texture2D(uShadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     
-    float bias = 0.005;
-    return currentDepth - bias < closestDepth ? 1.0 : 0.3; // 1.0 means no shadow
+    // Adjust bias based on angle between normal and light
+    float bias = max(0.05 * (1.0 - dot(normal, lightDirection)), 0.005);
+
+    return currentDepth - bias < closestDepth ? 1.0 : 0.5; // 1.0 means no shadow
 }

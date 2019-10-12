@@ -24,9 +24,6 @@ public:
 	// Destroys and cleans up the engine.
 	~GameEngine();
 
-	// Handle user input.
-	void HandleInput(Input *input, SDL_Event windowEvent);
-
 	// Main game update loop
 	void Update();
 
