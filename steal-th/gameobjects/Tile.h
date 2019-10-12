@@ -48,4 +48,5 @@ struct Tile
 
 		// Tile down from this tile
 		Tile* tileDown;
+
 };
