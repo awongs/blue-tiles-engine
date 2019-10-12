@@ -1,7 +1,6 @@
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
-#include "MessageSystem.h"
-
+#include <algorithm>
 Scene::Scene()
 {
 
@@ -43,8 +42,8 @@ void Scene::Update(float deltaTime)
 	for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Update(deltaTime);
 	for (auto& screenGameObj : m_screenGameObjects) screenGameObj->Update(deltaTime);
 
-	// message system updates
-	MessageSystem::ProcessAllMessages(this);
+	// Remove all flagged world game objects before doing anything else.
+	RemoveWorldGameObjects();
 }
 
 void Scene::DrawWorld(Shader& shader)
@@ -91,18 +90,9 @@ bool Scene::AddWorldGameObject(GameObject* gameObject)
 }
 
 
-bool Scene::RemoveWorldGameObject(const GLuint id)
+void Scene::RemoveWorldGameObject(const GLuint id)
 {
-	auto it = find_if(m_worldGameObjects.begin(), m_worldGameObjects.end(), [&](std::unique_ptr<GameObject>& obj) { return obj->id == id; });
-
-	if (it != m_worldGameObjects.end())
-	{
-		auto retval = std::move(*it);
-		m_worldGameObjects.erase(it);
-		return true;
-	}
-	DebugLog::Error("A GameObject with that id does not exist.");
-	return false;
+	m_worldGameObjectsToRemove.push_back(id);
 }
 
 std::vector<std::unique_ptr<GameObject>> const& Scene::GetScreenGameObjects() const
@@ -150,4 +140,24 @@ bool Scene::RemoveScreenGameObject(const GLuint id)
 	}
 	DebugLog::Error("A GameObject with that id does not exist.");
 	return false;
+}
+
+void Scene::RemoveWorldGameObjects()
+{
+	for (GLuint id : m_worldGameObjectsToRemove)
+	{
+		auto it = find_if(m_worldGameObjects.begin(), m_worldGameObjects.end(), [&](std::unique_ptr<GameObject> &obj) { return obj->id == id; });
+
+		if (it != m_worldGameObjects.end())
+		{
+			auto retval = std::move(*it);
+			m_worldGameObjects.erase(it);
+		}
+		else
+		{
+			DebugLog::Error("A GameObject with that id does not exist.");
+		}
+	}
+
+	m_worldGameObjectsToRemove.clear();
 }

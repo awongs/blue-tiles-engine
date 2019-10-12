@@ -19,7 +19,12 @@ public:
 		NUM_INPUTS
 	};
 
-	Input();
+	// Prevent copying.
+	Input(const Input& other) = delete;
+	Input& operator=(const Input& other) = delete;
+
+	// Singleton accessor.
+	static Input& GetInstance();
 
 	// Poll input events and update their states.
 	void HandleInput(const SDL_Event &inputEvent);
@@ -35,6 +40,9 @@ public:
 	glm::ivec2 GetMousePos() const;
 
 private:
+	// Constructor.
+	Input();
+
 	// Hold input states for each key.
 	const static int NUM_SCANCODES{ 322 };
 	std::array<bool, NUM_SCANCODES> m_keyStates;

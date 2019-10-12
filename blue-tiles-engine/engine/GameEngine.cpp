@@ -9,6 +9,7 @@
 #include "physics/PhysicsObject.h"
 #include "input/Input.h"
 #include "graphics/TextRenderer.h"
+#include "MessageSystem.h"
 
 GameEngine::GameEngine(SDL_Window* targetWindow)
 	: m_window(targetWindow)
@@ -99,6 +100,9 @@ void GameEngine::Update()
 {
 	UpdateFPSCounter();
 
+	// Update the message system before updating anything else.
+	MessageSystem::ProcessAllMessages(m_currentScene.get());
+
 	m_currentScene->Update(m_deltaTime);
 
 	m_physEngine->Update();
@@ -117,6 +121,14 @@ void GameEngine::Draw()
 void GameEngine::SetScene(Scene* scene)
 {
 	m_currentScene = std::unique_ptr<Scene>(scene);
+}
+
+PhysicsEngine *GameEngine::GetPhysicsEngine() const
+{
+	if (m_physEngine != nullptr)
+		return m_physEngine.get();
+
+	return nullptr;
 }
 
 void GameEngine::UpdateFPSCounter()
