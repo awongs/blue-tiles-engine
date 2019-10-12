@@ -189,8 +189,10 @@ LevelScene::LevelScene(Level* _level)
 			meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
 			scale = glm::vec3(0.5, 0.5, 0.5);
 		}
+
 		// Set object on tile
 		tiles[obj.location].on = obj.name;
+
 		glm::vec3 position = glm::vec3((double)(obj.location % level->width) * 9 + 4.5, 0, (double)(obj.location / level->length) * 9 + 4.5);
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, position, glm::vec3(0, glm::radians(obj.rotation), 0), scale);
 		ga->AddBehaviour(meshRenderer);
