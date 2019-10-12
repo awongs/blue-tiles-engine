@@ -48,3 +48,8 @@ bool PhysicsBehaviour::HandleMessage(unsigned int senderID, std::string message)
 
 	return false;
 }
+
+Collider *PhysicsBehaviour::GetCollider() const
+{
+	return m_collider;
+}

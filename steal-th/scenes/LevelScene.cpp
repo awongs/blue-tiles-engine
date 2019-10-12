@@ -3,11 +3,23 @@
 #include <engine/behaviours/PhysicsBehaviour.h>
 #include <engine/physics/Collider.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/projection.hpp>
 
 #include "LevelScene.h"
 #include "../behaviours/PlayerMovement.h"
 #include "../behaviours/FollowGameObject.h"
 #include "../behaviours/Inventory.h"
+
+namespace
+{
+	const std::string KEY_NAME{ "key" };
+	const std::string WALL_NAME{ "wall" };
+	const std::string DOOR_NAME{ "door" };
+
+	// TODO: Need a more accurate way to determine this.
+	// Just eye-balling it for now...
+	const glm::vec2 WALL_HALF_SIZES{ 3.5f, 0.5f };
+}
 
 LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	: Scene(), m_physEngine(physEngine)
@@ -45,7 +57,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		}
 		for (Door& door : room.doors)
 		{
-			AddDoor(door.facing, "door" + door.doorid, door.location, level->width, level->length);
+			AddDoor(door.facing, DOOR_NAME + std::to_string(door.doorid), door.location, level->width, level->length);
 		}
 
 		for (int x : room.gridUsed)
@@ -105,7 +117,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, position, glm::vec3(0, glm::radians(obj.rotation), 0));
 
 		glm::vec3 scale;
-		if (obj.name.find("key") != std::string::npos)
+		if (obj.name.find(KEY_NAME) != std::string::npos)
 		{
 			meshRenderer = new MeshRenderer("../Assets/models/key.obj");
 			meshRenderer->SetTexture("../Assets/textures/key.png");
@@ -165,21 +177,47 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	ga->AddBehaviour(new Inventory());
 
 	Collider *playerCol{ new Collider(glm::vec3(2.f)) };
-	GameObject *tempPlayer = ga.get();
-	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, playerCol, [this, tempPlayer](GLuint other)
+	GameObject *playerObj = ga.get();
+	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, playerCol, [this, playerObj, playerCol](GLuint other)
 		{
+			// TODO: We should really not be using string-matching to 
+			// differentiate between object types.
+
 			// If this is a "key", then pick it up.
 			GameObject *otherObj{ GetWorldGameObjectById(other) };
-			if (otherObj->name.find("key") != std::string::npos)
+			bool isDoor{ otherObj->name.find(DOOR_NAME) != std::string::npos };
+			if (otherObj->name.find(KEY_NAME) != std::string::npos)
 			{
-				Inventory *tempInventory = static_cast<Inventory*>(tempPlayer->GetBehaviour(BehaviourType::Inventory));
-				if(tempInventory != 0) {
-					//TODO: Using red key for now.
-					tempInventory->AddItem(Inventory::ObjectType::RED_KEY);
+				Inventory *inventory = static_cast<Inventory *>(playerObj->GetBehaviour(BehaviourType::Inventory));
+				if (inventory != nullptr)
+				{
+					// TODO: Using red key for now.
+					inventory->AddItem(Inventory::ObjectType::RED_KEY);
 				}
 
 				// KILL IT
 				RemoveWorldGameObject(other);
+			}
+			// Handle collisions against walls.
+			else if (otherObj->name == WALL_NAME || isDoor)
+			{
+				PlayerMovement *playerMovement{ static_cast<PlayerMovement *>(playerObj->GetBehaviour(BehaviourType::PlayerMovement)) };
+				if (playerMovement == nullptr)
+					return;
+
+				PhysicsBehaviour *otherPhys{ static_cast<PhysicsBehaviour *>(otherObj->GetBehaviour(BehaviourType::Physics)) };
+				if (otherPhys == nullptr)
+					return;
+
+				Collider *otherCol{ otherPhys->GetCollider() };
+				if (otherCol == nullptr)
+					return;
+
+				glm::vec3 playerVel{ playerMovement->GetCurrentVelocity() };
+				glm::vec3 playerColSize{ playerCol->GetHalfSizes() };
+				glm::vec3 otherColSize{ otherCol->GetHalfSizes() };
+
+				playerObj->position -= playerVel;
 			}
 		}) };
 	ga->AddBehaviour(physBehaviour);
@@ -195,30 +233,39 @@ void LevelScene::AddWall(std::string facing, int location, int width, int length
 
 	glm::vec3 position;
 	glm::vec3 rotation;
+	glm::vec3 colliderSize;
 
 	if (facing == "up")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9);
 		rotation = glm::vec3(0, 0, 0);
+		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
 	}
 	else if (facing == "down")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
 		rotation = glm::vec3(0, 0, 0);
+		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
 	}
 	else if (facing == "left")
 	{
 		position = glm::vec3((double)(location % width) * 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
+		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
 	}
 	else if (facing == "right")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
+		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
 	}
 
-	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "WALL", position, rotation, glm::vec3(9, 9, 9));
+	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, WALL_NAME, position, rotation, glm::vec3(9, 9, 9));
 	ga->AddBehaviour(meshRenderer);
+
+	Collider *collider{ new Collider(colliderSize) };
+	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, collider, [](GLuint) {}) };
+	ga->AddBehaviour(physBehaviour);
 
 	m_count++;
 	m_worldGameObjects.push_back(std::move(ga));
@@ -231,30 +278,39 @@ void LevelScene::AddDoor(std::string facing, std::string name, int location, int
 
 	glm::vec3 position;
 	glm::vec3 rotation;
+	glm::vec3 colliderSize;
 
 	if (facing == "up")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9);
 		rotation = glm::vec3(0, 0, 0);
+		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
 	}
 	else if (facing == "down")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
 		rotation = glm::vec3(0, 0, 0);
+		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
 	}
 	else if (facing == "left")
 	{
 		position = glm::vec3((double)(location % width) * 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
+		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
 	}
 	else if (facing == "right")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
+		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
 	}
 
 	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, name, position, rotation, glm::vec3(9, 9, 9));
 	ga->AddBehaviour(meshRenderer);
+
+	Collider *collider{ new Collider(colliderSize) };
+	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, collider, [](GLuint) {}) };
+	ga->AddBehaviour(physBehaviour);
 
 	m_count++;
 	m_worldGameObjects.push_back(std::move(ga));

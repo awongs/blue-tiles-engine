@@ -11,22 +11,41 @@ PlayerMovement::PlayerMovement(float speed)
 
 void PlayerMovement::Update(float deltaTime)
 {
-	if (Input::GetInstance().IsKeyDown(Input::INPUT_UP))
+	bool isKeyUp{ Input::GetInstance().IsKeyDown(Input::INPUT_UP) };
+	bool isKeyDown{ Input::GetInstance().IsKeyDown(Input::INPUT_DOWN) };
+	bool isKeyLeft{ Input::GetInstance().IsKeyDown(Input::INPUT_LEFT) };
+	bool isKeyRight{ Input::GetInstance().IsKeyDown(Input::INPUT_RIGHT) };
+
+	// Update current velocity based on input.
+	if (isKeyUp)
 	{
-		gameObject->position.z -= m_speed * deltaTime;
+		m_currentVelocity.z = -m_speed * deltaTime;
 	}
-	if (Input::GetInstance().IsKeyDown(Input::INPUT_DOWN))
+	if (isKeyDown)
 	{
-		gameObject->position.z += m_speed * deltaTime;
+		m_currentVelocity.z = m_speed * deltaTime;
 	}
-	if (Input::GetInstance().IsKeyDown(Input::INPUT_LEFT))
+	if (isKeyLeft)
 	{
-		gameObject->position.x -= m_speed * deltaTime;
+		m_currentVelocity.x = -m_speed * deltaTime;
 	}
-	if (Input::GetInstance().IsKeyDown(Input::INPUT_RIGHT))
+	if (isKeyRight)
 	{
-		gameObject->position.x += m_speed * deltaTime;
+		m_currentVelocity.x = m_speed * deltaTime;
 	}
+
+	// Stop moving if no input pressed.
+	if (!isKeyUp && !isKeyDown)
+	{
+		m_currentVelocity.z = 0.f;
+	}
+	if (!isKeyLeft && !isKeyRight)
+	{
+		m_currentVelocity.x = 0.f;
+	}
+
+	// Update position based on current velocity.
+	gameObject->position += (m_currentVelocity);
 }
 
 void PlayerMovement::Draw(Shader& shader)
@@ -37,5 +56,10 @@ void PlayerMovement::Draw(Shader& shader)
 bool PlayerMovement::HandleMessage(unsigned int senderID, std::string message)
 {
 	return false;
+}
+
+glm::vec3 PlayerMovement::GetCurrentVelocity() const
+{
+	return m_currentVelocity;
 }
 

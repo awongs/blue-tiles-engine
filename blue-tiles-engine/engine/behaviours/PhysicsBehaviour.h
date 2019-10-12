@@ -25,6 +25,9 @@ public:
 	// Handles messages
 	virtual bool HandleMessage(unsigned int senderID, std::string message);
 
+	// Get its PhysicsObject's collider.
+	Collider *GetCollider() const;
+
 private:
 	// Hold a raw pointer to the GameEngine's PhysicsEngine.
 	// This behaviour will need to register a PhysicsObject for itself.

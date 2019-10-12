@@ -130,9 +130,9 @@ void PhysicsEngine::HandleCollisions()
 		GLuint firstId{ first->GetGameObjectId() };
 		GLuint secondId{ second->GetGameObjectId() };
 
-		DebugLog::Info("Collision detected between (" +
+		/*DebugLog::Info("Collision detected between (" +
 			std::to_string(firstId) + " " +
-			std::to_string(secondId) + ").");
+			std::to_string(secondId) + ").");*/
 
 		// Handle collisions for both physics components.
 		MessageSystem::SendMessageToObject(firstId, secondId, BehaviourType::Physics, COLLISION_MESSAGE_STR);
