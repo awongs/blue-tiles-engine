@@ -80,6 +80,9 @@
     <ClInclude Include="gameobjects\Wall.h">
       <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
+    <ClInclude Include="gameobjects\Tile.h">
+      <Filter>Source Files\gameobjects</Filter>
+	</ClInclude>
     <ClInclude Include="behaviours\PlayerMovement.h">
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>

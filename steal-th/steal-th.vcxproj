@@ -157,6 +157,7 @@
     <ClInclude Include="gameobjects\Guard.h" />
     <ClInclude Include="gameobjects\Object.h" />
     <ClInclude Include="gameobjects\Room.h" />
+    <ClInclude Include="gameobjects\Tile.h" />
     <ClInclude Include="gameobjects\Wall.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="scenes\LevelScene.h" />
