@@ -27,7 +27,7 @@ GameObject::~GameObject()
 void GameObject::Update(float deltaTime)
 {
 	// Tell each behaviour to update
-	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	for (std::shared_ptr<Behaviour>& behaviour : m_Behaviours)
 	{
 		behaviour->Update(deltaTime);
 	}
@@ -43,7 +43,7 @@ void GameObject::Update(float deltaTime)
 void GameObject::Draw(Shader& shader)
 {
 	// Tell each behaviour to draw
-	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	for (std::shared_ptr<Behaviour>& behaviour : m_Behaviours)
 	{
 		behaviour->Draw(shader);
 	}
@@ -71,27 +71,28 @@ void GameObject::UpdateTransformMatrix()
 	forward = glm::normalize(glm::vec3(-rotationMatrix[0][2], -rotationMatrix[1][2], -rotationMatrix[2][2]));
 }
 
-Behaviour* GameObject::GetBehaviour(BehaviourType type)
+std::weak_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)
 {
 	for (auto& behaviour : m_Behaviours)
 	{
 		if (behaviour->GetType() == type)
 		{
-			return behaviour.get();
+			return behaviour;
 		}
 	}
-	return nullptr;
+	// Return an empty weak pointer
+	return std::weak_ptr<Behaviour>();
 }
 
 bool GameObject::HandleMessage(unsigned int senderID, std::string message, BehaviourType type)
 {
-	Behaviour* behav = GetBehaviour(type);
+	std::weak_ptr<Behaviour> behav = GetBehaviour(type);
 
-	return behav != nullptr ? behav->HandleMessage(senderID, message) : false;
+	return behav.expired() ? false : behav.lock()->HandleMessage(senderID, message);
 }
 
 void GameObject::AddBehaviour(Behaviour* behaviour)
 {
 	behaviour->gameObject = this;
-	m_Behaviours.push_back(std::move(std::unique_ptr<Behaviour>(behaviour)));
+	m_Behaviours.push_back(std::shared_ptr<Behaviour>(behaviour));
 }

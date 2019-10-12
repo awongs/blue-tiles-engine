@@ -167,6 +167,7 @@
     <ClCompile Include="engine\graphics\Renderer.cpp" />
     <ClCompile Include="engine\graphics\Shader.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
+    <ClCompile Include="engine\graphics\ShadowBuffer.cpp" />
     <ClCompile Include="engine\graphics\TextRenderer.cpp" />
     <ClCompile Include="engine\graphics\Texture.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="engine\graphics\Renderer.h" />
     <ClInclude Include="engine\graphics\Shader.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
+    <ClInclude Include="engine\graphics\ShadowBuffer.h" />
     <ClInclude Include="engine\graphics\TextRenderer.h" />
     <ClInclude Include="engine\graphics\Texture.h" />
     <ClInclude Include="engine\input\Input.h" />

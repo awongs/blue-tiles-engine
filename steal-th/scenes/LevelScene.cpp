@@ -27,7 +27,20 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 {
 	m_count = 0;
 	std::vector<int> gridsUsed;
-	for (Room& room : level->rooms)
+
+	// Initialize tiles
+	for (unsigned int i = 0; i < level->width; i++)
+	{
+		// Create tiles
+		for (unsigned int j = 0; j < level->length; j++)
+		{
+			Tile tile;
+			tiles.push_back(tile);
+		}
+	}
+
+	// Generate rooms
+	for (Room& room : level->m_rooms)
 	{
 		for (Wall& wall : room.walls)
 		{
@@ -79,12 +92,29 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			glm::vec3 position = glm::vec3((double)i * 9 + 4.5, -0.5, (double)j * 9 + 4.5);
 			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "FLOOR", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(4.5, 4.5, 4.5));
 
+			// Current location
+			int currLoc = i + j * level->length;
+
+			// Set tile num
+			tiles[currLoc].num = currLoc;
+
+			// Set tile center
+			tiles[currLoc].center = position;
+
+			// Set tile coords
+			tiles[currLoc].startX = (double)i * 9.0f;
+			tiles[currLoc].endX = (double)i * 9.0f + 9.0f;
+			tiles[currLoc].startZ = (double)j * 9.0f;
+			tiles[currLoc].endZ = (double)j * 9.0f + 9.0f;
+
 			ga->AddBehaviour(meshRenderer);
 
 			m_count++;
 			m_worldGameObjects.push_back(std::move(ga));
 
 			int currGrid = i + (j * 10);
+
+			// Add walls if to edge of world if not part of a room
 			if (find(gridsUsed.begin(), gridsUsed.end(), currGrid) == gridsUsed.end())
 			{
 				if (j == 0)
@@ -106,11 +136,54 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 					AddWall("right", currGrid, level->width, level->length);
 				}
 			}
+
+			// Make sure all tiles know of previous tile's walls/doors
+			if (i != 0)
+			{
+				// Set current tile as right tile of previous tile
+				tiles[currLoc - 1].tileRight = &tiles[currLoc];
+
+				// Set previous tile as left of current tile
+				tiles[currLoc].tileLeft = &tiles[currLoc - 1];
+
+				// Does the tile to the left have a wall/door on the right?
+				if (tiles[currLoc - 1].right != "none")
+				{
+					tiles[currLoc].left = tiles[currLoc - 1].right;
+				}
+
+				// Does the current tile have a wall/door on the left?
+				if (tiles[currLoc].left != "none")
+				{
+					tiles[currLoc - 1].right = tiles[currLoc].left;
+				}
+			}
+
+			if (j != 0)
+			{
+				// Set current tile as down tile of previous tile
+				tiles[currLoc - level->length].tileDown = &tiles[currLoc];
+
+				// Set previous tile as up of current tile
+				tiles[currLoc].tileUp = &tiles[currLoc - level->length];
+
+				// Does the tile above have a wall/door on the bottom?
+				if (tiles[currLoc - level->length].down != "none")
+				{
+					tiles[currLoc].up = tiles[currLoc - level->length].down;
+				}
+
+				// Does the current tile have a wall/door on the top?
+				if (tiles[currLoc].up != "none")
+				{
+					tiles[currLoc - level->length].down = tiles[currLoc].up;
+				}
+			}
 		}
 	}
 
 	// Create the objects
-	for (Object& obj : level->objects)
+	for (Object& obj : level->m_objects)
 	{
 		MeshRenderer* meshRenderer;
 
@@ -149,6 +222,10 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
 			scale = glm::vec3(0.5, 0.5, 0.5);
 		}
+		
+		// Set object on tile
+		tiles[obj.location].on = obj.name;
+
 		ga->scale = scale;
 		ga->AddBehaviour(meshRenderer);
 
@@ -157,7 +234,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	}
 
 	// Create the guards
-	for (Guard& guard : level->guards)
+	for (Guard& guard : level->m_guards)
 	{
 		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
 		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
@@ -181,7 +258,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 	ga->AddBehaviour(meshRenderer);
 	ga->AddBehaviour(new PlayerMovement(10));
-	ga->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 20.0f)));
+	ga->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
 	ga->AddBehaviour(new Inventory());
 
 	Collider *playerCol{ new Collider(glm::vec3(2.f)) };
@@ -196,7 +273,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			bool isDoor{ otherObj->name.find(DOOR_NAME) != std::string::npos };
 			if (otherObj->name.find(KEY_NAME) != std::string::npos)
 			{
-				Inventory *inventory = static_cast<Inventory *>(playerObj->GetBehaviour(BehaviourType::Inventory));
+				std::shared_ptr<Inventory> inventory{ static_pointer_cast<Inventory>(playerObj->GetBehaviour(BehaviourType::Inventory).lock()) };
 				if (inventory != nullptr)
 				{
 					// TODO: Using red key for now.
@@ -211,18 +288,18 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 				otherObj->name.find(BLOCK_NAME) != std::string::npos)
 			{
 				// TODO: Unlock door with red key for now. Change this later to support all key/door types.
-				Inventory *inventory = static_cast<Inventory *>(playerObj->GetBehaviour(BehaviourType::Inventory));
+				std::shared_ptr<Inventory> inventory{ static_pointer_cast<Inventory>(playerObj->GetBehaviour(BehaviourType::Inventory).lock()) };
 				if (isDoor && inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0)
 				{
 					inventory->RemoveItem(Inventory::ObjectType::RED_KEY);
 					RemoveWorldGameObject(other);
 				}
 
-				PlayerMovement *playerMovement{ static_cast<PlayerMovement *>(playerObj->GetBehaviour(BehaviourType::PlayerMovement)) };
+				std::shared_ptr<PlayerMovement> playerMovement{ static_pointer_cast<PlayerMovement>(playerObj->GetBehaviour(BehaviourType::PlayerMovement).lock()) };
 				if (playerMovement == nullptr)
 					return;
 
-				PhysicsBehaviour *otherPhys{ static_cast<PhysicsBehaviour *>(otherObj->GetBehaviour(BehaviourType::Physics)) };
+				std::shared_ptr<PhysicsBehaviour> otherPhys{ static_pointer_cast<PhysicsBehaviour>(playerObj->GetBehaviour(BehaviourType::Physics).lock()) };
 				if (otherPhys == nullptr)
 					return;
 
@@ -241,6 +318,24 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 	m_count++;
 	m_worldGameObjects.push_back(std::move(ga));
+
+	// ----- For testing -----
+	/*int testTile = 13;
+	DebugLog::Info("center X = " + std::to_string(tiles[testTile].center.x));
+	DebugLog::Info("center Y = " + std::to_string(tiles[testTile].center.y));
+	DebugLog::Info("center Z = " + std::to_string(tiles[testTile].center.z));
+	DebugLog::Info("StartX = " + std::to_string(tiles[testTile].startX));
+	DebugLog::Info("EndX = " + std::to_string(tiles[testTile].endX));
+	DebugLog::Info("StartZ = " + std::to_string(tiles[testTile].startZ));
+	DebugLog::Info("endZ = " + std::to_string(tiles[testTile].endZ));
+	DebugLog::Info("Up = " + tiles[testTile].up);
+	DebugLog::Info("Down = " + tiles[testTile].down);
+	DebugLog::Info("Left = " + tiles[testTile].left);
+	DebugLog::Info("Right = " + tiles[testTile].right);
+	DebugLog::Info("TileUp = " + std::to_string(tiles[testTile].tileUp->num));
+	DebugLog::Info("TileDown = " + std::to_string(tiles[testTile].tileDown->num));
+	DebugLog::Info("TileLeft = " + std::to_string(tiles[testTile].tileLeft->num));
+	DebugLog::Info("TileRight = " + std::to_string(tiles[testTile].tileRight->num));*/
 }
 
 void LevelScene::AddWall(std::string facing, int location, int width, int length)
@@ -257,24 +352,28 @@ void LevelScene::AddWall(std::string facing, int location, int width, int length
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9);
 		rotation = glm::vec3(0, 0, 0);
 		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
+		tiles[location].up = WALL_NAME;
 	}
 	else if (facing == "down")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
 		rotation = glm::vec3(0, 0, 0);
 		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
+		tiles[location].down = WALL_NAME;
 	}
 	else if (facing == "left")
 	{
 		position = glm::vec3((double)(location % width) * 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
 		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
+		tiles[location].left = WALL_NAME;
 	}
 	else if (facing == "right")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
 		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
+		tiles[location].right = WALL_NAME;
 	}
 
 	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, WALL_NAME, position, rotation, glm::vec3(9, 9, 9));
@@ -302,24 +401,28 @@ void LevelScene::AddDoor(std::string facing, std::string name, int location, int
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9);
 		rotation = glm::vec3(0, 0, 0);
 		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
+		tiles[location].up = DOOR_NAME;
 	}
 	else if (facing == "down")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
 		rotation = glm::vec3(0, 0, 0);
 		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
+		tiles[location].down = DOOR_NAME;
 	}
 	else if (facing == "left")
 	{
 		position = glm::vec3((double)(location % width) * 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
 		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
+		tiles[location].left = DOOR_NAME;
 	}
 	else if (facing == "right")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
 		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
+		tiles[location].right = DOOR_NAME;
 	}
 
 	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, name, position, rotation, glm::vec3(9, 9, 9));
