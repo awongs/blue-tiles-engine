@@ -1,10 +1,12 @@
 #include "Level.h"
 
-Level::Level(std::string jsonFile) {
+Level::Level(std::string jsonFile)
+{
 	LoadLevel(jsonFile);
 }
 
-Level::~Level() {
+Level::~Level()
+{
 
 }
 
@@ -16,78 +18,81 @@ void Level::LoadLevel(std::string jsonFile)
 	// If you see a red squiggly, its an IntelliSense problem. It compiles fine.
 	_levelJSON = json::parse(input);
 
-	levelNum	= _levelJSON["info"].value("level", -1);
-	width		= _levelJSON["info"].value("width", -1);
-	length		= _levelJSON["info"].value("length", -1);
+	levelNum = _levelJSON["info"].value("level", -1);
+	width = _levelJSON["info"].value("width", -1);
+	length = _levelJSON["info"].value("length", -1);
 	startPos = _levelJSON["info"].value("startPos", -1);
-	numGrids	= width * length;
+	numGrids = width * length;
 
-	// To clear objects vector
-	std::vector<Object> temp;
-	objects.swap(temp);
-	for (auto object : _levelJSON["objects"])
+	// Create the level's objects from the JSON file.
+	m_objects.clear();
+	for (const auto &object : _levelJSON["objects"])
 	{
-		objects.push_back(*new Object(
-			object.value("objectid", -1),
-			object["name"],
-			object.value("location", -1),
-			object.value("rotation", 0.0)
-		));
+		Object thisObj;
+		thisObj.objectid = object.value("objectid", -1);
+		thisObj.name = object["name"];
+		thisObj.location = object.value("location", -1);
+		thisObj.rotation = object.value("rotation", 0.f);
+
+		m_objects.push_back(thisObj);
 	}
 
-	// To clear rooms vector
-	std::vector<Room> temp2;
-	rooms.swap(temp2);
-	for (auto room : _levelJSON["rooms"])
+	// Create the level's rooms from the JSON file.
+	m_rooms.clear();
+	for (const auto &room : _levelJSON["rooms"])
 	{
 		std::vector<Door> doors;
-		for (auto door : room["doors"]) {
-			doors.push_back(*new Door(
-				door.value("doorid", -1),
-				door.value("location", -1),
-				door.value("keyRequired", ""),
-				door.value("facing", ""),
-				door.value("exit", false)
-			)
-			);
+		for (const auto &door : room["doors"])
+		{
+			Door thisDoor;
+			thisDoor.doorid = door.value("doorid", -1);
+			thisDoor.location = door.value("location", -1);
+			thisDoor.keyRequired = door.value("keyRequired", "");
+			thisDoor.facing = door.value("facing", "");
+			thisDoor.exit = door.value("exit", false);
+
+			doors.push_back(thisDoor);
 		}
 
 		std::vector<Wall> walls;
-		for (auto wall : room["walls"]) {
-			walls.push_back(*new Wall(
-				wall.value("wallid", -1),
-				wall.value("location", -1),
-				wall.value("facing", "")
-			)
-			);
+		for (const auto &wall : room["walls"])
+		{
+			Wall thisWall;
+			thisWall.wallid = wall.value("wallid", -1);
+			thisWall.location = wall.value("location", -1);
+			thisWall.facing = wall.value("facing", "");
+
+			walls.push_back(thisWall);
 		}
 
 		std::vector<int> gridNums;
-		for (auto num : room["gridUsed"]) {
+		for (const auto &num : room["gridUsed"])
+		{
 			gridNums.push_back(num);
 		}
-		rooms.push_back(*new Room(
-			room.value("roomid", -1),
-			gridNums,
-			doors,
-			walls
-		)
-		);
+
+		Room thisRoom;
+		thisRoom.roomid = room.value("roomid", -1);
+		thisRoom.gridUsed = gridNums;
+		thisRoom.doors = doors;
+		thisRoom.walls = walls;
+
+		m_rooms.push_back(thisRoom);
 	}
 
-	// To clear guards vector
-	std::vector<Guard> temp3;
-	guards.swap(temp3);
-	for (auto guard : _levelJSON["guards"]) {
-		guards.push_back(*new Guard(
-			guard.value("guardid", -1),
-			guard.value("location", -1),
-			guard.value("range", 0.0),
-			guard["rotation"].value("angle", 0.0),
-			guard["rotation"].value("rotateFrom", 0.0),
-			guard["rotation"].value("rotateTo", 0.0),
-			guard["rotation"].value("interval", 0.0)
-		)
-		);
+	// Create the level's guards from the JSON file.
+	m_guards.clear();
+	for (const auto &guard : _levelJSON["guards"])
+	{
+		Guard thisGuard;
+		thisGuard.guardid = guard.value("guardid", -1);
+		thisGuard.location = guard.value("location", -1);
+		thisGuard.range = guard.value("range", 0.f);
+		thisGuard.rotAngle = guard["rotation"].value("angle", 0.f);
+		thisGuard.rotFrom = guard["rotation"].value("rotateFrom", 0.f);
+		thisGuard.rotTo = guard["rotation"].value("rotateTo", 0.f);
+		thisGuard.interval = guard["rotation"].value("interval", 0.f);
+
+		m_guards.push_back(thisGuard);
 	}
 }

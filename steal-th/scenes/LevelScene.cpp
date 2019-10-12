@@ -27,7 +27,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	}
 
 	// Generate rooms
-	for (Room& room : level->rooms)
+	for (Room& room : level->rooms
 	{
 		for (Wall& wall : room.walls)
 		{
@@ -170,7 +170,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	}
 
 	// Create the objects
-	for (Object& obj : level->objects)
+	for (Object& obj : level->m_objects)
 	{
 		MeshRenderer* meshRenderer;
 
@@ -214,7 +214,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	}
 
 	// Create the guards
-	for (Guard& guard : level->guards)
+	for (Guard& guard : level->m_guards)
 	{
 		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
 		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
