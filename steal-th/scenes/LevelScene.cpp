@@ -15,6 +15,7 @@ namespace
 	const std::string KEY_NAME{ "key" };
 	const std::string WALL_NAME{ "wall" };
 	const std::string DOOR_NAME{ "door" };
+	const std::string BLOCK_NAME{ "block" };
 
 	// TODO: Need a more accurate way to determine this.
 	// Just eye-balling it for now...
@@ -130,10 +131,17 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 				}) };
 			ga->AddBehaviour(physBehaviour);
 		}
-		else if (obj.name.find("block") != std::string::npos) {
+		else if (obj.name.find(BLOCK_NAME) != std::string::npos) {
 			meshRenderer = new MeshRenderer("../Assets/models/cube.obj");
 			meshRenderer->SetTexture("../Assets/textures/crate.jpg");
 			scale = glm::vec3(8, 8, 8);
+
+			Collider *keyCol{ new Collider(glm::vec3(3.f)) };
+			PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, keyCol, [this](GLuint other)
+				{
+
+				}) };
+			ga->AddBehaviour(physBehaviour);
 		}
 		else
 		{
@@ -198,9 +206,18 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 				// KILL IT
 				RemoveWorldGameObject(other);
 			}
-			// Handle collisions against walls.
-			else if (otherObj->name == WALL_NAME || isDoor)
+			// Handle collisions against walls, doors, and blocks.
+			else if (otherObj->name == WALL_NAME || isDoor || 
+				otherObj->name.find(BLOCK_NAME) != std::string::npos)
 			{
+				// TODO: Unlock door with red key for now. Change this later to support all key/door types.
+				Inventory *inventory = static_cast<Inventory *>(playerObj->GetBehaviour(BehaviourType::Inventory));
+				if (isDoor && inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0)
+				{
+					inventory->RemoveItem(Inventory::ObjectType::RED_KEY);
+					RemoveWorldGameObject(other);
+				}
+
 				PlayerMovement *playerMovement{ static_cast<PlayerMovement *>(playerObj->GetBehaviour(BehaviourType::PlayerMovement)) };
 				if (playerMovement == nullptr)
 					return;

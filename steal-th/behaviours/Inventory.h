@@ -21,6 +21,9 @@ public:
 
     // Decrement an item in player's inventory.
     void RemoveItem(ObjectType type);
+	
+	// Get the number of a specific item in the player's inventory.
+	unsigned int GetNumItem(ObjectType type);
     
 private:
     // Amount of red keys.
