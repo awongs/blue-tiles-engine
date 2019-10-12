@@ -94,5 +94,5 @@ bool GameObject::HandleMessage(unsigned int senderID, std::string message, Behav
 void GameObject::AddBehaviour(Behaviour* behaviour)
 {
 	behaviour->gameObject = this;
-	m_Behaviours.push_back(std::move(std::unique_ptr<Behaviour>(behaviour)));
+	m_Behaviours.push_back(std::shared_ptr<Behaviour>(behaviour));
 }
