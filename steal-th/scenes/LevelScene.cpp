@@ -27,7 +27,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	}
 
 	// Generate rooms
-	for (Room& room : level->rooms
+	for (Room& room : level->m_rooms)
 	{
 		for (Wall& wall : room.walls)
 		{
