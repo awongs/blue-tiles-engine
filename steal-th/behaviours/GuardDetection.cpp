@@ -13,9 +13,9 @@ namespace {
     * Function returns a list of tiles.
     */
 
-    std::vector<glm::vec2> PlotLineLow(int & x0, int & y0, int & x1, int & y1) {
+    std::vector<glm::vec2> PlotLineLow(int x0, int y0, int x1, int y1) {
         //Vector containing points on the line.
-        std::vector<glm::vec2 *> searchTiles;
+        std::vector<glm::vec2> searchTiles;
 
         int dx = x1 - x0;
         int dy = y1 - y0;
@@ -28,8 +28,8 @@ namespace {
         int D = 2 * dy - dx;
         int y = y0;
 
-        for(int x = x0; i < x1; x++) {
-            searchTiles.push_back(new vec2(x,y));
+        for(int x = x0; x <= x1; x++) {
+            searchTiles.push_back(glm::vec2(x,y));
             
             if(D > 0 ) {
                 y = y + yi;
@@ -42,9 +42,9 @@ namespace {
         return searchTiles;
     }
 
-     std::vector<glm::vec2> PlotLineHigh(int & x0, int & y0, int & x1, int & y1) {
+     std::vector<glm::vec2> PlotLineHigh(int x0, int y0, int x1, int y1) {
         //Vector containing points on the line.
-        std::vector<glm::vec2 *> searchTiles;
+        std::vector<glm::vec2> searchTiles;
 
         int dx = x1 - x0;
         int dy = y1 - y0;
@@ -57,10 +57,10 @@ namespace {
         int D = 2 * dx - dy;
         int x = x0;
 
-        for(int y = y0; i < y1; y++) {
-            searchTiles.push_back(new vec2(x,y));
+        for(int y = y0; y <= y1; y++) {
+            searchTiles.push_back(glm::vec2(x,y));
             
-            if(D > 0 ) {
+            if(D > 0) {
                 x = x + xi;
                 D = D - 2 * dy;
             }
@@ -71,8 +71,8 @@ namespace {
         return searchTiles;
     }
 
-    std::vector<glm::vec2> PlotLine(int & x0, int & y0, int & x1, int & y1) {
-        std::vector<glm::vec2 *> searchTiles;
+    std::vector<glm::vec2> PlotLine(int x0, int y0, int x1, int y1) {
+        std::vector<glm::vec2> searchTiles;
         if(std::abs(y1 - y0) < std::abs(x1 - x0)) {
             if(x0 > x1) {
                 searchTiles = PlotLineLow(x1, y1, x0, y0);
@@ -94,10 +94,12 @@ GuardDetection::GuardDetection() : Behaviour(BehaviourType::GuardDetection) {
     m_playerDetected = false;
 }
 
-void Inventory::Update(float deltaTime) {}
+void GuardDetection::Update(float deltaTime) {
+	
+}
 
-void Inventory::Draw(Shader& shader) {}
+void GuardDetection::Draw(Shader& shader) {}
 
-bool Inventory::HandleMessage(unsigned int senderID, std::string message) { 
+bool GuardDetection::HandleMessage(unsigned int senderID, std::string message) {
     return false;
 }

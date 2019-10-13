@@ -8,6 +8,7 @@
 #include "../behaviours/PlayerMovement.h"
 #include "../behaviours/FollowGameObject.h"
 #include "../behaviours/Inventory.h"
+#include "../behaviours/GuardDetection.h"
 
 LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	: Scene(), m_physEngine(physEngine)
@@ -223,6 +224,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "guard", position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
 		ga->AddBehaviour(meshRenderer);
+		ga->AddBehaviour(new GuardDetection());
 
 		m_count++;
 		m_worldGameObjects.push_back(std::move(ga));

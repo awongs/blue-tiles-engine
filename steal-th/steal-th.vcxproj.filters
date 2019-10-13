@@ -67,7 +67,7 @@
     </ClInclude>
     <ClInclude Include="gameobjects\Tile.h">
       <Filter>Source Files\gameobjects</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="behaviours\PlayerMovement.h">
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
@@ -75,6 +75,9 @@
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
     <ClInclude Include="behaviours\Inventory.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\GuardDetection.h">
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
   </ItemGroup>

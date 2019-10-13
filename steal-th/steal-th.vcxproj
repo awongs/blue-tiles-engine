@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="behaviours\FollowGameObject.cpp" />
+    <ClCompile Include="behaviours\GuardDetection.cpp" />
     <ClCompile Include="behaviours\Inventory.cpp" />
     <ClCompile Include="behaviours\PlayerMovement.cpp" />
     <ClCompile Include="Level.cpp" />
@@ -146,6 +147,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="behaviours\FollowGameObject.h" />
+    <ClInclude Include="behaviours\GuardDetection.h" />
     <ClInclude Include="behaviours\Inventory.h" />
     <ClInclude Include="behaviours\PlayerMovement.h" />
     <ClInclude Include="gameobjects\Door.h" />
