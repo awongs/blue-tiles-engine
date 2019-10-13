@@ -89,3 +89,15 @@ namespace {
         return searchTiles;
     }
 }
+
+GuardDetection::GuardDetection() : Behaviour(BehaviourType::GuardDetection) {
+    m_playerDetected = false;
+}
+
+void Inventory::Update(float deltaTime) {}
+
+void Inventory::Draw(Shader& shader) {}
+
+bool Inventory::HandleMessage(unsigned int senderID, std::string message) { 
+    return false;
+}
