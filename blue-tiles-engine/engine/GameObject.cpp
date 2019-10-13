@@ -27,25 +27,18 @@ GameObject::~GameObject()
 void GameObject::Update(float deltaTime)
 {
 	// Tell each behaviour to update
-	for (std::shared_ptr<Behaviour>& behaviour : m_Behaviours)
+	for (const auto& behaviour : m_behaviours)
 	{
-		behaviour->Update(deltaTime);
+		behaviour.second->Update(deltaTime);
 	}
-
-	// -- Testing Purposes --
-	//rotation.y += 3.14f * deltaTime;
-	
-	// Shared pointer to a music object.
-	//auto music = SoundManager::getInstance().getMusic("alarm");
-	//music->play();
 }
 
 void GameObject::Draw(Shader& shader)
 {
 	// Tell each behaviour to draw
-	for (std::shared_ptr<Behaviour>& behaviour : m_Behaviours)
+	for (const auto& behaviour : m_behaviours)
 	{
-		behaviour->Draw(shader);
+		behaviour.second->Draw(shader);
 	}
 }
 
@@ -73,11 +66,11 @@ void GameObject::UpdateTransformMatrix()
 
 std::weak_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)
 {
-	for (auto& behaviour : m_Behaviours)
+	for (auto& behaviour : m_behaviours)
 	{
-		if (behaviour->GetType() == type)
+		if (behaviour.second->GetType() == type)
 		{
-			return behaviour;
+			return behaviour.second;
 		}
 	}
 	// Return an empty weak pointer
@@ -93,6 +86,9 @@ bool GameObject::HandleMessage(unsigned int senderID, std::string message, Behav
 
 void GameObject::AddBehaviour(Behaviour* behaviour)
 {
-	behaviour->gameObject = this;
-	m_Behaviours.push_back(std::shared_ptr<Behaviour>(behaviour));
+	if (behaviour != nullptr )
+	{
+		behaviour->gameObject = this;
+		m_behaviours[std::type_index(typeid(*behaviour))] = std::shared_ptr<Behaviour>(behaviour);
+	}
 }
