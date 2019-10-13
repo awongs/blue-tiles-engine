@@ -100,36 +100,52 @@ void GuardDetection::Update(float deltaTime)
 	if (m_levelScene == nullptr)
 		return;
 
-	glm::vec2 guardPos{ gameObject->position.x, gameObject->position.z };
+	// The guard's tile position is point 1 for the line algorithm.
+	glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
+	glm::ivec2 guardTilePos{ m_levelScene->GetTileCoordFromPos(guardWorldPos) };
 
-	// TODO: THIS IS BUGGED. maxDistPoint (point 2 for the line algorithm) is being calculated incorrectly.
-	float maxViewDist{ 10.f };
-	glm::vec2 unrotatedMaxDistPoint{ guardPos.x, guardPos.y + maxViewDist };
+	// TODO: change this fixed view distance.
+	float maxViewDist{ LevelScene::TILE_SIZE * 3 };
 
-	glm::vec2 viewVector{ unrotatedMaxDistPoint - guardPos };
-	glm::rotate(viewVector, gameObject->rotation.y);
+	// For rotation == 0.f, the guard is facing up.
+	glm::vec2 unrotatedMaxDistPoint{ guardWorldPos.x, guardWorldPos.y - maxViewDist };
 
-	// These are the point 1 and point 2 params for the line algorithm.
-	glm::vec2 roundedGuardPos{ glm::round(guardPos) };
-	glm::vec2 maxDistPoint{ glm::round(guardPos + viewVector) };
-	DebugLog::Info(std::to_string(roundedGuardPos.x) + ", " + std::to_string(roundedGuardPos.y));
+	glm::vec2 viewVector{ unrotatedMaxDistPoint - guardWorldPos };
+	viewVector = glm::rotate(viewVector, gameObject->rotation.y);
+
+	// The max tile distance point is point 2 for the line algorithm.
+	glm::vec2 maxWorldDistPoint{ guardWorldPos + viewVector };
+	glm::ivec2 maxTileDistPoint{ m_levelScene->GetTileCoordFromPos(maxWorldDistPoint) };
+	glm::ivec2 levelSize{ m_levelScene->GetLevelSize() };
+	maxTileDistPoint.x = glm::clamp(maxTileDistPoint.x, 0, levelSize.x - 1);
+	maxTileDistPoint.y = glm::clamp(maxTileDistPoint.y, 0, levelSize.y - 1);
 
 	// Call the line algorithm to get the points on the line.
 	std::vector<glm::ivec2> output;
-	PlotLine(roundedGuardPos.x, roundedGuardPos.y, maxDistPoint.x, maxDistPoint.y, output);
+	PlotLine(guardTilePos.x, guardTilePos.y, maxTileDistPoint.x, maxTileDistPoint.y, output);
+
+	glm::vec2 playerWorldPos{ glm::vec2(m_playerObj->position.x, m_playerObj->position.z) };
+	glm::ivec2 playerTilePos{ m_levelScene->GetTileCoordFromPos(playerWorldPos) };
 
 	// Check points on the line, ordered from closest point to the 
 	// guard to furthest.
-	for (auto &point : output)
+	// The output of the line algorithm has this in reverse order, 
+	// so we iterate through the output vector in reverse.
+	for (auto it = output.rbegin(); it != output.rend(); ++it)
 	{
-		// Check if the player has been seen.
-		glm::ivec2 playerTilePos{ m_levelScene->GetTileCoordFromPos(m_playerObj->position) };
+		glm::ivec2 point{ *it };
+		//DebugLog::Info(std::to_string(point.x) + ", " + std::to_string(point.y));
+
 		if (point == playerTilePos)
 		{
 			m_playerDetected = true;
 			DebugLog::Info("I GOT U IN MY SIGHTS");
 			break;
 		}
+
+		// TODO: fix this... otherwise we're considering any tile with a 
+		// wall/door in it to be obstructing vision, regardless of the 
+		// facing-direction of that wall/door.
 
 		// Check if the vision ray has hit a wall yet.
 		const Tile &tile{ m_levelScene->GetTile(point.x, point.y) };

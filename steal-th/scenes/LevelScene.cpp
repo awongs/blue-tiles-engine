@@ -16,8 +16,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	: Scene(), m_physEngine(physEngine)
 {
 	// Can we please use axes instead of "width" and "length".
-	m_levelSizeX = level->length;
-	m_levelSizeZ = level->width;
+	m_levelSize = glm::ivec2(level->length, level->width);
 
 	m_count = 0;
 	std::vector<int> gridsUsed;
@@ -309,15 +308,20 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 const Tile &LevelScene::GetTile(unsigned int x, unsigned int z) const
 {
-	unsigned int clampedX{ glm::clamp(x, (unsigned int)0, m_levelSizeX - 1) };
-	unsigned int clampedZ{ glm::clamp(z, (unsigned int)0, m_levelSizeZ - 1) };
-	unsigned int index{ clampedZ * m_levelSizeX + clampedX };
+	int clampedX{ glm::clamp((int)x, 0, m_levelSize.x - 1) };
+	int clampedZ{ glm::clamp((int)z, 0, m_levelSize.y - 1) };
+	int index{ clampedZ * m_levelSize.x + clampedX };
 	return m_tiles[index];
 }
 
 glm::ivec2 LevelScene::GetTileCoordFromPos(glm::vec2 worldPos) const
 {
 	return glm::ivec2(glm::floor(worldPos / TILE_SIZE));
+}
+
+glm::ivec2 LevelScene::GetLevelSize() const
+{
+	return m_levelSize;
 }
 
 void LevelScene::AddWall(std::string facing, int location, int width, int length)

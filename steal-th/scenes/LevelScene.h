@@ -18,6 +18,9 @@ public:
 	// Get the x, z tile-coordinates from given x, z world coordinates.
 	glm::ivec2 GetTileCoordFromPos(glm::vec2 worldPos) const;
 
+	// Get the number of tiles in this level.
+	glm::ivec2 GetLevelSize() const;
+
 	// The size of a tile in world units.
 	static const float TILE_SIZE;
 
@@ -40,5 +43,5 @@ private:
 	std::vector<Tile> m_tiles;
 
 	// The size of the level in tiles.
-	unsigned int m_levelSizeX{ 0 }, m_levelSizeZ{ 0 };
+	glm::ivec2 m_levelSize;
 };
