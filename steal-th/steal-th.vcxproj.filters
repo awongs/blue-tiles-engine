@@ -42,6 +42,9 @@
     <ClCompile Include="behaviours\Inventory.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="behaviours\GuardDetection.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Door.h">
