@@ -249,8 +249,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			GameObject *otherObj{ GetWorldGameObjectById(other) };
 			if (otherObj->name.find("key") != std::string::npos)
 			{
-				auto tempInventory = static_pointer_cast<Inventory>(tempPlayer->GetBehaviour(BehaviourType::Inventory).lock());
-				if(tempInventory != 0) {
+				std::shared_ptr<Inventory> tempInventory = tempPlayer->GetBehaviour<Inventory>().lock();
+				if(tempInventory != nullptr) {
 					//TODO: Using red key for now.
 					tempInventory->AddItem(Inventory::ObjectType::RED_KEY);
 				}
