@@ -265,6 +265,9 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		}) };
 	ga->AddBehaviour(physBehaviour);
 
+	m_count++;
+	m_worldGameObjects.push_back(std::move(ga));
+
 	// Create the guards
 	for (Guard &guard : level->m_guards)
 	{
@@ -283,9 +286,6 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		m_count++;
 		m_worldGameObjects.push_back(std::move(ga));
 	}
-
-	m_count++;
-	m_worldGameObjects.push_back(std::move(ga));
 
 	// ----- For testing -----
 	/*int testTile = 13;

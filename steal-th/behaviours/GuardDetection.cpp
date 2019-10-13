@@ -161,8 +161,8 @@ void GuardDetection::Update(float deltaTime)
 		};
 
 		// This vision ray has hit a wall.
-		if (isBlocked)
-			break;
+		/*if (isBlocked)
+			break;*/
 	}
 }
 
