@@ -17,7 +17,8 @@ enum class BehaviourType
 	SpotLight, 
 	PlayerMovement, 
 	FollowGameObject,
-	Inventory
+	Inventory,
+  SimpleGuardMovementBehaviour
 };
 
 class GameObject;

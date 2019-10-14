@@ -92,24 +92,24 @@ void Renderer::SetupLighting(Scene& currentScene)
 	for (const std::unique_ptr<GameObject>& gameObject : currentScene.GetWorldGameObjects())
 	{
 		// Use this directional light if there isn't already one set
-		auto dirLight = static_pointer_cast<DirectionalLight>(gameObject->GetBehaviour(BehaviourType::DirectionalLight).lock());
-		if (m_directionalLight.expired() && dirLight != nullptr)
+		std::weak_ptr<DirectionalLight> dirLight = gameObject->GetBehaviour<DirectionalLight>();
+		if (m_directionalLight.expired() && !dirLight.expired())
 		{
 			m_directionalLight = dirLight;
 			continue;
 		}
 
 		// Get all point lights
-		auto pointLight = static_pointer_cast<PointLight>(gameObject->GetBehaviour(BehaviourType::PointLight).lock());
-		if (pointLight != nullptr)
+		std::weak_ptr<PointLight> pointLight = gameObject->GetBehaviour<PointLight>();
+		if (!pointLight.expired())
 		{
 			m_pointLights.push_back(pointLight);
 			continue;
 		}
 
 		// Get all spot lights
-		auto spotLight = static_pointer_cast<SpotLight>(gameObject->GetBehaviour(BehaviourType::SpotLight).lock());
-		if (spotLight != nullptr)
+		std::weak_ptr<SpotLight> spotLight = gameObject->GetBehaviour<SpotLight>();
+		if (!spotLight.expired())
 		{
 			m_spotLights.push_back(spotLight);
 		}

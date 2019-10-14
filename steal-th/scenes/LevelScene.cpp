@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/projection.hpp>
 
+#include "../behaviours/SimpleGuardMovementAIBehaviour.h"
 #include "LevelScene.h"
 #include "../behaviours/PlayerMovement.h"
 #include "../behaviours/FollowGameObject.h"
@@ -239,10 +240,30 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
 		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
 
+		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
+
+		// move to box
+		sgmaib->AddMoveTileAction(1, 2);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddMoveTileAction(1, 1);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddWaitAction(2);
+
+		// move back
+		sgmaib->AddMoveTileAction(1, 2);
+		sgmaib->AddTurnCCWAction();
+		sgmaib->AddMoveTileAction(2, 2);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddWaitAction(2);
+
 		glm::vec3 position = glm::vec3((double)(guard.location % level->width) * 9 + 4.5, 0, (double)(guard.location / level->length) * 9 + 4.5);
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "guard", position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
 		ga->AddBehaviour(meshRenderer);
+		ga->AddBehaviour(sgmaib);
+		
 
 		m_count++;
 		m_worldGameObjects.push_back(std::move(ga));
@@ -273,8 +294,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			bool isDoor{ otherObj->name.find(DOOR_NAME) != std::string::npos };
 			if (otherObj->name.find(KEY_NAME) != std::string::npos)
 			{
-				std::shared_ptr<Inventory> inventory{ static_pointer_cast<Inventory>(playerObj->GetBehaviour(BehaviourType::Inventory).lock()) };
-				if (inventory != nullptr)
+				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
+				if (inventory != nullptr) 
 				{
 					// TODO: Using red key for now.
 					inventory->AddItem(Inventory::ObjectType::RED_KEY);
@@ -288,18 +309,18 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 				otherObj->name.find(BLOCK_NAME) != std::string::npos)
 			{
 				// TODO: Unlock door with red key for now. Change this later to support all key/door types.
-				std::shared_ptr<Inventory> inventory{ static_pointer_cast<Inventory>(playerObj->GetBehaviour(BehaviourType::Inventory).lock()) };
+				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
 				if (isDoor && inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0)
 				{
 					inventory->RemoveItem(Inventory::ObjectType::RED_KEY);
 					RemoveWorldGameObject(other);
 				}
 
-				std::shared_ptr<PlayerMovement> playerMovement{ static_pointer_cast<PlayerMovement>(playerObj->GetBehaviour(BehaviourType::PlayerMovement).lock()) };
+				std::shared_ptr<PlayerMovement> playerMovement{ playerObj->GetBehaviour<PlayerMovement>().lock() };
 				if (playerMovement == nullptr)
 					return;
 
-				std::shared_ptr<PhysicsBehaviour> otherPhys{ static_pointer_cast<PhysicsBehaviour>(playerObj->GetBehaviour(BehaviourType::Physics).lock()) };
+				std::shared_ptr<PhysicsBehaviour> otherPhys{ otherObj->GetBehaviour<PhysicsBehaviour>().lock() };
 				if (otherPhys == nullptr)
 					return;
 
