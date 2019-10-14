@@ -57,7 +57,7 @@ void SimpleGuardMovementAIBehaviour::AddWaitAction(float duration)
 		duration,		// duration
 		0,				// x
 		0,				// z
-		0				// roty
+		false			// CW / CCW
 	});
 }
 
@@ -68,7 +68,7 @@ void SimpleGuardMovementAIBehaviour::AddMoveAction(float x, float z)
 		0,				// duration
 		x,				// x
 		z,				// z
-		0				// roty
+		false			// CW / CCW
 		});
 }
 
@@ -79,18 +79,40 @@ void SimpleGuardMovementAIBehaviour::AddMoveTileAction(int x, int z)
 		0,				// duration
 		(x * 9.0f) + 4.5f,		// x
 		(z * 9.0f) + 4.5f,		// z
-		0				// roty
+		false			// CW / CCW
 		});
 }
 
-void SimpleGuardMovementAIBehaviour::AddTurnAction(float rotYDegree)
+void SimpleGuardMovementAIBehaviour::AddTurnAction(bool rotateCCW)
 {
 	AddAction(SimpleGuardMovementAction{
 		SGMAType::Turn,	// type
 		0,				// duration
 		0,				// x
 		0,				// z
-		glm::radians(rotYDegree) // roty
+		rotateCCW		// CW / CCW
+		});
+}
+
+void SimpleGuardMovementAIBehaviour::AddTurnCWAction()
+{
+	AddAction(SimpleGuardMovementAction{
+		SGMAType::Turn,	// type
+		0,				// duration
+		0,				// x
+		0,				// z
+		false			// CW / CCW
+		});
+}
+
+void SimpleGuardMovementAIBehaviour::AddTurnCCWAction()
+{
+	AddAction(SimpleGuardMovementAction{
+		SGMAType::Turn,	// type
+		0,				// duration
+		0,				// x
+		0,				// z
+		true			// CW / CCW
 		});
 }
 
@@ -150,10 +172,10 @@ bool SimpleGuardMovementAIBehaviour::ProcessAction(float deltaTime, SimpleGuardM
 
 	case SGMAType::MoveAndTurn:
 
-		return ProcessMoveAction(deltaTime, action) && ProcessTurnAction(deltaTime, action);
+		return ProcessTurnAction(deltaTime, action) && ProcessMoveAction(deltaTime, action);
 
 	case SGMAType::Turn:
-
+		
 		return ProcessTurnAction(deltaTime, action);
 
 	}
@@ -169,7 +191,12 @@ bool SimpleGuardMovementAIBehaviour::ProcessMoveAction(float deltaTime, SimpleGu
 
 	float dist = glm::distance(gameObject->position, dest);
 
-	if (dist < epsilon) return true;
+	if (dist <= epsilon)
+	{
+		gameObject->position.x = dest.x;
+		gameObject->position.y = dest.y;
+		return true;
+	}
 
 	// move towards destination
 
@@ -177,7 +204,7 @@ bool SimpleGuardMovementAIBehaviour::ProcessMoveAction(float deltaTime, SimpleGu
 	float scaledSpeed = m_movementSpeed * deltaTime;
 
 	// went past the destination
-	if (scaledSpeed > dist)
+	if (scaledSpeed >= dist)
 	{
 		gameObject->position.x = dest.x;
 		gameObject->position.y = dest.y;
@@ -193,27 +220,41 @@ bool SimpleGuardMovementAIBehaviour::ProcessMoveAction(float deltaTime, SimpleGu
 
 bool SimpleGuardMovementAIBehaviour::ProcessTurnAction(float deltaTime, SimpleGuardMovementAction& action)
 {
+	// if new turn action, find the new target rotation
+	if (!m_newRotationTarget)
+	{
+		if (action.rotateCCW) m_rotationTarget = gameObject->rotation.y + glm::radians(90.0f);
+		else m_rotationTarget = gameObject->rotation.y - glm::radians(90.0f);
+
+		m_newRotationTarget = true;
+	}
+
 	// difference between desired and current
-	float diff = action.rotationY - gameObject->rotation.y;
+	float diff = m_rotationTarget - gameObject->rotation.y;
 
 	// abs diff
 	diff = diff > 0 ? diff : -diff;
 
-	if (diff < epsilon) return true;
+	if (diff <= epsilon)
+	{
+		gameObject->rotation.y = m_rotationTarget;
+		m_newRotationTarget = false;
+		return true;
+	}
 
 	// rotate towards desired rotation
 
 	float scaledRotation = m_rotationSpeed * deltaTime;
 
 	// check for overshoot
-	if (scaledRotation > diff)
+	if (scaledRotation >= diff)
 	{
-		gameObject->rotation.y = action.rotationY;
+		gameObject->rotation.y = m_rotationTarget;
 	}
 	else
 	{
 		// rotate ccw (?)
-		if (action.rotationY > gameObject->rotation.y) gameObject->rotation.y += scaledRotation;
+		if (m_rotationTarget > gameObject->rotation.y) gameObject->rotation.y += scaledRotation;
 		// rotate cw (?)
 		else gameObject->rotation.y -= scaledRotation;
 	}

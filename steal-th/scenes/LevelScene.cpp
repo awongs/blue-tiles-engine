@@ -134,16 +134,18 @@ LevelScene::LevelScene(Level* level)
 
 		// move to box
 		sgmaib->AddMoveTileAction(1, 2);
-		sgmaib->AddTurnAction(180);
+		sgmaib->AddTurnCWAction();
 		sgmaib->AddMoveTileAction(1, 1);
-		sgmaib->AddTurnAction(0);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddTurnCWAction();
 		sgmaib->AddWaitAction(2);
 
 		// move back
 		sgmaib->AddMoveTileAction(1, 2);
-		sgmaib->AddTurnAction(90);
+		sgmaib->AddTurnCCWAction();
 		sgmaib->AddMoveTileAction(2, 2);
-		sgmaib->AddTurnAction(-90);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddTurnCWAction();
 		sgmaib->AddWaitAction(2);
 
 		glm::vec3 position = glm::vec3((double)(guard.location % level->width) * 9 + 4.5, 0, (double)(guard.location / level->length) * 9 + 4.5);

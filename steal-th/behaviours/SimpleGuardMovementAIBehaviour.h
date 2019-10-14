@@ -27,7 +27,11 @@ public:
 
 	void AddMoveTileAction(int x, int z);
 
-	void AddTurnAction(float rotY);
+	void AddTurnAction(bool rotateCCW);
+
+	void AddTurnCWAction();
+
+	void AddTurnCCWAction();
 
 	// Overwritten functions.
 	void Update(float deltaTime) override;
@@ -53,6 +57,10 @@ protected:
 	float m_actionTime = 0;
 
 	bool m_isPaused = false;
+
+	float m_rotationTarget;
+
+	bool m_newRotationTarget;
 
 	size_t m_actionIndex = 0;
 
@@ -93,6 +101,6 @@ public:
 	// -- Parameters used by Turn actions -- 
 	//
 
-	// The desired y rotation value.
-	float rotationY;
+	// Rotate CW or CCW.
+	bool rotateCCW;
 };
