@@ -4,8 +4,6 @@
 
 float SimpleGuardMovementAIBehaviour::epsilon = 0.05f;
 
-float SimpleGuardMovementAIBehaviour::epsilonSqr = epsilon * epsilon;
-
 SimpleGuardMovementAIBehaviour::SimpleGuardMovementAIBehaviour(float movementSpeed, float rotationSpeed)
 	: Behaviour(BehaviourType::SimpleGuardMovementBehaviour)
 	, m_movementSpeed(movementSpeed)
@@ -122,14 +120,16 @@ void SimpleGuardMovementAIBehaviour::Update(float deltaTime)
 
 	if (m_actions.size() == 0) return;
 
-	if (deltaTime > 0.1f) return;
+	if (deltaTime > 0.1f) return; // Skip update when delta is too big. (First frame delta fix)
 
 	bool isDone = ProcessAction(deltaTime, m_actions[m_actionIndex]);
 
+	// Action is done, go to the next one.
 	if (isDone)
 	{
 		m_actionIndex++;
 
+		// Loop back to zero.
 		if (m_actionIndex >= m_actions.size())
 		{
 			m_actionIndex = 0;
@@ -143,8 +143,10 @@ void SimpleGuardMovementAIBehaviour::Draw(Shader& shader)
 
 bool SimpleGuardMovementAIBehaviour::HandleMessage(unsigned int senderID, std::string message)
 {
+	// Pause the action processing.
 	if (message == "Pause SGMAI") m_isPaused = true;
 
+	// Resumes the action processing.
 	else if (message == "Resume SGMAI") m_isPaused = false;
 
 	return false;
@@ -185,12 +187,13 @@ bool SimpleGuardMovementAIBehaviour::ProcessAction(float deltaTime, SimpleGuardM
 
 bool SimpleGuardMovementAIBehaviour::ProcessMoveAction(float deltaTime, SimpleGuardMovementAction& action)
 {
-	// check if close enough yet
-
+	// destination position vector 
 	glm::vec3 dest = glm::vec3(action.destinationX, gameObject->position.y, action.destinationZ);
 
+	// distance to the destination
 	float dist = glm::distance(gameObject->position, dest);
 
+	// check if close enough yet
 	if (dist <= epsilon)
 	{
 		gameObject->position.x = dest.x;
@@ -236,6 +239,7 @@ bool SimpleGuardMovementAIBehaviour::ProcessTurnAction(float deltaTime, SimpleGu
 	// abs diff
 	diff = diff >= 0 ? diff : -diff;
 
+	// check if we are close enough
 	if (diff <= epsilon)
 	{
 		gameObject->rotation.y = m_rotationTarget;
