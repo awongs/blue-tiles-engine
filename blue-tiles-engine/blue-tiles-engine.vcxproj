@@ -154,6 +154,7 @@
     <ClCompile Include="engine\behaviours\DirectionalLight.cpp" />
     <ClCompile Include="engine\behaviours\Light.cpp" />
     <ClCompile Include="engine\behaviours\MeshRenderer.cpp" />
+    <ClCompile Include="engine\behaviours\PhysicsBehaviour.cpp" />
     <ClCompile Include="engine\behaviours\PointLight.cpp" />
     <ClCompile Include="engine\behaviours\SpotLight.cpp" />
     <ClCompile Include="engine\behaviours\TextBehaviour.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="engine\graphics\Renderer.cpp" />
     <ClCompile Include="engine\graphics\Shader.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
+    <ClCompile Include="engine\graphics\ShadowBuffer.cpp" />
     <ClCompile Include="engine\graphics\TextRenderer.cpp" />
     <ClCompile Include="engine\graphics\Texture.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
@@ -185,6 +187,7 @@
   <ItemGroup>
     <ClInclude Include="engine\behaviours\Behaviour.h" />
     <ClInclude Include="engine\behaviours\DirectionalLight.h" />
+    <ClInclude Include="engine\behaviours\PhysicsBehaviour.h" />
     <ClInclude Include="engine\behaviours\PointLight.h" />
     <ClInclude Include="engine\behaviours\Light.h" />
     <ClInclude Include="engine\behaviours\MeshRenderer.h" />
@@ -199,6 +202,7 @@
     <ClInclude Include="engine\graphics\Renderer.h" />
     <ClInclude Include="engine\graphics\Shader.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
+    <ClInclude Include="engine\graphics\ShadowBuffer.h" />
     <ClInclude Include="engine\graphics\TextRenderer.h" />
     <ClInclude Include="engine\graphics\Texture.h" />
     <ClInclude Include="engine\input\Input.h" />

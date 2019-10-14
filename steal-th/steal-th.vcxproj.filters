@@ -21,23 +21,12 @@
     </Filter>
     <Filter Include="Source Files\behaviours">
       <UniqueIdentifier>{e83bc0a9-4132-4b8e-94dc-b8bc6e6c2755}</UniqueIdentifier>
+      <UniqueIdentifier>{3ea05163-1a9f-4be5-a819-10546405d977}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Door.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Guard.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Object.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Room.cpp">
-      <Filter>Source Files\gameobjects</Filter>
     </ClCompile>
     <ClCompile Include="Level.cpp">
       <Filter>Source Files</Filter>
@@ -45,8 +34,14 @@
     <ClCompile Include="scenes\LevelScene.cpp">
       <Filter>Source Files\scenes</Filter>
     </ClCompile>
-    <ClCompile Include="gameobjects\Wall.cpp">
-      <Filter>Source Files\gameobjects</Filter>
+    <ClCompile Include="behaviours\PlayerMovement.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="behaviours\FollowGameObject.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="behaviours\Inventory.cpp">
+      <Filter>Source Files\behaviours</Filter>
     </ClCompile>
     <ClCompile Include="behaviours\SimpleGuardMovementAIBehaviour.cpp">
       <Filter>Source Files\behaviours</Filter>
@@ -75,6 +70,18 @@
       <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
     <ClInclude Include="behaviours\SimpleGuardMovementAIBehaviour.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="gameobjects\Tile.h">
+      <Filter>Source Files\gameobjects</Filter>
+	  </ClInclude>
+    <ClInclude Include="behaviours\PlayerMovement.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\FollowGameObject.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\Inventory.h">
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
   </ItemGroup>

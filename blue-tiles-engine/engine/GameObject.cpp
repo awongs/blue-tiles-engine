@@ -27,25 +27,18 @@ GameObject::~GameObject()
 void GameObject::Update(float deltaTime)
 {
 	// Tell each behaviour to update
-	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	for (const auto& behaviour : m_behaviours)
 	{
-		behaviour->Update(deltaTime);
+		behaviour.second->Update(deltaTime);
 	}
-
-	// -- Testing Purposes --
-	//rotation.y += 3.14f * deltaTime;
-	
-	// Shared pointer to a music object.
-	//auto music = SoundManager::getInstance().getMusic("alarm");
-	//music->play();
 }
 
 void GameObject::Draw(Shader& shader)
 {
 	// Tell each behaviour to draw
-	for (std::unique_ptr<Behaviour>& behaviour : m_Behaviours)
+	for (const auto& behaviour : m_behaviours)
 	{
-		behaviour->Draw(shader);
+		behaviour.second->Draw(shader);
 	}
 }
 
@@ -71,27 +64,31 @@ void GameObject::UpdateTransformMatrix()
 	forward = glm::normalize(glm::vec3(-rotationMatrix[0][2], -rotationMatrix[1][2], -rotationMatrix[2][2]));
 }
 
-Behaviour* GameObject::GetBehaviour(BehaviourType type)
+std::weak_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)
 {
-	for (auto& behaviour : m_Behaviours)
+	for (auto& behaviour : m_behaviours)
 	{
-		if (behaviour->GetType() == type)
+		if (behaviour.second->GetType() == type)
 		{
-			return behaviour.get();
+			return behaviour.second;
 		}
 	}
-	return nullptr;
+	// Return an empty weak pointer
+	return std::weak_ptr<Behaviour>();
 }
 
 bool GameObject::HandleMessage(unsigned int senderID, std::string message, BehaviourType type)
 {
-	Behaviour* behav = GetBehaviour(type);
+	std::weak_ptr<Behaviour> behav = GetBehaviour(type);
 
-	return behav != nullptr ? behav->HandleMessage(senderID, message) : false;
+	return behav.expired() ? false : behav.lock()->HandleMessage(senderID, message);
 }
 
 void GameObject::AddBehaviour(Behaviour* behaviour)
 {
-	behaviour->gameObject = this;
-	m_Behaviours.push_back(std::move(std::unique_ptr<Behaviour>(behaviour)));
+	if (behaviour != nullptr )
+	{
+		behaviour->gameObject = this;
+		m_behaviours[std::type_index(typeid(*behaviour))] = std::shared_ptr<Behaviour>(behaviour);
+	}
 }

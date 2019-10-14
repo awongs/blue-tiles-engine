@@ -2,40 +2,27 @@
 
 #include <glad/glad.h>
 
-#include <functional>
 #include <memory>
 
-#include "../behaviours/Behaviour.h"
 #include "Collider.h"
 
-class PhysicsObject : public Behaviour
+class PhysicsObject
 {
 public:
-	PhysicsObject(Collider *collider, 
-		std::function<void(const PhysicsObject &)> onCollision);
+	PhysicsObject();
 
 	~PhysicsObject();
-
-	// Update
-	virtual void Update(float deltaTime);
-
-	// Draw
-	virtual void Draw(Shader& shader);
-
-	// Handles messages
-	virtual bool HandleMessage(unsigned int senderID, std::string message);
-
-	// The physics engine calls this when a collision is detected.
-	void OnCollision(const PhysicsObject &other);
 	
 	// Get the physics object's collider.
 	Collider *GetCollider() const;
+	void SetCollider(Collider *collider);
+	GLuint GetGameObjectId() const;
+	void SetGameObjectId(GLuint id);
 
 private:
 	// This physics component's collider.
 	std::unique_ptr<Collider> m_collider{ nullptr };
 
-	// Handle collisions specific to this component.
-	// This allows each component to define its own way of handling collisions.
-	std::function<void(const PhysicsObject &)> m_onCollision;
+	// Hold the id of the GameObject that corresponds to this PhysicsObject.
+	GLuint m_gameObjectId;
 };

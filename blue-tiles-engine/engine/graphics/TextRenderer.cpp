@@ -1,6 +1,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include <memory>
+
 #include "TextRenderer.h"
 #include "ShaderManager.h"
 #include "Shader.h"
@@ -98,7 +100,7 @@ void TextRenderer::RenderScreenText(Scene& scene)
 {
 	for (const std::unique_ptr<GameObject>& sceneObject : scene.GetScreenGameObjects())
 	{
-		TextBehaviour* behav = static_cast<TextBehaviour*>(sceneObject->GetBehaviour(BehaviourType::TextBehaviour));
+		auto behav = static_pointer_cast<TextBehaviour>(sceneObject->GetBehaviour(BehaviourType::TextBehaviour).lock());
 		
 		if (behav == nullptr) continue;
 

@@ -36,13 +36,13 @@ class Level
 		int numGrids;
 
 		// Game objects
-		std::vector<Object> objects;
+		std::vector<Object> m_objects;
 
 		// Rooms
-		std::vector<Room> rooms;
+		std::vector<Room> m_rooms;
 
 		// Guards (Should be std::vector<Guard> probably)
-		std::vector<Guard> guards;
+		std::vector<Guard> m_guards;
 
 
 		void LoadLevel(std::string jsonFile);

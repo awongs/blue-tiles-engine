@@ -33,17 +33,18 @@ int main()
 
 	// create game engine
 	GameEngine* engine = new GameEngine(gameWin.GetWindow());
+	PhysicsEngine *physEngine{ engine->GetPhysicsEngine() };
 
 	// Create the level
 	Level* l = new Level("level0");
-	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l);
+	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l, physEngine);
 	
 	// -- Testing --
 	srand(time(0));
 
 	// Add a directional light
 	GameObject* ga = new GameObject(420);
-	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -1.0f, -1.0f), 0.0f, 0.4f, 0.5f));
+	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -10.0f, -1.0f), 0.0f, 0.4f, 0.5f));
 	level->AddWorldGameObject(ga);
 
 	// Add point lights
@@ -61,9 +62,6 @@ int main()
 	// Set the scene in engine
 	engine->SetScene(level.release());
 
-	// Create the input manager.
-	Input* input{ new Input() };
-
 	SDL_Event windowEvent;
 
 	// Empty loop to prevent the window from closing immediately.
@@ -71,12 +69,11 @@ int main()
 	{
 		if (SDL_PollEvent(&windowEvent))
 		{
+			Input::GetInstance().HandleInput(windowEvent);
 			if (windowEvent.type == SDL_QUIT) break;
 
-			engine->HandleInput(input, windowEvent);
-
 			// Quit the game with cancel key.
-			if (input->IsKeyDown(Input::INPUT_CANCEL))
+			if (Input::GetInstance().IsKeyDown(Input::INPUT_CANCEL))
 				break;
 		}
 
@@ -86,10 +83,6 @@ int main()
 	}
 
 	std::cout << "End of engine life." << std::endl;
-
-	// Delete the input manager.
-	delete input;
-	input = nullptr;
 
 	// destroy engine
 	delete engine;

@@ -24,9 +24,6 @@ public:
 	// Destroys and cleans up the engine.
 	~GameEngine();
 
-	// Handle user input.
-	void HandleInput(Input *input, SDL_Event windowEvent);
-
 	// Main game update loop
 	void Update();
 
@@ -42,7 +39,14 @@ public:
 	// Text Renderering thing
 	TextRenderer* textRenderer;
 
+	// Get the raw pointer to the physics engine, so that the game engine 
+	// retains ownership of it.
+	// Return nullptr if it somehow doesn't already exist.
+	PhysicsEngine *GetPhysicsEngine() const;
+
 private:
+	// The game's physics engine.
+	std::unique_ptr<PhysicsEngine> m_physEngine{ nullptr };
 
 	// The current scene.
 	std::unique_ptr<Scene> m_currentScene;
@@ -67,7 +71,4 @@ private:
 
 	// Number of frames per second
 	int m_frameRate;
-
-	// The game's physics engine.
-	std::unique_ptr<PhysicsEngine> m_physEngine{ nullptr };
 };
