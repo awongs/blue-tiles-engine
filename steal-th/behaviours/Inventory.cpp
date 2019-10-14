@@ -42,6 +42,7 @@ void Inventory::RemoveItem(ObjectType type) {
        switch(type) {
         case ObjectType::RED_KEY:
             DecrementMinZero(m_redKey);
+			DebugLog::Info("Red Key:" + std::to_string(m_redKey));
             break;
 
         case ObjectType::BLUE_KEY:
@@ -54,4 +55,21 @@ void Inventory::RemoveItem(ObjectType type) {
     }
 }
 
+unsigned int Inventory::GetNumItem(ObjectType type)
+{
+	switch (type)
+	{
+		case ObjectType::RED_KEY:
+			return m_redKey;
+			break;
+
+		case ObjectType::BLUE_KEY:
+			return m_blueKey;
+			break;
+
+		case ObjectType::GREEN_KEY:
+			return m_greenKey;
+			break;
+	}
+}
 

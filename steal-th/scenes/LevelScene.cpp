@@ -3,12 +3,25 @@
 #include <engine/behaviours/PhysicsBehaviour.h>
 #include <engine/physics/Collider.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/projection.hpp>
 
 #include "../behaviours/SimpleGuardMovementAIBehaviour.h"
 #include "LevelScene.h"
 #include "../behaviours/PlayerMovement.h"
 #include "../behaviours/FollowGameObject.h"
 #include "../behaviours/Inventory.h"
+
+namespace
+{
+	const std::string KEY_NAME{ "key" };
+	const std::string WALL_NAME{ "wall" };
+	const std::string DOOR_NAME{ "door" };
+	const std::string BLOCK_NAME{ "block" };
+
+	// TODO: Need a more accurate way to determine this.
+	// Just eye-balling it for now...
+	const glm::vec2 WALL_HALF_SIZES{ 3.5f, 0.5f };
+}
 
 LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	: Scene(), m_physEngine(physEngine)
@@ -59,7 +72,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		}
 		for (Door& door : room.doors)
 		{
-			AddDoor(door.facing, "door" + door.doorid, door.location, level->width, level->length);
+			AddDoor(door.facing, DOOR_NAME + std::to_string(door.doorid), door.location, level->width, level->length);
 		}
 
 		for (int x : room.gridUsed)
@@ -179,7 +192,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, obj.name, position, glm::vec3(0, glm::radians(obj.rotation), 0));
 
 		glm::vec3 scale;
-		if (obj.name.find("key") != std::string::npos)
+		if (obj.name.find(KEY_NAME) != std::string::npos)
 		{
 			meshRenderer = new MeshRenderer("../Assets/models/key.obj");
 			meshRenderer->SetTexture("../Assets/textures/key.png");
@@ -192,10 +205,17 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 				}) };
 			ga->AddBehaviour(physBehaviour);
 		}
-		else if (obj.name.find("block") != std::string::npos) {
+		else if (obj.name.find(BLOCK_NAME) != std::string::npos) {
 			meshRenderer = new MeshRenderer("../Assets/models/cube.obj");
 			meshRenderer->SetTexture("../Assets/textures/crate.jpg");
 			scale = glm::vec3(8, 8, 8);
+
+			Collider *keyCol{ new Collider(glm::vec3(3.f)) };
+			PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, keyCol, [this](GLuint other)
+				{
+
+				}) };
+			ga->AddBehaviour(physBehaviour);
 		}
 		else
 		{
@@ -263,21 +283,110 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	ga->AddBehaviour(new Inventory());
 
 	Collider *playerCol{ new Collider(glm::vec3(2.f)) };
-	GameObject *tempPlayer = ga.get();
-	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, playerCol, [this, tempPlayer](GLuint other)
+	GameObject *playerObj = ga.get();
+	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, playerCol, [this, playerObj, playerCol](GLuint other)
 		{
+			// TODO: We should really not be using string-matching to 
+			// differentiate between object types.
+
 			// If this is a "key", then pick it up.
 			GameObject *otherObj{ GetWorldGameObjectById(other) };
-			if (otherObj->name.find("key") != std::string::npos)
+			bool isDoor{ otherObj->name.find(DOOR_NAME) != std::string::npos };
+			if (otherObj->name.find(KEY_NAME) != std::string::npos)
 			{
-				std::shared_ptr<Inventory> tempInventory = tempPlayer->GetBehaviour<Inventory>().lock();
-				if(tempInventory != nullptr) {
-					//TODO: Using red key for now.
-					tempInventory->AddItem(Inventory::ObjectType::RED_KEY);
+				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
+				if (inventory != nullptr) 
+				{
+					// TODO: Using red key for now.
+					inventory->AddItem(Inventory::ObjectType::RED_KEY);
 				}
 
 				// KILL IT
 				RemoveWorldGameObject(other);
+			}
+			// Handle collisions against walls, doors, and blocks.
+			else if (otherObj->name == WALL_NAME || isDoor || 
+				otherObj->name.find(BLOCK_NAME) != std::string::npos)
+			{
+				// TODO: Unlock door with red key for now. Change this later to support all key/door types.
+				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
+				if (isDoor && inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0)
+				{
+					inventory->RemoveItem(Inventory::ObjectType::RED_KEY);
+					RemoveWorldGameObject(other);
+				}
+
+				std::shared_ptr<PlayerMovement> playerMovement{ playerObj->GetBehaviour<PlayerMovement>().lock() };
+				if (playerMovement == nullptr)
+					return;
+
+				std::shared_ptr<PhysicsBehaviour> otherPhys{ otherObj->GetBehaviour<PhysicsBehaviour>().lock() };
+				if (otherPhys == nullptr)
+					return;
+
+				Collider *otherCol{ otherPhys->GetCollider() };
+				if (otherCol == nullptr || otherCol->GetType() != Collider::BOX)
+					return;
+
+				// Get the four corner points of the other's collider box.
+				glm::vec3 otherColSize{ otherCol->GetHalfSizes() };
+				glm::vec2 otherBottomLeft{ otherObj->position.x - otherColSize.x, otherObj->position.z + otherColSize.z };
+				glm::vec2 otherBottomRight{ otherObj->position.x + otherColSize.x, otherObj->position.z + otherColSize.z };
+				glm::vec2 otherTopLeft{ otherObj->position.x - otherColSize.x, otherObj->position.z - otherColSize.z };
+				glm::vec2 otherTopRight{ otherObj->position.x + otherColSize.x, otherObj->position.z - otherColSize.z };
+
+				// Calculate the determinant value of point p for the line 
+				// consisting of points a to b.
+				auto calculateDeterminant{ [](glm::vec2 a, glm::vec2 b, glm::vec2 p)
+				{
+					return (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x);
+				} };
+
+				// Check player's position against the two diagonal vectors of 
+				// the other's collider box. The sign of the determinant value
+				// will show which side of the diagonal the player's position
+				// lies on. This will let us find the direction that the player
+				// is colliding from.
+				glm::vec2 playerPos{ playerObj->position.x, playerObj->position.z };
+				bool isCollidingTop{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) > 0 && 
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) < 0 };
+				bool isCollidingBottom{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) < 0 &&
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) > 0 };
+				bool isCollidingLeft{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) > 0 &&
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) > 0 };
+				bool isCollidingRight{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) < 0 &&
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) < 0 };
+
+				// Undo the movement from PlayerMovement.
+				glm::vec3 playerVel{ playerMovement->GetCurrentVelocity() };
+				playerObj->position -= playerVel;
+
+				// Calculate the new velocity vector based on collision 
+				// direction. Handle the two axes separately.
+				glm::vec3 newPlayerVel{ playerVel };
+
+				// Handle the vertical axis.
+				if (isCollidingTop)
+				{
+					newPlayerVel.z = glm::max(newPlayerVel.z, 0.f);
+				}
+				else if (isCollidingBottom)
+				{
+					newPlayerVel.z = glm::min(newPlayerVel.z, 0.f);
+				}
+				
+				// Handle the horizontal axis.
+				if (isCollidingLeft)
+				{
+					newPlayerVel.x = glm::max(newPlayerVel.x, 0.f);
+				}
+				else if (isCollidingRight)
+				{
+					newPlayerVel.x = glm::min(newPlayerVel.x, 0.f);
+				}
+
+				// Apply the new velocity.
+				playerObj->position += newPlayerVel;
 			}
 		}) };
 	ga->AddBehaviour(physBehaviour);
@@ -311,34 +420,43 @@ void LevelScene::AddWall(std::string facing, int location, int width, int length
 
 	glm::vec3 position;
 	glm::vec3 rotation;
+	glm::vec3 colliderSize;
 
 	if (facing == "up")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9);
 		rotation = glm::vec3(0, 0, 0);
-		tiles[location].up = "wall";
+		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
+		tiles[location].up = WALL_NAME;
 	}
 	else if (facing == "down")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
 		rotation = glm::vec3(0, 0, 0);
-		tiles[location].down = "wall";
+		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
+		tiles[location].down = WALL_NAME;
 	}
 	else if (facing == "left")
 	{
 		position = glm::vec3((double)(location % width) * 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
-		tiles[location].left = "wall";
+		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
+		tiles[location].left = WALL_NAME;
 	}
 	else if (facing == "right")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
-		tiles[location].right = "wall";
+		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
+		tiles[location].right = WALL_NAME;
 	}
 
-	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "WALL", position, rotation, glm::vec3(9, 9, 9));
+	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, WALL_NAME, position, rotation, glm::vec3(9, 9, 9));
 	ga->AddBehaviour(meshRenderer);
+
+	Collider *collider{ new Collider(colliderSize) };
+	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, collider, [](GLuint) {}) };
+	ga->AddBehaviour(physBehaviour);
 
 	m_count++;
 	m_worldGameObjects.push_back(std::move(ga));
@@ -351,34 +469,43 @@ void LevelScene::AddDoor(std::string facing, std::string name, int location, int
 
 	glm::vec3 position;
 	glm::vec3 rotation;
+	glm::vec3 colliderSize;
 
 	if (facing == "up")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9);
 		rotation = glm::vec3(0, 0, 0);
-		tiles[location].up = "door";
+		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
+		tiles[location].up = DOOR_NAME;
 	}
 	else if (facing == "down")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 4.5, 0, (double)(location / length) * 9 + 9);
 		rotation = glm::vec3(0, 0, 0);
-		tiles[location].down = "door";
+		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
+		tiles[location].down = DOOR_NAME;
 	}
 	else if (facing == "left")
 	{
 		position = glm::vec3((double)(location % width) * 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
-		tiles[location].left = "door";
+		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
+		tiles[location].left = DOOR_NAME;
 	}
 	else if (facing == "right")
 	{
 		position = glm::vec3((double)(location % width) * 9 + 9, 0, (double)(location / length) * 9 + 4.5);
 		rotation = glm::vec3(0, glm::radians(90.0), 0);
-		tiles[location].right = "door";
+		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
+		tiles[location].right = DOOR_NAME;
 	}
 
 	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, name, position, rotation, glm::vec3(9, 9, 9));
 	ga->AddBehaviour(meshRenderer);
+
+	Collider *collider{ new Collider(colliderSize) };
+	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, collider, [](GLuint) {}) };
+	ga->AddBehaviour(physBehaviour);
 
 	m_count++;
 	m_worldGameObjects.push_back(std::move(ga));
