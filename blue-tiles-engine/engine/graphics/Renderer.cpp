@@ -1,4 +1,5 @@
 #include <memory>
+#include <sstream>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Renderer.h"
@@ -15,6 +16,10 @@
 #include "../behaviours/PointLight.h"
 #include "../behaviours/SpotLight.h"
 #include "../../util/FileManager.h"
+
+// Define maximum light count here. Should match the shader's maximums.
+constexpr unsigned int MAX_POINT_LIGHTS = 256;
+constexpr unsigned int MAX_SPOT_LIGHTS = 64;
 
 Renderer::Renderer(SDL_GLContext* targetContext, int windowWidth, int windowHeight)
 	: m_context(targetContext)
@@ -79,6 +84,19 @@ void Renderer::SetupShaders()
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, deferredLightingVertex.c_str());
 	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, deferredLightingFragment.c_str());
 	m_deferredLightingShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
+
+	// Setup the uniform buffer
+	glGenBuffers(1, &m_uniformBufferObject);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBufferObject);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(PLight) * MAX_POINT_LIGHTS + sizeof(SLight) * MAX_SPOT_LIGHTS, NULL, GL_STATIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_uniformBufferObject);
+	
+	// Bind the lighting uniform block to the uniform buffer
+	unsigned int lights_index = glGetUniformBlockIndex(m_deferredLightingShader->GetProgramHandle(), "LightBlock");
+	glUniformBlockBinding(m_deferredLightingShader->GetProgramHandle(), lights_index, 0);
+
+	// Unbind for now
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Renderer::SetupLighting(Scene& currentScene)
@@ -101,7 +119,7 @@ void Renderer::SetupLighting(Scene& currentScene)
 
 		// Get all point lights
 		std::weak_ptr<PointLight> pointLight = gameObject->GetBehaviour<PointLight>();
-		if (!pointLight.expired())
+		if (!pointLight.expired() && m_pointLights.size() < MAX_POINT_LIGHTS)
 		{
 			m_pointLights.push_back(pointLight);
 			continue;
@@ -109,7 +127,7 @@ void Renderer::SetupLighting(Scene& currentScene)
 
 		// Get all spot lights
 		std::weak_ptr<SpotLight> spotLight = gameObject->GetBehaviour<SpotLight>();
-		if (!spotLight.expired())
+		if (!spotLight.expired() && m_spotLights.size() < MAX_SPOT_LIGHTS)
 		{
 			m_spotLights.push_back(spotLight);
 		}
@@ -144,7 +162,7 @@ void Renderer::ShadowPass(Scene& currentScene)
 		glm::mat4 lightSpaceMatrix = m_directionalLight.lock()->GetProjectionMatrix() * m_directionalLight.lock()->GetViewMatrix();
 
 		// Translate by the camera's current position
-		lightSpaceMatrix *= glm::translate(glm::mat4(1), -Camera::GetInstance().GetPosition());
+		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
 		m_shadowShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
 	}
 
@@ -175,7 +193,7 @@ void Renderer::GeometryPass(Scene& currentScene)
 		glm::mat4 lightSpaceMatrix = m_directionalLight.lock()->GetProjectionMatrix() * m_directionalLight.lock()->GetViewMatrix();
 
 		// Translate by the camera's current position
-		lightSpaceMatrix *= glm::translate(glm::mat4(1), -Camera::GetInstance().GetPosition());
+		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
 		m_deferredGeometryShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
 		m_deferredGeometryShader->SetUniform3f("lightDirection", glm::vec3(0.0f, 5.0f, 1.0f));
 	}
@@ -227,11 +245,12 @@ void Renderer::Render(Scene& currentScene)
 	{
 		m_directionalLight.lock()->Render(*m_deferredLightingShader);
 	}
-	
-	int lightCount = 0;
+
+	// Bind the uniform buffer
+	glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBufferObject);
 
 	// Loop backwards since lights may be removed from the list
-	for (int i = m_pointLights.size() - 1; i >= 0; i--, lightCount++)
+	for (int i = m_pointLights.size() - 1, lightCount = 0; i >= 0; i--, lightCount++)
 	{
 		if (m_pointLights[i].expired())
 		{
@@ -239,14 +258,13 @@ void Renderer::Render(Scene& currentScene)
 		}
 		else
 		{
-			m_pointLights[i].lock()->Render(*m_deferredLightingShader, lightCount);
+			m_pointLights[i].lock()->Render(*m_deferredLightingShader, 
+				sizeof(PLight) * lightCount);
 		}
 	}
 
-	lightCount = 0;
-
 	// Loop backwards since lights may be removed from the list
-	for (int i = m_spotLights.size() - 1; i >= 0; i--, lightCount++)
+	for (int i = m_spotLights.size() - 1, lightCount = 0; i >= 0; i--, lightCount++)
 	{
 		if (m_spotLights[i].expired())
 		{
@@ -254,7 +272,8 @@ void Renderer::Render(Scene& currentScene)
 		}
 		else
 		{
-			m_spotLights[i].lock()->Render(*m_deferredLightingShader, lightCount);
+			m_spotLights[i].lock()->Render(*m_deferredLightingShader, 
+				sizeof(PLight) * MAX_POINT_LIGHTS + sizeof(SLight) * lightCount);
 		}
 	}
 
@@ -265,6 +284,7 @@ void Renderer::Render(Scene& currentScene)
 	// Draw onto the quad
 	m_screenQuad->Draw(*m_deferredLightingShader);
 
-	// Disable depth testing
+	// Disable depth test and unbind UBO
 	glDisable(GL_DEPTH_TEST);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

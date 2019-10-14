@@ -8,7 +8,7 @@ class Light : public Behaviour
 {
 public:
 	// Renders the light. Not the same as draw.
-	virtual void Render(Shader& shader, int lightIndex = -1) = 0;
+	virtual void Render(Shader& shader, int bufferOffset) = 0;
 
 	// Overwritten functions.
 	virtual void Update(float deltaTime) override;

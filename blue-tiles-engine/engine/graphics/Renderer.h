@@ -4,6 +4,8 @@
 #include <glad/glad.h>
 #include <vector>
 
+#include "../behaviours/PointLight.h"
+
 
 class GeometryBuffer;
 class ShadowBuffer;
@@ -45,9 +47,10 @@ public:
 	void Render(Scene& currentScene);
 
 private:
-
 	// Width and height of the screen.
 	int m_width, m_height;
+
+	GLuint m_uniformBufferObject;
 
 	// SDL context for the render target
 	SDL_GLContext* m_context;
