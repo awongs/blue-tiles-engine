@@ -133,11 +133,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="behaviours\SimpleGuardMovementAIBehaviour.cpp" />
-    <ClCompile Include="gameobjects\Door.cpp" />
-    <ClCompile Include="gameobjects\Guard.cpp" />
-    <ClCompile Include="gameobjects\Object.cpp" />
-    <ClCompile Include="gameobjects\Room.cpp" />
-    <ClCompile Include="gameobjects\Wall.cpp" />
     <ClCompile Include="behaviours\FollowGameObject.cpp" />
     <ClCompile Include="behaviours\Inventory.cpp" />
     <ClCompile Include="behaviours\PlayerMovement.cpp" />

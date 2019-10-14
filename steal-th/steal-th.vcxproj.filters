@@ -46,21 +46,6 @@
     <ClCompile Include="behaviours\SimpleGuardMovementAIBehaviour.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
-    <ClCompile Include="gameobjects\Door.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Guard.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Object.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Room.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
-    <ClCompile Include="gameobjects\Wall.cpp">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Door.h">
