@@ -325,14 +325,68 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 					return;
 
 				Collider *otherCol{ otherPhys->GetCollider() };
-				if (otherCol == nullptr)
+				if (otherCol == nullptr || otherCol->GetType() != Collider::BOX)
 					return;
 
-				glm::vec3 playerVel{ playerMovement->GetCurrentVelocity() };
-				glm::vec3 playerColSize{ playerCol->GetHalfSizes() };
+				// Get the four corner points of the other's collider box.
 				glm::vec3 otherColSize{ otherCol->GetHalfSizes() };
+				glm::vec2 otherBottomLeft{ otherObj->position.x - otherColSize.x, otherObj->position.z + otherColSize.z };
+				glm::vec2 otherBottomRight{ otherObj->position.x + otherColSize.x, otherObj->position.z + otherColSize.z };
+				glm::vec2 otherTopLeft{ otherObj->position.x - otherColSize.x, otherObj->position.z - otherColSize.z };
+				glm::vec2 otherTopRight{ otherObj->position.x + otherColSize.x, otherObj->position.z - otherColSize.z };
 
+				// Calculate the determinant value of point p for the line 
+				// consisting of points a to b.
+				auto calculateDeterminant{ [](glm::vec2 a, glm::vec2 b, glm::vec2 p)
+				{
+					return (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x);
+				} };
+
+				// Check player's position against the two diagonal vectors of 
+				// the other's collider box. The sign of the determinant value
+				// will show which side of the diagonal the player's position
+				// lies on. This will let us find the direction that the player
+				// is colliding from.
+				glm::vec2 playerPos{ playerObj->position.x, playerObj->position.z };
+				bool isCollidingTop{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) > 0 && 
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) < 0 };
+				bool isCollidingBottom{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) < 0 &&
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) > 0 };
+				bool isCollidingLeft{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) > 0 &&
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) > 0 };
+				bool isCollidingRight{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) < 0 &&
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) < 0 };
+
+				// Undo the movement from PlayerMovement.
+				glm::vec3 playerVel{ playerMovement->GetCurrentVelocity() };
 				playerObj->position -= playerVel;
+
+				// Calculate the new velocity vector based on collision 
+				// direction. Handle the two axes separately.
+				glm::vec3 newPlayerVel{ playerVel };
+
+				// Handle the vertical axis.
+				if (isCollidingTop)
+				{
+					newPlayerVel.z = glm::max(newPlayerVel.z, 0.f);
+				}
+				else if (isCollidingBottom)
+				{
+					newPlayerVel.z = glm::min(newPlayerVel.z, 0.f);
+				}
+				
+				// Handle the horizontal axis.
+				if (isCollidingLeft)
+				{
+					newPlayerVel.x = glm::max(newPlayerVel.x, 0.f);
+				}
+				else if (isCollidingRight)
+				{
+					newPlayerVel.x = glm::min(newPlayerVel.x, 0.f);
+				}
+
+				// Apply the new velocity.
+				playerObj->position += newPlayerVel;
 			}
 		}) };
 	ga->AddBehaviour(physBehaviour);
