@@ -187,7 +187,7 @@ bool SimpleGuardMovementAIBehaviour::ProcessMoveAction(float deltaTime, SimpleGu
 {
 	// check if close enough yet
 
-	glm::vec3 dest = glm::vec3(action.destinationX, 0.0f, action.destinationZ);
+	glm::vec3 dest = glm::vec3(action.destinationX, gameObject->position.y, action.destinationZ);
 
 	float dist = glm::distance(gameObject->position, dest);
 
@@ -208,6 +208,7 @@ bool SimpleGuardMovementAIBehaviour::ProcessMoveAction(float deltaTime, SimpleGu
 	{
 		gameObject->position.x = dest.x;
 		gameObject->position.y = dest.y;
+		return true;
 	}
 	else
 	{
@@ -233,7 +234,7 @@ bool SimpleGuardMovementAIBehaviour::ProcessTurnAction(float deltaTime, SimpleGu
 	float diff = m_rotationTarget - gameObject->rotation.y;
 
 	// abs diff
-	diff = diff > 0 ? diff : -diff;
+	diff = diff >= 0 ? diff : -diff;
 
 	if (diff <= epsilon)
 	{
@@ -250,6 +251,8 @@ bool SimpleGuardMovementAIBehaviour::ProcessTurnAction(float deltaTime, SimpleGu
 	if (scaledRotation >= diff)
 	{
 		gameObject->rotation.y = m_rotationTarget;
+		m_newRotationTarget = false;
+		return true;
 	}
 	else
 	{
