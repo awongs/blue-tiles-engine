@@ -42,7 +42,7 @@ private:
 	GLuint m_vertexArrayObjectID;
 	
 	// This mesh's texture.
-	std::unique_ptr<Texture> m_texture;
+	std::shared_ptr<Texture> m_texture;
 	
 	// This mesh's vertices.
 	std::vector<Vertex> m_vertices;

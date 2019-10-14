@@ -8,6 +8,8 @@
 
 namespace filemanager
 {
+	std::unordered_map<std::string, std::shared_ptr<Texture>> cachedTextures;
+
 	std::string LoadFile(const std::string filePath)
 	{
 		// Setup streams for reading the file
@@ -56,8 +58,14 @@ namespace filemanager
 		}
 	}
 
-	std::unique_ptr<Texture> LoadTexture(const std::string filePath)
+	std::shared_ptr<Texture> LoadTexture(const std::string filePath)
 	{
+		// Check if the texture is cached
+		if (cachedTextures[filePath] != nullptr)
+		{
+			return cachedTextures[filePath];
+		}
+
 		// Image surface
 		SDL_Surface* image;
 		image = IMG_Load(filePath.c_str());
@@ -66,10 +74,13 @@ namespace filemanager
 		if (image != nullptr)
 		{
 			// Create the texture
-			std::unique_ptr<Texture> texture = std::make_unique<Texture>(image->pixels, image->w, image->h, image->format->BytesPerPixel);
+			std::shared_ptr<Texture> texture = std::make_shared<Texture>(image->pixels, image->w, image->h, image->format->BytesPerPixel);
 
-			// Return the texture as a unique pointer after freeing the surface
+			// Free the surface
 			SDL_FreeSurface(image);
+
+			// Return the texture as a shared pointer after caching it
+			cachedTextures[filePath] = texture;
 			return texture;
 		}
 		else
