@@ -4,6 +4,7 @@
 #include <engine/physics/Collider.h>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "../behaviours/SimpleGuardMovementAIBehaviour.h"
 #include "LevelScene.h"
 #include "../behaviours/PlayerMovement.h"
 #include "../behaviours/FollowGameObject.h"
@@ -219,10 +220,30 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
 		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
 
+		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
+
+		// move to box
+		sgmaib->AddMoveTileAction(1, 2);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddMoveTileAction(1, 1);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddWaitAction(2);
+
+		// move back
+		sgmaib->AddMoveTileAction(1, 2);
+		sgmaib->AddTurnCCWAction();
+		sgmaib->AddMoveTileAction(2, 2);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddWaitAction(2);
+
 		glm::vec3 position = glm::vec3((double)(guard.location % level->width) * 9 + 4.5, 0, (double)(guard.location / level->length) * 9 + 4.5);
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_count, "guard", position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
 		ga->AddBehaviour(meshRenderer);
+		ga->AddBehaviour(sgmaib);
+		
 
 		m_count++;
 		m_worldGameObjects.push_back(std::move(ga));
