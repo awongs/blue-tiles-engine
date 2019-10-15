@@ -316,11 +316,14 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
 				if (isDoor)
 				{	
-					if(inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0) {
+					if (inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0) 
+					{
 						SoundManager::getInstance().getSound("door-unlocked")->play();
 						inventory->RemoveItem(Inventory::ObjectType::RED_KEY);
 						RemoveWorldGameObject(other);
-					}else {
+					}
+					else 
+					{
 						SoundManager::getInstance().getSound("door-locked")->play();
 					}
 				}
