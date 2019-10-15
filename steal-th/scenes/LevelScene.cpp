@@ -10,6 +10,9 @@
 #include "../behaviours/PlayerMovement.h"
 #include "../behaviours/FollowGameObject.h"
 #include "../behaviours/Inventory.h"
+#include <engine/sound/SoundManager.h>
+#include <engine/sound/Music.h>
+#include <engine/sound/Sound.h>
 
 namespace
 {
@@ -294,6 +297,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			bool isDoor{ otherObj->name.find(DOOR_NAME) != std::string::npos };
 			if (otherObj->name.find(KEY_NAME) != std::string::npos)
 			{
+				SoundManager::getInstance().getSound("key-pickup")->play();
 				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
 				if (inventory != nullptr) 
 				{
