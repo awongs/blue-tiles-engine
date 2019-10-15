@@ -10,6 +10,9 @@ namespace {
     };
 
     const std::map<std::string, std::string> ID_TO_SOUND_PATH = {
+        {"door-locked", "../Assets/sound-assets/Door_Locked.wav"},
+        {"door-unlocked", "../Assets/sound-assets/Door_Unlocked.wav"},
+        {"key-pickup", "../Assets/sound-assets/Key_Pickup.wav"}
     };
 }
 
