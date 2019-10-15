@@ -314,10 +314,15 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			{
 				// TODO: Unlock door with red key for now. Change this later to support all key/door types.
 				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
-				if (isDoor && inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0)
-				{
-					inventory->RemoveItem(Inventory::ObjectType::RED_KEY);
-					RemoveWorldGameObject(other);
+				if (isDoor)
+				{	
+					if(inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0) {
+						SoundManager::getInstance().getSound("door-unlocked")->play();
+						inventory->RemoveItem(Inventory::ObjectType::RED_KEY);
+						RemoveWorldGameObject(other);
+					}else {
+						SoundManager::getInstance().getSound("door-locked")->play();
+					}
 				}
 
 				std::shared_ptr<PlayerMovement> playerMovement{ playerObj->GetBehaviour<PlayerMovement>().lock() };
