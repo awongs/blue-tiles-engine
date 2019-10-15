@@ -328,3 +328,11 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+*.so
+
+# Don't ignore models
+!Assets/models/*
+
+#Ignore all .a files
+*.a

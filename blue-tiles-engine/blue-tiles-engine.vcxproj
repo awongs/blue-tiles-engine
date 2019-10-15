@@ -39,13 +39,13 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -70,13 +70,21 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)\libraries\includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
-    <LibraryPath>$(SolutionDir)\libraries\libs;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)\libraries\includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(SolutionDir)\libraries\includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\libraries\libs;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)\libraries\includes;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\libraries\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -85,21 +93,26 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MinSpace</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>SDL2.lib;SDL2_mixer.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -110,12 +123,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -126,15 +140,83 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>SDL2.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="engine\behaviours\Behaviour.cpp" />
+    <ClCompile Include="engine\behaviours\DirectionalLight.cpp" />
+    <ClCompile Include="engine\behaviours\Light.cpp" />
+    <ClCompile Include="engine\behaviours\MeshRenderer.cpp" />
+    <ClCompile Include="engine\behaviours\PhysicsBehaviour.cpp" />
+    <ClCompile Include="engine\behaviours\PointLight.cpp" />
+    <ClCompile Include="engine\behaviours\SpotLight.cpp" />
+    <ClCompile Include="engine\behaviours\TextBehaviour.cpp" />
+    <ClCompile Include="engine\debugbt\DebugLog.cpp" />
+    <ClCompile Include="engine\GameEngine.cpp" />
+    <ClCompile Include="engine\GameWindow.cpp" />
+    <ClCompile Include="engine\graphics\Camera.cpp" />
+    <ClCompile Include="engine\GameObject.cpp" />
+    <ClCompile Include="engine\graphics\GeometryBuffer.cpp" />
+    <ClCompile Include="engine\graphics\Renderer.cpp" />
+    <ClCompile Include="engine\graphics\Shader.cpp" />
+    <ClCompile Include="engine\graphics\ShaderManager.cpp" />
+    <ClCompile Include="engine\graphics\ShadowBuffer.cpp" />
+    <ClCompile Include="engine\graphics\TextRenderer.cpp" />
+    <ClCompile Include="engine\graphics\Texture.cpp" />
+    <ClCompile Include="engine\input\Input.cpp" />
+    <ClCompile Include="engine\physics\Collider.cpp" />
+    <ClCompile Include="engine\physics\PhysicsEngine.cpp" />
+    <ClCompile Include="engine\physics\PhysicsObject.cpp" />
+    <ClCompile Include="engine\physics\SphereCollider.cpp" />
+    <ClCompile Include="engine\MessageSystem.cpp" />
+    <ClCompile Include="engine\Scene.cpp" />
+    <ClCompile Include="engine\sound\Music.cpp" />
+    <ClCompile Include="engine\sound\Sound.cpp" />
+    <ClCompile Include="engine\sound\SoundManager.cpp" />
+    <ClCompile Include="glad.c" />
+    <ClCompile Include="util\FileManager.cpp" />
+    <ClCompile Include="util\MeshManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="engine\behaviours\Behaviour.h" />
+    <ClInclude Include="engine\behaviours\DirectionalLight.h" />
+    <ClInclude Include="engine\behaviours\PhysicsBehaviour.h" />
+    <ClInclude Include="engine\behaviours\PointLight.h" />
+    <ClInclude Include="engine\behaviours\Light.h" />
+    <ClInclude Include="engine\behaviours\MeshRenderer.h" />
+    <ClInclude Include="engine\behaviours\SpotLight.h" />
+    <ClInclude Include="engine\behaviours\TextBehaviour.h" />
+    <ClInclude Include="engine\debugbt\DebugLog.h" />
+    <ClInclude Include="engine\GameEngine.h" />
+    <ClInclude Include="engine\GameWindow.h" />
+    <ClInclude Include="engine\graphics\Camera.h" />
+    <ClInclude Include="engine\GameObject.h" />
+    <ClInclude Include="engine\graphics\GeometryBuffer.h" />
+    <ClInclude Include="engine\graphics\Renderer.h" />
+    <ClInclude Include="engine\graphics\Shader.h" />
+    <ClInclude Include="engine\graphics\ShaderManager.h" />
+    <ClInclude Include="engine\graphics\ShadowBuffer.h" />
+    <ClInclude Include="engine\graphics\TextRenderer.h" />
+    <ClInclude Include="engine\graphics\Texture.h" />
+    <ClInclude Include="engine\input\Input.h" />
+    <ClInclude Include="engine\physics\Collider.h" />
+    <ClInclude Include="engine\physics\PhysicsEngine.h" />
+    <ClInclude Include="engine\physics\PhysicsObject.h" />
+    <ClInclude Include="engine\physics\SphereCollider.h" />
+    <ClInclude Include="engine\MessageSystem.h" />
+    <ClInclude Include="engine\Scene.h" />
+    <ClInclude Include="engine\sound\Music.h" />
+    <ClInclude Include="engine\sound\Sound.h" />
+    <ClInclude Include="engine\sound\SoundManager.h" />
+    <ClInclude Include="util\FileManager.h" />
+    <ClInclude Include="util\MeshManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
