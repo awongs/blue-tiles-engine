@@ -8,6 +8,19 @@
 #include "graphics/Shader.h"
 #include "behaviours/Behaviour.h"
 
+int GameObject::idCounter = 0;
+
+GameObject::GameObject(std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
+	: name(n)
+	, position(pos)
+	, rotation(rot)
+	, scale(sca)
+	, m_transformMatrix(glm::mat4(1))
+{
+	// We increment counter but don't decrement because we don't keep track of which
+	// GameObject ids are destroyed
+	id = idCounter++;
+}
 
 GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
 	: id(_id)
