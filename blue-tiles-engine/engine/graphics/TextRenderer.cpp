@@ -32,7 +32,10 @@ TextRenderer::~TextRenderer()
 
 void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3& color)
 {
+	// Enable culling and specify which face to cull
 	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

@@ -169,7 +169,10 @@ void Renderer::ShadowPass(Scene& currentScene)
 	// Draw the world
 	currentScene.DrawWorld(*m_shadowShader);
 
+	// Disable culling and reset face setting
+	// If we end up not using quads for the level floor, keep this enabled for performance
 	glDisable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 }
 
 void Renderer::GeometryPass(Scene& currentScene)
