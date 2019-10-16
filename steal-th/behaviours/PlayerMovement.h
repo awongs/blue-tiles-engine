@@ -21,5 +21,5 @@ private:
 
 	// The player's velocity for this current frame.
 	// This will be influenced by m_speed.
-	glm::vec3 m_currentVelocity;
+	glm::vec3 m_currentVelocity = glm::vec3(0);
 };
