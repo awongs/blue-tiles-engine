@@ -45,13 +45,16 @@ struct SpotLight {
 layout (location = 0) out vec4 fragColour;
 
 // Maximum number of lights that can affect fragment are defined here.
-#define MAX_POINT_LIGHTS 64
-#define MAX_SPOT_LIGHTS 32
+#define MAX_POINT_LIGHTS 256
+#define MAX_SPOT_LIGHTS 64
 
 // Lighting uniforms
-uniform PointLight pointLights[MAX_POINT_LIGHTS];
-uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 uniform DirLight dirLight;
+
+layout (std140) uniform LightBlock {
+    PointLight pointLights[MAX_POINT_LIGHTS];
+    SpotLight spotLights[MAX_SPOT_LIGHTS];
+};
 
 uniform int totalPointLights;
 uniform int totalSpotLights;

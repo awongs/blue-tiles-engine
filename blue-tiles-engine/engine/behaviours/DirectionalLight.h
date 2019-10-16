@@ -9,7 +9,7 @@ public:
 	DirectionalLight(glm::vec3 colour, glm::vec3 direction, float ambient = 1.0f, float diffuse = 1.0f, float specular = 1.0f);
 
 	// Overridden render.
-	void Render(Shader& shader, int lightIndex = -1) override;
+	void Render(Shader& shader, int bufferOffset = -1) override;
 
 	// Accessor for the view matrix.
 	glm::mat4 GetViewMatrix() const;

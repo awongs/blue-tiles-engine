@@ -149,16 +149,6 @@ void GuardDetection::Update(float deltaTime)
 
 		// Check if the vision ray has hit a wall yet.
 		const Tile &tile{ m_levelScene->GetTile(point.x, point.y) };
-		bool isBlocked{
-			tile.up == Tile::TileEdgeType::WALL ||
-			tile.up == Tile::TileEdgeType::DOOR ||
-			tile.down == Tile::TileEdgeType::WALL ||
-			tile.down == Tile::TileEdgeType::DOOR ||
-			tile.left == Tile::TileEdgeType::WALL ||
-			tile.left == Tile::TileEdgeType::DOOR ||
-			tile.right == Tile::TileEdgeType::WALL ||
-			tile.right == Tile::TileEdgeType::DOOR 
-		};
 
 		// This vision ray has hit a wall.
 		/*if (isBlocked)

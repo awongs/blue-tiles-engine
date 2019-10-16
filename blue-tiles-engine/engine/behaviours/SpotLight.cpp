@@ -2,30 +2,46 @@
 #include "../graphics/Shader.h"
 #include "../GameObject.h"
 
+#include <ctime>
+#include <glm/gtc/random.hpp>
 SpotLight::SpotLight(glm::vec3 colour, glm::vec3 direction, float innerRadius, float outerRadius, 
 	float ambient, float diffuse, float specular, 
 	float constant, float linear, float quadratic)
 	: Light(BehaviourType::SpotLight, colour, ambient, diffuse, specular)
-	, m_direction(direction)
+	, m_direction(glm::normalize(direction))
 	, m_innerRadius(innerRadius)
 	, m_outerRadius(outerRadius)
 	, m_constant(constant)
 	, m_linear(linear)
 	, m_quadratic(quadratic)
 {
+	// Initialize the struct values
+	m_lightStruct = std::shared_ptr<SLight>(new SLight());
+	m_lightStruct->ambient = m_ambient;
+	m_lightStruct->diffuse = m_diffuse;
+	m_lightStruct->specular = m_specular;
+
+	// Offset a value over because the uniform buffer offsets by 4 bytes
+	m_lightStruct->colour = glm::vec4(0.0f, m_colour);
+	m_lightStruct->direction = glm::vec4(0.0f, m_direction);
+
+	m_lightStruct->innerRadius = m_innerRadius;
+	m_lightStruct->outerRadius = m_outerRadius;
+
+	m_lightStruct->constant = m_constant;
+	m_lightStruct->linear = m_linear;
+	m_lightStruct->quadratic = m_quadratic;
 }
 
-void SpotLight::Render(Shader& shader, int lightIndex)
+void SpotLight::Render(Shader& shader, int bufferOffset)
 {
-	shader.SetUniform1f("spotLights[" + std::to_string(lightIndex) + "].ambientIntensity", m_ambient);
-	shader.SetUniform1f("spotLights[" + std::to_string(lightIndex) + "].diffuseIntensity", m_diffuse);
-	shader.SetUniform1f("spotLights[" + std::to_string(lightIndex) + "].specularIntensity", m_specular);
-	shader.SetUniform3f("spotLights[" + std::to_string(lightIndex) + "].colour", m_colour);
-	shader.SetUniform3f("spotLights[" + std::to_string(lightIndex) + "].position", gameObject->position);
-	shader.SetUniform3f("spotLights[" + std::to_string(lightIndex) + "].direction", m_direction);
-	shader.SetUniform1f("spotLights[" + std::to_string(lightIndex) + "].innerRadius", m_innerRadius);
-	shader.SetUniform1f("spotLights[" + std::to_string(lightIndex) + "].outerRadius", m_outerRadius);
-	shader.SetUniform1f("spotLights[" + std::to_string(lightIndex) + "].constant", m_constant);
-	shader.SetUniform1f("spotLights[" + std::to_string(lightIndex) + "].linear", m_linear);
-	shader.SetUniform1f("spotLights[" + std::to_string(lightIndex) + "].quadratic", m_quadratic);
+	// Send struct information to shader
+	// Assumes that the uniform buffer is already bound before calling this function
+	glBufferSubData(GL_UNIFORM_BUFFER, bufferOffset, sizeof(SLight), m_lightStruct.get());
+}
+
+void SpotLight::Update(float deltaTime)
+{
+	// Offset a value over because the uniform buffer offsets by 4 bytes
+	m_lightStruct->position = glm::vec4(0.0f, gameObject->position);
 }

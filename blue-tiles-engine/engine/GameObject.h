@@ -6,13 +6,20 @@
 #include <iterator>
 #include <glm/glm.hpp>
 #include <vector>
+#include <typeindex>
+#include <unordered_map>
 #include "behaviours/Behaviour.h"
+
 
 class Shader;
 
 class GameObject
 {
 public: 
+	// constructor without an id
+	GameObject(std::string n = "Default", glm::vec3 pos = glm::vec3(0, 0, 0),
+		glm::vec3 rot = glm::vec3(0, 0, 0), glm::vec3 sca = glm::vec3(1, 1, 1));
+
 	// Constructor with default arguments
 	GameObject(int _id, std::string n = "Default", glm::vec3 pos = glm::vec3(0, 0, 0), 
 		glm::vec3 rot = glm::vec3(0, 0, 0), glm::vec3 sca = glm::vec3(1, 1, 1));
@@ -38,6 +45,21 @@ public:
 	// Gets behaviour of BehaviourType; Returns an empty weak pointer if doesn't exist
 	std::weak_ptr<Behaviour> GetBehaviour(BehaviourType type);
 
+	// Gets behaviour of type T. Returns an empty weak pointer if it doesn't exist.
+	template <typename T>
+	std::weak_ptr<T> GetBehaviour()
+	{
+		std::type_index index(typeid(T));
+		if (m_behaviours.count(std::type_index(typeid(T))) != 0)
+		{
+			return std::static_pointer_cast<T>(m_behaviours[index]);
+		}
+		else
+		{
+			return std::weak_ptr<T>();
+		}
+	}
+
 	// Adds a behaviour
 	void AddBehaviour(Behaviour* behaviour);
 
@@ -57,8 +79,11 @@ public:
 	glm::vec3 forward;
 
 private:
-	std::vector<std::shared_ptr<Behaviour>> m_Behaviours;
+	// Hashmap of behaviours currently attached to this game object.
+	// Access using std::type_index(typeid(childBehaviour)).
+	std::unordered_map<std::type_index, std::shared_ptr<Behaviour>> m_behaviours;
 
 	// The game object's transform/model matrix.
 	glm::mat4 m_transformMatrix;
+	static int idCounter;
 };

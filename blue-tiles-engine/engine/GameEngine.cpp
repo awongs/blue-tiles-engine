@@ -10,6 +10,7 @@
 #include "input/Input.h"
 #include "graphics/TextRenderer.h"
 #include "MessageSystem.h"
+#include "sound/SoundManager.h"
 
 GameEngine::GameEngine(SDL_Window* targetWindow)
 	: m_window(targetWindow)
@@ -44,6 +45,9 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 
 	// Instantiate the physics engine.
 	m_physEngine = std::make_unique<PhysicsEngine>();
+
+	// Instantiate the sound manager
+	SoundManager::getInstance();
 
 	DebugLog::Info("Engine initialization completed!");
 }

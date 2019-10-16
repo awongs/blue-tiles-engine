@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <memory>
+#include <unordered_map>
+#include <map>
 
 class Texture;
 
@@ -16,5 +18,8 @@ namespace filemanager
 
 	// Returns an image's contents as an unsigned char pointer.
 	// Expects filePath to be a path from the working directory.
-	std::unique_ptr<Texture> LoadTexture(const std::string filePath);
+	std::shared_ptr<Texture> LoadTexture(const std::string filePath);
+
+	// Cache of textures
+	extern std::unordered_map<std::string, std::shared_ptr<Texture>> cachedTextures;
 }

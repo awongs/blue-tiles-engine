@@ -4,22 +4,6 @@
 struct Tile
 {
 	public:
-		enum class TileEdgeType
-		{
-			NONE,
-			WALL,
-			DOOR
-		};
-
-		enum class ObjectType
-		{
-			NONE,
-			BLOCK,
-			RED_KEY,
-			BLUE_KEY,
-			GREEN_KEY
-		};
-
 		// Tile number
 		int num = -1;
 
@@ -39,19 +23,19 @@ struct Tile
 		double endZ = 0.0;
 
 		// What's above the tile? (none, wall, door)
-		TileEdgeType up = TileEdgeType::NONE;
+		std::string up = "none";
 
 		// What's below the tile? (none, wall, door)
-		TileEdgeType down = TileEdgeType::NONE;
+		std::string down = "none";
 
 		// What's to the left of the tile? (none, wall, door)
-		TileEdgeType left = TileEdgeType::NONE;
+		std::string left = "none";
 
 		// What's to the right of the tile? (none, wall, door)
-		TileEdgeType right = TileEdgeType::NONE;
+		std::string right = "none";
 
 		//What's on the tile?
-		ObjectType on = ObjectType::NONE;
+		std::string on = "none";
 
 		// Tile up from this tile
 		Tile* tileUp;

@@ -16,6 +16,7 @@
 #include <engine/physics/PhysicsObject.h>
 #include <engine/physics/PhysicsEngine.h>
 #include <engine/graphics/Camera.h>
+#include <engine/behaviours/TextBehaviour.h>
 
 #include "Level.h"
 #include "scenes/LevelScene.h"
@@ -44,18 +45,27 @@ int main()
 
 	// Add a directional light
 	GameObject* ga = new GameObject(420);
-	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -10.0f, -1.0f), 0.0f, 0.4f, 0.5f));
+	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
+	
 	level->AddWorldGameObject(ga);
+	
+	// Test text
+	GameObject* text = new GameObject(48456);
+	text->AddBehaviour(new TextBehaviour("OZMA", 2, glm::vec3(1, 0, 0)));
+	level->AddScreenGameObject(text);
 
-	// Add point lights
-	for (int i = 0; i < 64; i++)
+	// Add test lighting
+	for (int i = 0; i < 32; i++)
 	{
 		GameObject* ga = new GameObject(999 + i);
 		ga->position = level->GetWorldGameObjectByIndex(i)->position;
 
 		glm::vec3 randomColour = glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f));
+		//glm::vec3 randomDirection = glm::vec3(glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f));
 
 		ga->AddBehaviour(new PointLight(randomColour, 1.0f, 1.0f, 1.0f, 0.2f, 0.3f, 0.5f));
+		//ga->AddBehaviour(new SpotLight(randomColour, randomDirection, 1.0, 2.0, 1.0f, 1.0f, 1.0f, 0.2f, 0.3f, 0.5f));
+		
 		level->AddWorldGameObject(ga);
 	}
 

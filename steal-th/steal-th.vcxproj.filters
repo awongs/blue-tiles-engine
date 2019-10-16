@@ -20,6 +20,7 @@
       <UniqueIdentifier>{bd9da87c-2c46-4029-9cf4-1319f2497586}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\behaviours">
+      <UniqueIdentifier>{e83bc0a9-4132-4b8e-94dc-b8bc6e6c2755}</UniqueIdentifier>
       <UniqueIdentifier>{3ea05163-1a9f-4be5-a819-10546405d977}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -45,6 +46,9 @@
     <ClCompile Include="behaviours\GuardDetection.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="behaviours\SimpleGuardMovementAIBehaviour.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Door.h">
@@ -67,6 +71,9 @@
     </ClInclude>
     <ClInclude Include="gameobjects\Wall.h">
       <Filter>Source Files\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\SimpleGuardMovementAIBehaviour.h">
+      <Filter>Source Files\behaviours</Filter>
     </ClInclude>
     <ClInclude Include="gameobjects\Tile.h">
       <Filter>Source Files\gameobjects</Filter>

@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="behaviours\SimpleGuardMovementAIBehaviour.cpp" />
     <ClCompile Include="behaviours\FollowGameObject.cpp" />
     <ClCompile Include="behaviours\GuardDetection.cpp" />
     <ClCompile Include="behaviours\Inventory.cpp" />
@@ -146,6 +147,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="behaviours\SimpleGuardMovementAIBehaviour.h" />
     <ClInclude Include="behaviours\FollowGameObject.h" />
     <ClInclude Include="behaviours\GuardDetection.h" />
     <ClInclude Include="behaviours\Inventory.h" />

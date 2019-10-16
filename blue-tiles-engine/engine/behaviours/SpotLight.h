@@ -1,6 +1,27 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <memory>
 #include "Light.h"
+
+// Structure that holds spot light variables.
+// Used for sending lighting variables to the shader.
+struct SLight
+{
+	float ambient; // 4
+	float diffuse; // 8
+	float specular; // 12
+
+	glm::vec4 colour; // 28
+	glm::vec4 position; // 44
+	glm::vec4 direction; // 60
+
+	float innerRadius; // 64
+	float outerRadius; // 68
+
+	float constant; // 72
+	float linear; // 76
+	float quadratic; // 80
+};
 
 class SpotLight : public Light
 {
@@ -11,9 +32,14 @@ public:
 		float constant = 1.0f, float linear = 1.0f, float quadratic = 1.0f);
 
 	// Overridden render.
-	void Render(Shader& shader, int lightIndex = -1) override;
+	void Render(Shader& shader, int bufferOffset = -1) override;
+
+	// Overridden update.
+	virtual void Update(float deltaTime) override;
 
 private:
+	// Struct representation of this light source.
+	std::shared_ptr<SLight> m_lightStruct;
 
 	// The direction that the light is facing towards.
 	glm::vec3 m_direction;

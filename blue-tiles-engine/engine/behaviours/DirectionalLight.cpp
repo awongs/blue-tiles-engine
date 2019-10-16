@@ -6,7 +6,7 @@
 
 DirectionalLight::DirectionalLight(glm::vec3 colour, glm::vec3 direction, float ambient, float diffuse, float specular)
 	: Light(BehaviourType::DirectionalLight, colour, ambient, diffuse, specular)
-	, m_direction(direction)
+	, m_direction(glm::normalize(direction))
 {
 	// Vector4 definitions for the eight corners of a perspective camera
 	glm::vec4 corners[8] = { glm::vec4(-1.0f, -1.0f, 1.0f, 1.0f), glm::vec4(-1.0f, -1.0f, -1.0f, 1.0f),
@@ -49,7 +49,7 @@ DirectionalLight::DirectionalLight(glm::vec3 colour, glm::vec3 direction, float 
 		glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-void DirectionalLight::Render(Shader& shader, int lightIndex)
+void DirectionalLight::Render(Shader& shader, int bufferOffset)
 {
 	shader.SetUniform1f("dirLight.ambientIntensity", m_ambient);
 	shader.SetUniform1f("dirLight.diffuseIntensity", m_diffuse);
