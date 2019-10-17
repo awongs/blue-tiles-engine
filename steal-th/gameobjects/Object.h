@@ -1,11 +1,17 @@
 #pragma once
 
-#include <string>
+enum class ObjectType
+{
+	NONE,
+	RED_KEY,
+	BLUE_KEY,
+	GREEN_KEY,
+	OBJECTIVE_ITEM
+};
 
 struct Object
 {
-	int objectid;
-	std::string name;
-	int location;
+	ObjectType type;
+	int tileIndex;
 	float rotation;
 };

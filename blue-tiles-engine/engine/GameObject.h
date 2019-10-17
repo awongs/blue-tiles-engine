@@ -16,12 +16,8 @@ class Shader;
 class GameObject
 {
 public: 
-	// constructor without an id
+	// Create a GameObject, where the id is automatically incremented.
 	GameObject(std::string n = "Default", glm::vec3 pos = glm::vec3(0, 0, 0),
-		glm::vec3 rot = glm::vec3(0, 0, 0), glm::vec3 sca = glm::vec3(1, 1, 1));
-
-	// Constructor with default arguments
-	GameObject(int _id, std::string n = "Default", glm::vec3 pos = glm::vec3(0, 0, 0), 
 		glm::vec3 rot = glm::vec3(0, 0, 0), glm::vec3 sca = glm::vec3(1, 1, 1));
 
 	// Deconstructor

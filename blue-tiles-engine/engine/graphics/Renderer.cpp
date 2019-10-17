@@ -40,7 +40,7 @@ Renderer::Renderer(SDL_GLContext* targetContext, int windowWidth, int windowHeig
 	m_shadowBuffer = std::make_unique<ShadowBuffer>(windowWidth, windowWidth);
 
 	// Create the screen quad
-	m_screenQuad = std::make_unique<GameObject>(7355608, "screenQuad", glm::vec3(), glm::vec3(0, glm::pi<float>(), glm::pi<float>()));
+	m_screenQuad = std::make_unique<GameObject>("screenQuad", glm::vec3(), glm::vec3(0, glm::pi<float>(), glm::pi<float>()));
 	m_screenQuad->AddBehaviour(new MeshRenderer("../Assets/models/quad.obj"));
 
 	DebugLog::Info("Renderer initialization completed!\n");

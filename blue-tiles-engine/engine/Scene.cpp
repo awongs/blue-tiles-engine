@@ -81,7 +81,7 @@ bool Scene::AddWorldGameObject(GameObject* gameObject)
 
 	if (it != m_worldGameObjects.end())
 	{
-		DebugLog::Error("A GameObject with that id already exists.");
+		DebugLog::Error("A GameObject with that id: " + std::to_string(gameObject->id) + " already exists.");
 		return false;
 	}
 

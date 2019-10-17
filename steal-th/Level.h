@@ -21,19 +21,13 @@ class Level
 		Level(std::string jsonFile);
 		~Level();
 
-		int levelNum;
+		unsigned int m_levelNum{ 0 };
 
-		// Width of level ^ v
-		int width;
+		// The number of tiles in the level for each axis.
+		unsigned int m_sizeX{ 0 }, m_sizeZ{ 0 };
 
-		// Length of level <------>
-		int length;
-
-		// Starting position of the player
-		int startPos;
-
-		// Number of grids in the level (width * length)
-		int numGrids;
+		// The index of the tile that the player starts on.
+		unsigned int m_startTileIndex{ 0 };
 
 		// Game objects
 		std::vector<Object> m_objects;

@@ -1,4 +1,16 @@
 #include "Level.h"
+#include <unordered_map>
+
+namespace
+{
+	std::unordered_map<std::string, ObjectType> m_objStrToType
+	{
+		{ "red_key", ObjectType::RED_KEY },
+		{ "blue_key", ObjectType::BLUE_KEY },
+		{ "green_key", ObjectType::GREEN_KEY },
+		{ "objective_item", ObjectType::OBJECTIVE_ITEM }
+	};
+}
 
 Level::Level(std::string jsonFile)
 {
@@ -18,21 +30,24 @@ void Level::LoadLevel(std::string jsonFile)
 	// If you see a red squiggly, its an IntelliSense problem. It compiles fine.
 	_levelJSON = json::parse(input);
 
-	levelNum = _levelJSON["info"].value("level", -1);
-	width = _levelJSON["info"].value("width", -1);
-	length = _levelJSON["info"].value("length", -1);
-	startPos = _levelJSON["info"].value("startPos", -1);
-	numGrids = width * length;
+	m_levelNum = _levelJSON["info"].value("level", 0);
+	m_sizeX = _levelJSON["info"].value("sizeX", 0);
+	m_sizeZ = _levelJSON["info"].value("sizeZ", 0);
+	m_startTileIndex = _levelJSON["info"].value("startTileIndex", 0);
 
 	// Create the level's objects from the JSON file.
 	m_objects.clear();
 	for (const auto &object : _levelJSON["objects"])
 	{
 		Object thisObj;
-		thisObj.objectid = object.value("objectid", -1);
-		thisObj.name = object["name"];
-		thisObj.location = object.value("location", -1);
+		thisObj.tileIndex = object.value("tileIndex", 0);
 		thisObj.rotation = object.value("rotation", 0.f);
+
+		// Convert string value from JSON to its corresponding enum.
+		// Default to NONE if nothing matches.
+		std::string objStr{ object.value("type", "") };
+		auto it{ m_objStrToType.find(objStr) };
+		thisObj.type = (it == m_objStrToType.end() ? ObjectType::NONE : it->second);
 
 		m_objects.push_back(thisObj);
 	}
@@ -41,40 +56,41 @@ void Level::LoadLevel(std::string jsonFile)
 	m_rooms.clear();
 	for (const auto &room : _levelJSON["rooms"])
 	{
-		std::vector<Door> doors;
-		for (const auto &door : room["doors"])
+		std::vector<int> redDoors;
+		for (const auto& tileIndex : room["redDoors"])
 		{
-			Door thisDoor;
-			thisDoor.doorid = door.value("doorid", -1);
-			thisDoor.location = door.value("location", -1);
-			thisDoor.keyRequired = door.value("keyRequired", "");
-			thisDoor.facing = door.value("facing", "");
-			thisDoor.exit = door.value("exit", false);
-
-			doors.push_back(thisDoor);
+			redDoors.push_back(tileIndex);
 		}
 
-		std::vector<Wall> walls;
-		for (const auto &wall : room["walls"])
+		std::vector<int> greenDoors;
+		for (const auto& tileIndex : room["greenDoors"])
 		{
-			Wall thisWall;
-			thisWall.wallid = wall.value("wallid", -1);
-			thisWall.location = wall.value("location", -1);
-			thisWall.facing = wall.value("facing", "");
-
-			walls.push_back(thisWall);
+			greenDoors.push_back(tileIndex);
 		}
 
-		std::vector<int> gridNums;
-		for (const auto &num : room["gridUsed"])
+		std::vector<int> blueDoors;
+		for (const auto& tileIndex : room["blueDoors"])
 		{
-			gridNums.push_back(num);
+			blueDoors.push_back(tileIndex);
+		}
+
+		std::vector<int> walls;
+		for (const auto &tileIndex : room["walls"])
+		{
+			walls.push_back(tileIndex);
+		}
+
+		std::vector<int> tiles;
+		for (const auto & tileIndex : room["tileIndices"])
+		{
+			tiles.push_back(tileIndex);
 		}
 
 		Room thisRoom;
-		thisRoom.roomid = room.value("roomid", -1);
-		thisRoom.gridUsed = gridNums;
-		thisRoom.doors = doors;
+		thisRoom.tileIndices = tiles;
+		thisRoom.redDoors = redDoors;
+		thisRoom.blueDoors = blueDoors;
+		thisRoom.greenDoors = greenDoors;
 		thisRoom.walls = walls;
 
 		m_rooms.push_back(thisRoom);

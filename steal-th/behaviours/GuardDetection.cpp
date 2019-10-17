@@ -8,6 +8,8 @@
 #include <cmath>
 #include <glm/gtx/rotate_vector.hpp>
 
+#include <iostream>
+
 namespace {
     /* 
     * Implementation of Bresenham's line algorithm
@@ -143,16 +145,15 @@ void GuardDetection::Update(float deltaTime)
 			break;
 		}
 
-		// TODO: fix this... otherwise we're considering any tile with a 
-		// wall/door in it to be obstructing vision, regardless of the 
-		// facing-direction of that wall/door.
-
 		// Check if the vision ray has hit a wall yet.
-		const Tile &tile{ m_levelScene->GetTile(point.x, point.y) };
-
-		// This vision ray has hit a wall.
-		/*if (isBlocked)
-			break;*/
+		TileType tile{ m_levelScene->GetTile(point.x, point.y) };
+		if (tile == TileType::WALL ||
+			tile == TileType::RED_DOOR ||
+			tile == TileType::GREEN_DOOR ||
+			tile == TileType::BLUE_DOOR)
+		{
+			break;
+		}
 	}
 }
 

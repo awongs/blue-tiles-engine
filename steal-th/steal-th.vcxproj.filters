@@ -49,11 +49,14 @@
     <ClCompile Include="behaviours\SimpleGuardMovementAIBehaviour.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="behaviours\ObjectBehaviour.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="behaviours\TileBehaviour.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gameobjects\Door.h">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClInclude>
     <ClInclude Include="gameobjects\Guard.h">
       <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
@@ -68,9 +71,6 @@
     </ClInclude>
     <ClInclude Include="scenes\LevelScene.h">
       <Filter>Source Files\scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="gameobjects\Wall.h">
-      <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
     <ClInclude Include="behaviours\SimpleGuardMovementAIBehaviour.h">
       <Filter>Source Files\behaviours</Filter>
@@ -88,6 +88,12 @@
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
     <ClInclude Include="behaviours\GuardDetection.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\ObjectBehaviour.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\TileBehaviour.h">
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
   </ItemGroup>

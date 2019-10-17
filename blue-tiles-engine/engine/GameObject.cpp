@@ -22,16 +22,6 @@ GameObject::GameObject(std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 	id = idCounter++;
 }
 
-GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
-	: id(_id)
-	, name(n)
-	, position(pos)
-	, rotation(rot)
-	, scale(sca)
-	, m_transformMatrix(glm::mat4(1))
-{
-}
-
 GameObject::~GameObject()
 {
 	

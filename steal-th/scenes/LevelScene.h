@@ -13,7 +13,7 @@ public:
 	LevelScene(Level* level, PhysicsEngine *physEngine);
 	
 	// Get the tile at the given x, z-coordinate.
-	const Tile &GetTile(unsigned int x, unsigned int z) const;
+	TileType GetTile(unsigned int x, unsigned int z) const;
 
 	// Get the x, z tile-coordinates from given x, z world coordinates.
 	glm::ivec2 GetTileCoordFromPos(glm::vec2 worldPos) const;
@@ -25,14 +25,11 @@ public:
 	static const float TILE_SIZE;
 
 private:
-	// Add a wall to the level
-	void AddWall(std::string facing, int location, int width, int length);
+	// Add a tile to the level at the given x, z-tile coordinates.
+	void AddTile(TileType type, unsigned int x, unsigned int z);
 
-	// Add a door to the level
-	void AddDoor(std::string facing, std::string name, int location, int width, int length);
-
-	// Current number of gameobjects in level
-	int m_count;
+	// Add a tile to the level at the given tile index.
+	void AddTile(TileType type, unsigned int tileIndex);
 
 	// Hold a raw pointer to the GameEngine's PhysicsEngine.
 	// This will be needed for registering PhysicsObjects when PhysicsBehaviours
@@ -40,7 +37,7 @@ private:
 	PhysicsEngine *m_physEngine;
 
 	// The tiles in the level
-	std::vector<Tile> m_tiles;
+	std::vector<TileType> m_tiles;
 
 	// The size of the level in tiles.
 	glm::ivec2 m_levelSize;
