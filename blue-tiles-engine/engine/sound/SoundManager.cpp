@@ -5,11 +5,11 @@
 
 // This is used to store a list of keys. Which is the path to the music files and sound files.
 namespace { 
-    const std::map<std::string, std::string> ID_TO_MUSIC_PATH = {
+    const std::unordered_map<std::string, std::string> ID_TO_MUSIC_PATH = {
         {"alarm", "../Assets/sound-assets/Alert.mp3"}
     };
 
-    const std::map<std::string, std::string> ID_TO_SOUND_PATH = {
+    const std::unordered_map<std::string, std::string> ID_TO_SOUND_PATH = {
         {"door-locked", "../Assets/sound-assets/Door_Locked.wav"},
         {"door-unlocked", "../Assets/sound-assets/Door_Unlocked.wav"},
         {"key-pickup", "../Assets/sound-assets/Key_Pickup.wav"}

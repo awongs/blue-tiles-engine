@@ -1,9 +1,7 @@
 #pragma once
 
 #include <sdl2/SDL_mixer.h>
-#include <vector>
-#include <iostream>
-#include "../debugbt/DebugLog.h"
+#include <string>
 
 class Sound {
 public:

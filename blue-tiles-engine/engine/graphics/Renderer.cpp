@@ -1,5 +1,4 @@
 #include <memory>
-#include <sstream>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Renderer.h"

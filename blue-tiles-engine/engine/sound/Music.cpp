@@ -1,4 +1,5 @@
 #include "Music.h"
+#include "../debugbt/DebugLog.h"
 
 /*
 * Function that Attempts to load a music file.

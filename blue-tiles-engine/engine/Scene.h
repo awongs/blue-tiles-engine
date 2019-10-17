@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <memory>
+#include <vector>
 
 #include "GameObject.h"
 
