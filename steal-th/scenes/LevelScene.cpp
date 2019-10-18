@@ -4,15 +4,16 @@
 #include <engine/physics/Collider.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/projection.hpp>
+#include <engine/sound/SoundManager.h>
+#include <engine/sound/Music.h>
+#include <engine/sound/Sound.h>
 
 #include "../behaviours/SimpleGuardMovementAIBehaviour.h"
 #include "LevelScene.h"
 #include "../behaviours/PlayerMovement.h"
 #include "../behaviours/FollowGameObject.h"
 #include "../behaviours/Inventory.h"
-#include <engine/sound/SoundManager.h>
-#include <engine/sound/Music.h>
-#include <engine/sound/Sound.h>
+
 
 namespace
 {

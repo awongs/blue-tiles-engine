@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
 #include <algorithm>
+#include <iterator>
+
 Scene::Scene()
 {
 

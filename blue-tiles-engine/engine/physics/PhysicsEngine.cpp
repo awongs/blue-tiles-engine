@@ -1,3 +1,5 @@
+#include <glm/glm.hpp>
+
 #include "PhysicsEngine.h"
 #include "../debugbt/DebugLog.h"
 #include "SphereCollider.h"
@@ -5,9 +7,6 @@
 #include "../GameObject.h"
 #include "../MessageSystem.h"
 
-#include <glm/glm.hpp>
-
-#include <iostream>
 
 const std::string PhysicsEngine::COLLISION_MESSAGE_STR{ "HandleCollision" };
 

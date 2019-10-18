@@ -1,10 +1,6 @@
-#include <algorithm>
-#include <functional>
 #include <glm/ext/matrix_transform.hpp>
 
 #include "GameObject.h"
-#include "sound/SoundManager.h"
-#include "sound/Music.h"
 #include "graphics/Shader.h"
 #include "behaviours/Behaviour.h"
 

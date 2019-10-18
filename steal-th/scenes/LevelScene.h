@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "../blue-tiles-engine/engine/Scene.h"
 #include "../Level.h"
 #include "../gameobjects/Tile.h"
