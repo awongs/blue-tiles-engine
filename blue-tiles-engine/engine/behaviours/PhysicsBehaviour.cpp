@@ -61,6 +61,10 @@ bool PhysicsBehaviour::HandleMessage(unsigned int senderID, std::string message)
 	return false;
 }
 
+void PhysicsBehaviour::OnCollisionStay(GLuint other)
+{
+}
+
 Collider *PhysicsBehaviour::GetCollider() const
 {
 	return m_collider;

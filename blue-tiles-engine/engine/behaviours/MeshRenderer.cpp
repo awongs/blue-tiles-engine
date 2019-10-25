@@ -104,3 +104,7 @@ bool MeshRenderer::HandleMessage(unsigned int senderID, std::string message)
 {
 	return false;
 }
+
+void MeshRenderer::OnCollisionStay(GLuint other)
+{
+}

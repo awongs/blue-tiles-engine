@@ -21,6 +21,10 @@ bool Inventory::HandleMessage(unsigned int senderID, std::string message) {
     return false;
 }
 
+void Inventory::OnCollisionStay(GLuint other)
+{
+}
+
 void Inventory::AddItem(ObjectType type) {
     switch(type) {
         case ObjectType::RED_KEY:

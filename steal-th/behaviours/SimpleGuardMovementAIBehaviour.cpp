@@ -152,6 +152,10 @@ bool SimpleGuardMovementAIBehaviour::HandleMessage(unsigned int senderID, std::s
 	return false;
 }
 
+void SimpleGuardMovementAIBehaviour::OnCollisionStay(GLuint other)
+{
+}
+
 bool SimpleGuardMovementAIBehaviour::ProcessAction(float deltaTime, SimpleGuardMovementAction& action)
 {
 	switch (action.actionType)
