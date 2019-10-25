@@ -21,6 +21,18 @@ PhysicsBehaviour::PhysicsBehaviour(PhysicsEngine *physEngine,
 	}
 }
 
+PhysicsBehaviour::PhysicsBehaviour(PhysicsEngine* physEngine, GLuint gameObjectId, Collider* collider)
+	: Behaviour(BehaviourType::Physics)
+	, m_physEngine(physEngine)
+	, m_collider(collider)
+{
+	m_onCollision = [this](GLuint other) {
+
+		gameObject->OnCollisionStay(other);
+
+	};
+}
+
 PhysicsBehaviour::~PhysicsBehaviour()
 {
 	// Unregister its corresponding PhysicsObject from the PhysicsEngine.

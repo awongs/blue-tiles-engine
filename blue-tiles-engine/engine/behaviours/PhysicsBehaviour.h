@@ -14,6 +14,8 @@ public:
 		GLuint gameObjectId, Collider *collider,
 		std::function<void(GLuint)> onCollision);
 
+	PhysicsBehaviour(PhysicsEngine* physEngine, GLuint gameObjectId, Collider* collider);
+
 	~PhysicsBehaviour();
 
 	// Update
