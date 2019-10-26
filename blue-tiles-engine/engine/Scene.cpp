@@ -2,6 +2,7 @@
 #include "debugbt/DebugLog.h"
 #include <algorithm>
 #include <iterator>
+#include "graphics/Camera.h"
 
 Scene::Scene()
 {
@@ -50,7 +51,15 @@ void Scene::Update(float deltaTime)
 
 void Scene::DrawWorld(Shader& shader)
 {
-	for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Draw(shader);
+	for (auto& worldGameObj : m_worldGameObjects)
+	{
+		// Only draw objects that are within the camera's view
+		// Note: Does not consider model size
+		if (Camera::GetInstance().IsWithinBoundingBox(worldGameObj->position))
+		{
+			worldGameObj->Draw(shader);
+		}
+	}
 }
 
 void Scene::DrawScreen(Shader& shader)

@@ -24,7 +24,7 @@ DirectionalLight::DirectionalLight(glm::vec3 colour, glm::vec3 direction, float 
 
 	// Find the minimum and maximum values for the three coordinate axes
 	float minX = corners[0].x, minY = corners[0].y, minZ = corners[0].z, maxX = corners[0].x, maxY = corners[0].y, maxZ = corners[0].z;
-	for (int i = 0; i < 8; i++)
+	for (int i = 1; i < 8; i++)
 	{
 		if (corners[i].x < minX)
 			minX = corners[i].x;
@@ -41,7 +41,7 @@ DirectionalLight::DirectionalLight(glm::vec3 colour, glm::vec3 direction, float 
 	}
 
 	// Create the orthographic projection matrix for shadow mapping
-	m_projectionMatrix = glm::ortho(minX, maxX, minY, maxY, 1.0f, 150.0f);
+	m_projectionMatrix = glm::ortho(minX, maxX, minY, maxY, 1.0f, 50.0f);
 
 	// Calculate view matrix for this light
 	m_viewMatrix = glm::lookAt(-m_direction,

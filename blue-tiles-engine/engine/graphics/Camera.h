@@ -5,6 +5,19 @@
 class Camera
 {
 public:
+
+	// Storing variables for the camera's bounding box.
+	// See https://i.stack.imgur.com/YBcd7.png
+	struct BoundingBox
+	{
+		float minX;
+		float maxX;
+		float minY; 
+		float maxY;
+		float minZ;
+		float maxZ;
+	};
+
 	// Deconstructor.
 	virtual ~Camera();
 
@@ -39,6 +52,13 @@ public:
 	// Projection matrix accessor.
 	glm::mat4 GetProjectionMatrix() const;
 
+	// Checks if a given point is within the camera's bounding box.
+	// Returns true if it is, otherwise false.
+	bool IsWithinBoundingBox(glm::vec3 point) const;
+
+	// Bounding box accessor.
+	BoundingBox GetBoundingBox() const;
+
 private:
 	// Constructor.
 	Camera();
@@ -48,6 +68,10 @@ private:
 
 	// Calculates and sets the projection matrix to a perspective view.
 	void CalculatePerspectiveView();
+
+	// Calculates and sets the camera's bounding box.
+	// See https://gamedev.stackexchange.com/questions/69749/get-the-8-corners-of-camera-frustrum
+	void CalculateBoundingBox();
 
 	// Field of view.
 	float m_fov = glm::radians(60.0f);
@@ -60,6 +84,9 @@ private:
 
 	// The camera's view matrix.
 	glm::mat4 m_viewMatrix;
+
+	// The camera's bounding box.
+	BoundingBox m_boundingBox;
 
 	// The camera's projection matrix.
 	glm::mat4 m_projectionMatrix;
