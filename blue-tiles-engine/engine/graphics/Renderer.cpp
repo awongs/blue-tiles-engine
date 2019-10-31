@@ -158,7 +158,8 @@ void Renderer::ShadowPass(Scene& currentScene)
 	// Do shadow mapping if there is a directional light
 	if (!m_directionalLight.expired())
 	{
-		glm::mat4 lightSpaceMatrix = m_directionalLight.lock()->GetProjectionMatrix() * m_directionalLight.lock()->GetViewMatrix();
+		std::shared_ptr<DirectionalLight> dirLight = m_directionalLight.lock();
+		glm::mat4 lightSpaceMatrix = dirLight->GetLightSpaceMatrix();
 
 		// Translate by the camera's current position
 		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
@@ -192,12 +193,13 @@ void Renderer::GeometryPass(Scene& currentScene)
 	// Do shadow mapping if there is a directional light
 	if (!m_directionalLight.expired())
 	{
-		glm::mat4 lightSpaceMatrix = m_directionalLight.lock()->GetProjectionMatrix() * m_directionalLight.lock()->GetViewMatrix();
+		std::shared_ptr<DirectionalLight> dirLight = m_directionalLight.lock();
+		glm::mat4 lightSpaceMatrix = dirLight->GetLightSpaceMatrix();
 
 		// Translate by the camera's current position
 		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
 		m_deferredGeometryShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
-		m_deferredGeometryShader->SetUniform3f("lightDirection", glm::vec3(0.0f, 5.0f, 1.0f));
+		m_deferredGeometryShader->SetUniform3f("lightDirection", dirLight->GetDirection());
 	}
 
 	// Set camera matrices in shader

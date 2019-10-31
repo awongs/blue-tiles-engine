@@ -8,11 +8,8 @@ Camera::Camera()
 	, m_viewMatrix()
 	, m_projectionMatrix()
 {
-	SetOrientation(glm::vec3(glm::radians(75.0f), 0.0f, 0.0f));
-
 	// Initial matrix values
 	CalculateViewMatrix();
-	CalculatePerspectiveView();
 	CalculateBoundingBox();
 }
 
@@ -27,7 +24,7 @@ Camera& Camera::GetInstance()
 	return instance;
 }
 
-void Camera::SetPosition(const glm::vec3 position)
+void Camera::SetPosition(const glm::vec3& position)
 {
 	m_position = position;
 
@@ -36,7 +33,7 @@ void Camera::SetPosition(const glm::vec3 position)
 	CalculateBoundingBox();
 }
 
-void Camera::SetOrientation(const glm::vec3 orientation)
+void Camera::SetOrientation(const glm::vec3& orientation)
 {
 	m_orientation = orientation;
 
@@ -45,7 +42,7 @@ void Camera::SetOrientation(const glm::vec3 orientation)
 	CalculateBoundingBox();
 }
 
-void Camera::Translate(const glm::vec3 translation)
+void Camera::Translate(const glm::vec3& translation)
 {
 	m_position += translation;
 
@@ -54,7 +51,7 @@ void Camera::Translate(const glm::vec3 translation)
 	CalculateBoundingBox();
 }
 
-void Camera::Rotate(const glm::vec3 rotation)
+void Camera::Rotate(const glm::vec3& rotation)
 {
 	m_orientation += rotation;
 
@@ -83,20 +80,20 @@ glm::mat4 Camera::GetProjectionMatrix() const
 	return m_projectionMatrix;
 }
 
-bool Camera::IsWithinBoundingBox(glm::vec3 point) const
+std::pair<float, float> Camera::GetZClip() const
 {
-	if (point.x > m_boundingBox.maxX || point.y > m_boundingBox.maxY || point.y > m_boundingBox.maxZ
+	return m_zClip;
+}
+
+bool Camera::IsWithinBoundingBox(const glm::vec3& point) const
+{
+	if (point.x > m_boundingBox.maxX || point.y > m_boundingBox.maxY || point.z > m_boundingBox.maxZ
 	 || point.x < m_boundingBox.minX || point.y < m_boundingBox.minY || point.z < m_boundingBox.minZ)
 	{
 		return false;
 	}
 
 	return true;
-}
-
-Camera::BoundingBox Camera::GetBoundingBox() const
-{
-	return m_boundingBox;
 }
 
 void Camera::CalculateViewMatrix()
@@ -119,10 +116,11 @@ void Camera::CalculateViewMatrix()
 	m_viewMatrix = rotationMatrix * positionMatrix;
 }
  
-void Camera::CalculatePerspectiveView()
+void Camera::CalculatePerspectiveView(const float fov, const float aspect, const float nearClip, const float farClip)
 {
-	// TODO: Make aspect ratio not hard coded
-	m_projectionMatrix = glm::perspective(m_fov, 4.0f / 3.0f, 1.0f, 50.0f);
+	m_zClip.first = nearClip;
+	m_zClip.second = farClip;
+	m_projectionMatrix = glm::perspective(fov, aspect, nearClip, farClip);
 }
 
 void Camera::CalculateBoundingBox()

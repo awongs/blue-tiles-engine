@@ -21,9 +21,19 @@
 #include "Level.h"
 #include "scenes/LevelScene.h"
 
+// Window size settings.
+constexpr int WINDOW_WIDTH = 800;
+constexpr int WINDOW_HEIGHT = 600;
+
+// Camera settings.
+constexpr float CAMERA_FOV = glm::radians(60.0f);
+constexpr float CAMERA_NEAR_CLIP = 1.0f;
+constexpr float CAMERA_FAR_CLIP = 50.0f;
+constexpr glm::vec3 CAMERA_ORIENTATION = glm::vec3(glm::radians(75.0f), 0.0f, 0.0f);
+
 int main()
 {
-	GameWindow gameWin(800, 600);
+	GameWindow gameWin(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	int windowSetupStatus = gameWin.SetupSDLWindow();
 
@@ -39,6 +49,10 @@ int main()
 	// Create the level
 	Level* l = new Level("level0");
 	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l, physEngine);
+
+	// Setup the camera.
+	Camera::GetInstance().SetOrientation(CAMERA_ORIENTATION);
+	Camera::GetInstance().CalculatePerspectiveView(CAMERA_FOV, WINDOW_WIDTH / WINDOW_HEIGHT, CAMERA_NEAR_CLIP, CAMERA_FAR_CLIP);
 	
 	// -- Testing --
 	srand(time(0));

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <utility>
 
 class Camera
 {
@@ -29,16 +30,16 @@ public:
 	static Camera& GetInstance();
 
 	// Sets the position to an input vec3.
-	void SetPosition(const glm::vec3 position);
+	void SetPosition(const glm::vec3& position);
 
 	// Sets the orientation to an input vec3.
-	void SetOrientation(const glm::vec3 orientation);
+	void SetOrientation(const glm::vec3& orientation);
 
 	// Performs a translation by the input vec3.
-	void Translate(const glm::vec3 translation);
+	void Translate(const glm::vec3& translation);
 
 	// Performs a rotation by the input vec3.
-	void Rotate(const glm::vec3 rotation);
+	void Rotate(const glm::vec3& rotation);
 
 	// Position accessor.
 	glm::vec3 GetPosition() const;
@@ -52,12 +53,15 @@ public:
 	// Projection matrix accessor.
 	glm::mat4 GetProjectionMatrix() const;
 
+	// Near and far clip accessor.
+	std::pair<float, float> GetZClip() const;
+
 	// Checks if a given point is within the camera's bounding box.
 	// Returns true if it is, otherwise false.
-	bool IsWithinBoundingBox(glm::vec3 point) const;
+	bool IsWithinBoundingBox(const glm::vec3& point) const;
 
-	// Bounding box accessor.
-	BoundingBox GetBoundingBox() const;
+	// Calculates and sets the projection matrix to a perspective view.
+	void CalculatePerspectiveView(const float fov, const float aspect, const float nearClip, const float farClip);
 
 private:
 	// Constructor.
@@ -66,15 +70,9 @@ private:
 	// Calculates and sets the view matrix.
 	void CalculateViewMatrix();
 
-	// Calculates and sets the projection matrix to a perspective view.
-	void CalculatePerspectiveView();
-
 	// Calculates and sets the camera's bounding box.
 	// See https://gamedev.stackexchange.com/questions/69749/get-the-8-corners-of-camera-frustrum
 	void CalculateBoundingBox();
-
-	// Field of view.
-	float m_fov = glm::radians(60.0f);
 
 	// Current position of the camera.
 	glm::vec3 m_position;
@@ -90,4 +88,7 @@ private:
 
 	// The camera's projection matrix.
 	glm::mat4 m_projectionMatrix;
+
+	// The camera's near and far clipping distances in the z direction.
+	std::pair<float, float> m_zClip;
 };
