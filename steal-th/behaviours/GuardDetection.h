@@ -10,7 +10,8 @@ class GuardDetection : public Behaviour
 
 public:
 	// Constructor.
-	GuardDetection(LevelScene *levelScene, GameObject *playerObj);
+	GuardDetection(LevelScene *levelScene, GameObject *playerObj, 
+		float maxViewDist, int viewTileRadius);
 
 	// Overridden functions.
 	void Update(float deltaTime) override;
@@ -18,7 +19,16 @@ public:
 	bool HandleMessage(unsigned int senderID, std::string message) override;
 
 private:
+	// Try to detect the player by using the line algorithm with
+	// a start point and the point at the maximum view distance 
+	// from the guard, in world coordinates.
+	void tryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistancePoint);
+
 	bool m_playerDetected;
+
+	// Defines how far and wide a guard can detect players.
+	float m_maxViewDist{ 0 };
+	int m_viewTileRadius{ 0 };
 
 	// Hold a raw pointer to the level scene.
 	// We need this to get tile data.

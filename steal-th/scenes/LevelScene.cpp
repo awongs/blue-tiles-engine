@@ -470,8 +470,12 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			(guard.location / level->m_sizeZ) * TILE_SIZE + TILE_SIZE / 2.f);
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("guard", position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
+		// TODO: maybe move these fixed values into the JSON definition?
+		float maxViewDist{ LevelScene::TILE_SIZE * 3 };
+		int viewTileRadius{ 3 };
+
 		ga->AddBehaviour(meshRenderer);
-		ga->AddBehaviour(new GuardDetection(this, playerObj));
+		ga->AddBehaviour(new GuardDetection(this, playerObj, maxViewDist, viewTileRadius));
 
 		m_worldGameObjects.push_back(std::move(ga));
 	}

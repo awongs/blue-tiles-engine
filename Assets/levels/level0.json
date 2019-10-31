@@ -1,12 +1,12 @@
 {
-  "info": 
+  "info":
   {
     "level": 0,
     "startTileIndex": 13,
     "sizeX": 12,
     "sizeZ": 12
   },
-  "rooms": 
+  "rooms":
   [
     {
       "tileIndices": [],
