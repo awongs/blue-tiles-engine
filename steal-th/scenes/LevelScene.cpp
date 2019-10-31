@@ -219,49 +219,51 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("object", position, glm::vec3(0, glm::radians(obj.rotation), 0));
 
 		glm::vec3 scale;
+		MeshRenderer *meshRenderer{ nullptr };
+		PhysicsBehaviour *physBehaviour{ nullptr };
 		switch (obj.type)
 		{
 			case ObjectType::RED_KEY:
 			case ObjectType::BLUE_KEY:
 			case ObjectType::GREEN_KEY:
 			{
-				MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/key.obj");
+				meshRenderer = new MeshRenderer("../Assets/models/key.obj");
 				meshRenderer->SetTexture("../Assets/textures/key.png");
 				scale = glm::vec3(0.5, 0.5, 0.5);
 
 				Collider* keyCol{ new Collider(glm::vec3(2.f)) };
-				PhysicsBehaviour* physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, keyCol, [this](GLuint other) {}) };
-				ga->AddBehaviour(physBehaviour);
-
-				switch (obj.type)
-				{
-					case ObjectType::RED_KEY:
-					{
-						ObjectBehaviour* objBehaviour{ new ObjectBehaviour(ObjectType::RED_KEY) };
-						ga->AddBehaviour(objBehaviour);
-						break;
-					}
-
-					case ObjectType::BLUE_KEY:
-					{
-						ObjectBehaviour* objBehaviour{ new ObjectBehaviour(ObjectType::BLUE_KEY) };
-						ga->AddBehaviour(objBehaviour);
-						break;
-					}
-
-					case ObjectType::GREEN_KEY:
-					{
-						ObjectBehaviour* objBehaviour{ new ObjectBehaviour(ObjectType::GREEN_KEY) };
-						ga->AddBehaviour(objBehaviour);
-						break;
-					}
-				}
-
-				ga->scale = scale;
-				ga->AddBehaviour(meshRenderer);
+				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, keyCol, [this](GLuint other) {});
 				break;
 			}
 		}
+
+		switch (obj.type)
+		{
+			case ObjectType::RED_KEY:
+			{
+				ObjectBehaviour *objBehaviour{ new ObjectBehaviour(ObjectType::RED_KEY) };
+				ga->AddBehaviour(objBehaviour);
+				break;
+			}
+
+			case ObjectType::BLUE_KEY:
+			{
+				ObjectBehaviour *objBehaviour{ new ObjectBehaviour(ObjectType::BLUE_KEY) };
+				ga->AddBehaviour(objBehaviour);
+				break;
+			}
+
+			case ObjectType::GREEN_KEY:
+			{
+				ObjectBehaviour *objBehaviour{ new ObjectBehaviour(ObjectType::GREEN_KEY) };
+				ga->AddBehaviour(objBehaviour);
+				break;
+			}
+		}
+
+		ga->scale = scale;
+		ga->AddBehaviour(meshRenderer);
+		ga->AddBehaviour(physBehaviour);
 
 		/*if (obj.name.find(KEY_NAME) != std::string::npos)
 		{
@@ -328,26 +330,35 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			std::shared_ptr<ObjectBehaviour> otherObjBehaviour{ otherObj->GetBehaviour<ObjectBehaviour>().lock() };
 			if (otherObjBehaviour != nullptr)
 			{
-				switch (otherObjBehaviour->GetType())
+				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
+				if (inventory != nullptr)
 				{
-					case ObjectType::RED_KEY:
-					case ObjectType::BLUE_KEY:
-					case ObjectType::GREEN_KEY:
+					switch (otherObjBehaviour->GetType())
 					{
-						SoundManager::getInstance().getSound("key-pickup")->play();
-						std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
-						if (inventory != nullptr)
+						case ObjectType::RED_KEY:
 						{
-							// TODO: Using red key for now.
+							SoundManager::getInstance().getSound("key-pickup")->play();
 							inventory->AddItem(Inventory::ObjectType::RED_KEY);
+							break;
+						}
+							
+						case ObjectType::BLUE_KEY:
+						{
+							SoundManager::getInstance().getSound("key-pickup")->play();
+							inventory->AddItem(Inventory::ObjectType::BLUE_KEY);
+							break;
 						}
 
-						// KILL IT
-						RemoveWorldGameObject(other);
-						break;
+						case ObjectType::GREEN_KEY:
+						{
+							SoundManager::getInstance().getSound("key-pickup")->play();
+							inventory->AddItem(Inventory::ObjectType::GREEN_KEY);
+							break;
+						}
 					}
 				}
 
+				RemoveWorldGameObject(other);
 				return;
 			}
 
@@ -356,16 +367,12 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			if (otherTile != nullptr)
 			{
 				TileType type{ otherTile->GetType() };
-				switch (type)
+				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
+				if (inventory != nullptr)
 				{
-					case TileType::WALL:
-					case TileType::RED_DOOR:
-					case TileType::BLUE_DOOR:
-					case TileType::GREEN_DOOR:
+					switch (type)
 					{
-						// TODO: Unlock door with red key for now. Change this later to support all key/door types.
-						std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
-						if (type == TileType::RED_DOOR || type == TileType::BLUE_DOOR || type == TileType::GREEN_DOOR)
+						case TileType::RED_DOOR:
 						{
 							if (inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0)
 							{
@@ -377,8 +384,50 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 							{
 								SoundManager::getInstance().getSound("door-locked")->play();
 							}
+
+							break;
 						}
 
+						case TileType::BLUE_DOOR:
+						{
+							if (inventory->GetNumItem(Inventory::ObjectType::BLUE_KEY) > 0)
+							{
+								SoundManager::getInstance().getSound("door-unlocked")->play();
+								inventory->RemoveItem(Inventory::ObjectType::BLUE_KEY);
+								RemoveWorldGameObject(other);
+							}
+							else
+							{
+								SoundManager::getInstance().getSound("door-locked")->play();
+							}
+							break;
+						}
+
+						case TileType::GREEN_DOOR:
+						{
+							if (inventory->GetNumItem(Inventory::ObjectType::GREEN_KEY) > 0)
+							{
+								SoundManager::getInstance().getSound("door-unlocked")->play();
+								inventory->RemoveItem(Inventory::ObjectType::GREEN_KEY);
+								RemoveWorldGameObject(other);
+							}
+							else
+							{
+								SoundManager::getInstance().getSound("door-locked")->play();
+							}
+
+							break;
+						}
+					}
+				}
+
+				switch (type)
+				{
+					case TileType::WALL:
+					case TileType::RED_DOOR:
+					case TileType::BLUE_DOOR:
+					case TileType::GREEN_DOOR:
+					{
 						std::shared_ptr<PlayerMovement> playerMovement{ playerObj->GetBehaviour<PlayerMovement>().lock() };
 						if (playerMovement == nullptr)
 							return;
