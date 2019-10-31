@@ -32,36 +32,23 @@ namespace
 LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	: Scene(), m_physEngine(physEngine)
 {
-	// Can we please use axes instead of "width" and "length".
 	m_levelSize = glm::ivec2(level->m_sizeX, level->m_sizeZ);
 
 	//std::vector<int> gridsUsed;
 
 	// Initialize tiles
-	m_tiles.resize(level->m_sizeX * level->m_sizeZ);
+	unsigned int numTiles{ level->m_sizeX * level->m_sizeZ };
+	m_tiles.resize(numTiles);
 
-	// Generate rooms
-	for (Room& room : level->m_rooms)
+	// Generate level tiles.
+	for (unsigned int i = 0; i < numTiles; ++i)
 	{
-		for (int tileIndex : room.walls)
-		{
-			AddTile(TileType::WALL, tileIndex);
-		}
+		// Skip floors for now, we'll create them after.
+		int tile{ level->m_layout[i] };
+		if (tile == 0) continue;
 
-		for (int tileIndex : room.redDoors)
-		{
-			AddTile(TileType::RED_DOOR, tileIndex);
-		}
-
-		for (int tileIndex : room.blueDoors)
-		{
-			AddTile(TileType::BLUE_DOOR, tileIndex);
-		}
-
-		for (int tileIndex : room.greenDoors)
-		{
-			AddTile(TileType::GREEN_DOOR, tileIndex);
-		}
+		TileType type{ static_cast<TileType>(tile) };
+		AddTile(type, i);
 
 		/*for (Wall& wall : room.walls)
 		{
@@ -212,9 +199,9 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	for (Object& obj : level->m_objects)
 	{
 		glm::vec3 position = glm::vec3(
-			(float)(obj.tileIndex % level->m_sizeX) * TILE_SIZE + TILE_SIZE / 2.f,
+			(float)(obj.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
 			0, 
-			(float)(obj.tileIndex / level->m_sizeZ) * TILE_SIZE + TILE_SIZE / 2.f
+			(float)(obj.tileZ) * TILE_SIZE + TILE_SIZE / 2.f
 		);
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("object", position, glm::vec3(0, glm::radians(obj.rotation), 0));
 
@@ -314,9 +301,9 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	meshRenderer->SetTexture("../Assets/textures/unity_chan.png");
 
 	glm::vec3 position = glm::vec3(
-		(float)(level->m_startTileIndex % level->m_sizeX) * TILE_SIZE + TILE_SIZE / 2.f,
+		(float)(level->m_playerSpawnX) * TILE_SIZE + TILE_SIZE / 2.f,
 		0, 
-		(float)(level->m_startTileIndex / level->m_sizeZ) * TILE_SIZE + TILE_SIZE / 2.f
+		(float)(level->m_playerSpawnZ) * TILE_SIZE + TILE_SIZE / 2.f
 	);
 
 	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("player", position, glm::vec3(0, 0, 0), glm::vec3(2, 2, 2));
@@ -538,17 +525,15 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
 
 		glm::vec3 position = glm::vec3(
-			(guard.location % level->m_sizeX) * TILE_SIZE + TILE_SIZE / 2.f,
+			(float)(guard.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
 			0, 
-			(guard.location / level->m_sizeZ) * TILE_SIZE + TILE_SIZE / 2.f);
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("guard", position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
-
-		// TODO: maybe move these fixed values into the JSON definition?
-		float maxViewDist{ LevelScene::TILE_SIZE * 3 };
-		int viewTileRadius{ 3 };
+			(float)(guard.tileZ) * TILE_SIZE + TILE_SIZE / 2.f);
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("guard", 
+			position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
 		ga->AddBehaviour(meshRenderer);
-		ga->AddBehaviour(new GuardDetection(this, playerObj, maxViewDist, viewTileRadius));
+		ga->AddBehaviour(new GuardDetection(this, playerObj, 
+			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
 
 		m_worldGameObjects.push_back(std::move(ga));
 	}
@@ -584,6 +569,11 @@ TileType LevelScene::GetTile(unsigned int x, unsigned int z) const
 glm::ivec2 LevelScene::GetTileCoordFromPos(glm::vec2 worldPos) const
 {
 	return glm::ivec2(glm::floor(worldPos / TILE_SIZE));
+}
+
+unsigned int LevelScene::GetTileIndexFromXZ(glm::ivec2 tilePos) const
+{
+	return tilePos.x + tilePos.y * m_levelSize.x;
 }
 
 glm::ivec2 LevelScene::GetLevelSize() const
@@ -728,7 +718,7 @@ void LevelScene::AddTile(TileType type, unsigned int tileIndex)
 
 void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 {
-	unsigned int tileIndex{ x + z * m_levelSize.x };
+	unsigned int tileIndex{ GetTileIndexFromXZ(glm::ivec2(x, z)) };
 
 	switch (type)
 	{

@@ -11,7 +11,7 @@ class GuardDetection : public Behaviour
 public:
 	// Constructor.
 	GuardDetection(LevelScene *levelScene, GameObject *playerObj, 
-		float maxViewDist, int viewTileRadius);
+		float maxViewDist, int tileViewRadius);
 
 	// Overridden functions.
 	void Update(float deltaTime) override;
@@ -28,7 +28,7 @@ private:
 
 	// Defines how far and wide a guard can detect players.
 	float m_maxViewDist{ 0 };
-	int m_viewTileRadius{ 0 };
+	int m_tileViewRadius{ 0 };
 
 	// Hold a raw pointer to the level scene.
 	// We need this to get tile data.

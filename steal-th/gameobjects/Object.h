@@ -12,7 +12,7 @@ enum class ObjectType
 
 struct Object
 {
-	ObjectType type;
-	int tileIndex;
-	float rotation;
+	ObjectType type{ ObjectType::NONE };
+	unsigned int tileX{ 0 }, tileZ{ 0 };
+	float rotation{ 0.f };
 };

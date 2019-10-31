@@ -97,10 +97,10 @@ namespace {
 }
 
 GuardDetection::GuardDetection(LevelScene *levelScene, GameObject *playerObj,
-	float maxViewDist, int viewTileRadius) :
+	float maxViewDist, int tileViewRadius) :
 	Behaviour(BehaviourType::GuardDetection),
 	m_levelScene(levelScene), m_playerObj(playerObj), 
-	m_maxViewDist(maxViewDist), m_viewTileRadius(viewTileRadius)
+	m_maxViewDist(maxViewDist), m_tileViewRadius(tileViewRadius)
 {
     m_playerDetected = false;
 }
@@ -124,17 +124,17 @@ void GuardDetection::Update(float deltaTime)
 	unrotatedMaxDistPoint.y -= m_maxViewDist;
 
 	// Check if the guard can detect the player at its maximum view distance.
-	int numEndTiles{ m_viewTileRadius * 2 };
+	int numEndTiles{ m_tileViewRadius * 2 };
 	for (int i = 0; i < numEndTiles + 1; ++i)
 	{
 		glm::vec2 pos{ unrotatedMaxDistPoint };
-		pos.x -= (m_viewTileRadius * LevelScene::TILE_SIZE);
+		pos.x -= (m_tileViewRadius * LevelScene::TILE_SIZE);
 		pos.x += (i * LevelScene::TILE_SIZE);
 		tryDetectPlayer(guardWorldPos, pos);
 	}
 
 	// Check side for peripheral vision.
-	for (int i = 0; i < m_viewTileRadius; ++i)
+	for (int i = 0; i < m_tileViewRadius; ++i)
 	{
 		glm::vec2 startPos{ guardWorldPos };
 		startPos.x -= (2 * LevelScene::TILE_SIZE);
@@ -146,7 +146,7 @@ void GuardDetection::Update(float deltaTime)
 	}
 
 	// Check the other side for peripheral vision.
-	for (int i = 0; i < m_viewTileRadius; ++i)
+	for (int i = 0; i < m_tileViewRadius; ++i)
 	{
 		glm::vec2 startPos{ guardWorldPos };
 		startPos.x += (2 * LevelScene::TILE_SIZE);

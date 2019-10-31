@@ -18,6 +18,9 @@ public:
 	// Get the x, z tile-coordinates from given x, z world coordinates.
 	glm::ivec2 GetTileCoordFromPos(glm::vec2 worldPos) const;
 
+	// Get the index for a tile, given its x, z tile coordinates.
+	unsigned int GetTileIndexFromXZ(glm::ivec2 tilePos) const;
+
 	// Get the number of tiles in this level.
 	glm::ivec2 GetLevelSize() const;
 

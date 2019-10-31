@@ -1,39 +1,33 @@
 {
-  "info":
-  {
-    "level": 0,
-    "startTileIndex": 13,
-    "sizeX": 12,
-    "sizeZ": 12
-  },
-  "rooms":
-  [
+    "info":
     {
-      "tileIndices": [],
-      "redDoors": [ 50 ],
-      "greenDoors": [ ],
-      "blueDoors": [],
-      "walls": [ 0, 1, 2, 3, 4, 12, 14, 16, 24, 28, 36, 40, 48, 49, 51, 52]
-    }
-  ],
-  "objects" : [
-    {
-      "type" : "red_key",
-      "tileIndex": 15,
-      "rotation": 0.0
-    }
+        "level": 0,
+        "size": { "x": 12, "z": 12 },
+        "playerSpawn": { "x": 1, "z": 1 }
+    },
+
+    "layout":
+    [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,
+        1, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    ],
+
+    "objects" : [
+        { "type" : "red_key", "position": { "x": 3, "z": 1 }, "rotation": 0.0 }
 	],
-  "guards": [
-    {
-      "guardid" : 0,
-      "location": 15,
-	    "range" : 1.0,
-      "rotation": {
-        "angle" : -90.0,
-        "rotateFrom" : -90.0,
-        "rotateTo" : 0.0,
-        "interval" : 5.0
-      }
-    }
-  ]
+
+    "guards": [
+        { "guardId" : 0, "position": { "x": 3, "z": 3 }, "tileViewDistance": 3, "tileViewRadius": 3,
+        "rotation": { "angle" : -90.0, "rotateFrom" : -90.0, "rotateTo" : 0.0, "interval" : 5.0 } }
+    ]
 }
