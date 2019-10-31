@@ -116,12 +116,11 @@ void GuardDetection::Update(float deltaTime)
 
 	// The guard's tile position is point 1 for the line algorithm.
 	// We want this to be the tile directly in front of the guard.
-	glm::vec2 guardWorldPos{ gameObject->position.x, 
-		gameObject->position.z - LevelScene::TILE_SIZE };
+	glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
+	glm::vec2 frontWorldPos{ guardWorldPos.x, guardWorldPos.y - LevelScene::TILE_SIZE };
 
 	// For rotation == 0.f, the guard is facing up.
-	glm::vec2 unrotatedMaxDistPoint{ guardWorldPos };
-	unrotatedMaxDistPoint.y -= m_maxViewDist;
+	glm::vec2 unrotatedMaxDistPoint{ frontWorldPos.x, frontWorldPos.y - m_maxViewDist };
 
 	// Check if the guard can detect the player at its maximum view distance.
 	int numEndTiles{ m_tileViewRadius * 2 };
@@ -130,13 +129,13 @@ void GuardDetection::Update(float deltaTime)
 		glm::vec2 pos{ unrotatedMaxDistPoint };
 		pos.x -= (m_tileViewRadius * LevelScene::TILE_SIZE);
 		pos.x += (i * LevelScene::TILE_SIZE);
-		tryDetectPlayer(guardWorldPos, pos);
+		tryDetectPlayer(frontWorldPos, pos);
 	}
 
 	// Check side for peripheral vision.
 	for (int i = 0; i < m_tileViewRadius; ++i)
 	{
-		glm::vec2 startPos{ guardWorldPos };
+		glm::vec2 startPos{ frontWorldPos };
 		startPos.x -= (2 * LevelScene::TILE_SIZE);
 
 		glm::vec2 pos{ startPos };
@@ -148,7 +147,7 @@ void GuardDetection::Update(float deltaTime)
 	// Check the other side for peripheral vision.
 	for (int i = 0; i < m_tileViewRadius; ++i)
 	{
-		glm::vec2 startPos{ guardWorldPos };
+		glm::vec2 startPos{ frontWorldPos };
 		startPos.x += (2 * LevelScene::TILE_SIZE);
 
 		glm::vec2 pos{ startPos };
@@ -157,15 +156,22 @@ void GuardDetection::Update(float deltaTime)
 		tryDetectPlayer(startPos, pos);
 	}
 
+	// Additional peripheral vision checks.
+	// We need to explicitly check the two tiles beside the front tile,
+	// since we skip it above.
+	glm::vec2 pos{ frontWorldPos.x - LevelScene::TILE_SIZE, frontWorldPos.y };
+	tryDetectPlayer(frontWorldPos, pos);
+	pos.x = frontWorldPos.x + LevelScene::TILE_SIZE;
+	tryDetectPlayer(frontWorldPos, pos);
+
 	// Check the tile on the guard, as well as the two tiles
 	// to the side of the guard.
-	glm::vec2 startPos{ gameObject->position.x, gameObject->position.z };
-	glm::vec2 endPos{ startPos };
+	glm::vec2 endPos{ guardWorldPos };
 	endPos.x -= LevelScene::TILE_SIZE;
-	tryDetectPlayer(startPos, endPos);
-	endPos = startPos;
+	tryDetectPlayer(guardWorldPos, endPos);
+	endPos = guardWorldPos;
 	endPos.x += LevelScene::TILE_SIZE;
-	tryDetectPlayer(startPos, endPos);
+	tryDetectPlayer(guardWorldPos, endPos);
 }
 
 void GuardDetection::Draw(Shader& shader) {}
