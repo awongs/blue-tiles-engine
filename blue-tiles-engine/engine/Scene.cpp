@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
 #include <algorithm>
+#include "behaviours/MeshRenderer.h"
 Scene::Scene()
 {
 
@@ -48,7 +49,16 @@ void Scene::Update(float deltaTime)
 
 void Scene::DrawWorld(Shader& shader)
 {
-	for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Draw(shader);
+	for (auto& worldGameObj : m_worldGameObjects) {
+
+		// Don't draw transparent objects
+		std::weak_ptr<MeshRenderer> meshRenderer = worldGameObj->GetBehaviour<MeshRenderer>();
+		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent()) {
+			continue;
+		}
+
+		worldGameObj->Draw(shader);
+	}
 }
 
 void Scene::DrawScreen(Shader& shader)

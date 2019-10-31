@@ -2,7 +2,7 @@
 
 layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
-layout (location = 2) out vec3 gColour;
+layout (location = 2) out vec4 gColour;
 
 uniform sampler2D uTexture;
 uniform sampler2D uShadowMap;
@@ -21,7 +21,7 @@ void main()
 {   
 	gPosition = fragPosition;
 	gNormal = normalize(fragNormal);
-	gColour = texture(uTexture, fragTexCoord).rgb * calcShadow(lightDirection, gNormal);
+	gColour = texture(uTexture, fragTexCoord) * calcShadow(lightDirection, gNormal);
 }
 
 float calcShadow(vec3 lightDirection, vec3 normal) 

@@ -26,6 +26,12 @@ public:
 	// Destructor.
 	virtual ~MeshRenderer();
 
+	// Accessor for transparency.
+	bool IsTransparent();
+
+	// Setter for transparency.
+	void SetTransparent(bool transparent);
+
 	// Overridden functions.
 	void Update(float deltaTime) override;
 	void Draw(Shader& shader) override;
@@ -49,4 +55,7 @@ private:
 
 	// This mesh's indices.
 	std::vector<GLuint> m_indices;
+
+	// Flag for if this mesh is transprent.
+	bool m_isTransparent;
 };

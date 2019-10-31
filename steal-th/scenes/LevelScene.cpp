@@ -216,7 +216,6 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			case ObjectType::GREEN_KEY:
 			{
 				meshRenderer = new MeshRenderer("../Assets/models/key.obj");
-				meshRenderer->SetTexture("../Assets/textures/key.png");
 				scale = glm::vec3(0.5, 0.5, 0.5);
 
 				Collider *col{ new Collider(glm::vec3(2.f)) };
@@ -226,9 +225,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 			case ObjectType::OBJECTIVE_ITEM:
 			{
-				// TODO: replace the key model.
-				meshRenderer = new MeshRenderer("../Assets/models/key.obj");
-				meshRenderer->SetTexture("../Assets/textures/key.png");
+				meshRenderer = new MeshRenderer("../Assets/models/golden_goose.obj");
+				meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
 				scale = glm::vec3(0.5, 0.5, 0.5);
 
 				Collider *col{ new Collider(glm::vec3(2.f)) };
@@ -242,14 +240,17 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		{
 			case ObjectType::RED_KEY:
 				objBehaviour = new ObjectBehaviour(ObjectType::RED_KEY);
+				meshRenderer->SetTexture("../Assets/textures/red_key.png");
 				break;
 
 			case ObjectType::BLUE_KEY:
 				objBehaviour = new ObjectBehaviour(ObjectType::BLUE_KEY);
+				meshRenderer->SetTexture("../Assets/textures/blue_key.png");
 				break;
 
 			case ObjectType::GREEN_KEY:
 				objBehaviour = new ObjectBehaviour(ObjectType::GREEN_KEY);
+				meshRenderer->SetTexture("../Assets/textures/green_key.png");
 				break;
 		}
 
@@ -772,10 +773,9 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				}
 				case TileType::RED_DOOR:
 				{
-					ga->scale = DOOR_SCALE;
-
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/door.obj");
-					meshRenderer->SetTexture("../Assets/textures/door.png");
+					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
+					meshRenderer->SetTransparent(true);
+					meshRenderer->SetTexture("../Assets/textures/red_key_block.png");
 					ga->AddBehaviour(meshRenderer);
 
 					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::RED_DOOR) };
@@ -785,10 +785,9 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				}
 				case TileType::BLUE_DOOR:
 				{
-					ga->scale = DOOR_SCALE;
-
 					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/door.obj");
-					meshRenderer->SetTexture("../Assets/textures/door.png");
+					meshRenderer->SetTransparent(true);
+					meshRenderer->SetTexture("../Assets/textures/blue_key_block.png");
 					ga->AddBehaviour(meshRenderer);
 
 					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::BLUE_DOOR) };
@@ -798,10 +797,9 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				}
 				case TileType::GREEN_DOOR:
 				{
-					ga->scale = DOOR_SCALE;
-
 					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/door.obj");
-					meshRenderer->SetTexture("../Assets/textures/door.png");
+					meshRenderer->SetTransparent(true);
+					meshRenderer->SetTexture("../Assets/textures/green_key_block.png");
 					ga->AddBehaviour(meshRenderer);
 
 					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::GREEN_DOOR) };
