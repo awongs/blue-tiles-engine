@@ -1,5 +1,6 @@
 #pragma once
 
+// Define different types of objects that can appear on the level.
 enum class ObjectType
 {
 	NONE,

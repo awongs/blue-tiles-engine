@@ -221,6 +221,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		glm::vec3 scale;
 		MeshRenderer *meshRenderer{ nullptr };
 		PhysicsBehaviour *physBehaviour{ nullptr };
+		ObjectBehaviour *objBehaviour{ nullptr };
 		switch (obj.type)
 		{
 			case ObjectType::RED_KEY:
@@ -231,8 +232,21 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 				meshRenderer->SetTexture("../Assets/textures/key.png");
 				scale = glm::vec3(0.5, 0.5, 0.5);
 
-				Collider* keyCol{ new Collider(glm::vec3(2.f)) };
-				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, keyCol, [this](GLuint other) {});
+				Collider *col{ new Collider(glm::vec3(2.f)) };
+				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, col, [this](GLuint other) {});
+				break;
+			}
+
+			case ObjectType::OBJECTIVE_ITEM:
+			{
+				// TODO: replace the key model.
+				meshRenderer = new MeshRenderer("../Assets/models/key.obj");
+				meshRenderer->SetTexture("../Assets/textures/key.png");
+				scale = glm::vec3(0.5, 0.5, 0.5);
+
+				Collider *col{ new Collider(glm::vec3(2.f)) };
+				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, col, [this](GLuint other) {});
+				objBehaviour = new ObjectBehaviour(ObjectType::OBJECTIVE_ITEM);
 				break;
 			}
 		}
@@ -240,30 +254,22 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		switch (obj.type)
 		{
 			case ObjectType::RED_KEY:
-			{
-				ObjectBehaviour *objBehaviour{ new ObjectBehaviour(ObjectType::RED_KEY) };
-				ga->AddBehaviour(objBehaviour);
+				objBehaviour = new ObjectBehaviour(ObjectType::RED_KEY);
 				break;
-			}
 
 			case ObjectType::BLUE_KEY:
-			{
-				ObjectBehaviour *objBehaviour{ new ObjectBehaviour(ObjectType::BLUE_KEY) };
-				ga->AddBehaviour(objBehaviour);
+				objBehaviour = new ObjectBehaviour(ObjectType::BLUE_KEY);
 				break;
-			}
 
 			case ObjectType::GREEN_KEY:
-			{
-				ObjectBehaviour *objBehaviour{ new ObjectBehaviour(ObjectType::GREEN_KEY) };
-				ga->AddBehaviour(objBehaviour);
+				objBehaviour = new ObjectBehaviour(ObjectType::GREEN_KEY);
 				break;
-			}
 		}
 
 		ga->scale = scale;
 		ga->AddBehaviour(meshRenderer);
 		ga->AddBehaviour(physBehaviour);
+		ga->AddBehaviour(objBehaviour);
 
 		/*if (obj.name.find(KEY_NAME) != std::string::npos)
 		{
@@ -338,21 +344,29 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 						case ObjectType::RED_KEY:
 						{
 							SoundManager::getInstance().getSound("key-pickup")->play();
-							inventory->AddItem(Inventory::ObjectType::RED_KEY);
+							inventory->AddItem(Inventory::ItemType::RED_KEY);
 							break;
 						}
 							
 						case ObjectType::BLUE_KEY:
 						{
 							SoundManager::getInstance().getSound("key-pickup")->play();
-							inventory->AddItem(Inventory::ObjectType::BLUE_KEY);
+							inventory->AddItem(Inventory::ItemType::BLUE_KEY);
 							break;
 						}
 
 						case ObjectType::GREEN_KEY:
 						{
 							SoundManager::getInstance().getSound("key-pickup")->play();
-							inventory->AddItem(Inventory::ObjectType::GREEN_KEY);
+							inventory->AddItem(Inventory::ItemType::GREEN_KEY);
+							break;
+						}
+
+						case ObjectType::OBJECTIVE_ITEM:
+						{
+							// TODO: replace key pickup sound.
+							SoundManager::getInstance().getSound("key-pickup")->play();
+							inventory->AddItem(Inventory::ItemType::OBJECTIVE_ITEM);
 							break;
 						}
 					}
@@ -374,10 +388,10 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 					{
 						case TileType::RED_DOOR:
 						{
-							if (inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0)
+							if (inventory->GetNumItem(Inventory::ItemType::RED_KEY) > 0)
 							{
 								SoundManager::getInstance().getSound("door-unlocked")->play();
-								inventory->RemoveItem(Inventory::ObjectType::RED_KEY);
+								inventory->RemoveItem(Inventory::ItemType::RED_KEY);
 								RemoveWorldGameObject(other);
 							}
 							else
@@ -390,10 +404,10 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 						case TileType::BLUE_DOOR:
 						{
-							if (inventory->GetNumItem(Inventory::ObjectType::BLUE_KEY) > 0)
+							if (inventory->GetNumItem(Inventory::ItemType::BLUE_KEY) > 0)
 							{
 								SoundManager::getInstance().getSound("door-unlocked")->play();
-								inventory->RemoveItem(Inventory::ObjectType::BLUE_KEY);
+								inventory->RemoveItem(Inventory::ItemType::BLUE_KEY);
 								RemoveWorldGameObject(other);
 							}
 							else
@@ -405,15 +419,25 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 						case TileType::GREEN_DOOR:
 						{
-							if (inventory->GetNumItem(Inventory::ObjectType::GREEN_KEY) > 0)
+							if (inventory->GetNumItem(Inventory::ItemType::GREEN_KEY) > 0)
 							{
 								SoundManager::getInstance().getSound("door-unlocked")->play();
-								inventory->RemoveItem(Inventory::ObjectType::GREEN_KEY);
+								inventory->RemoveItem(Inventory::ItemType::GREEN_KEY);
 								RemoveWorldGameObject(other);
 							}
 							else
 							{
 								SoundManager::getInstance().getSound("door-locked")->play();
+							}
+
+							break;
+						}
+
+						case TileType::EXIT:
+						{
+							if (inventory->GetNumItem(Inventory::ItemType::OBJECTIVE_ITEM) > 0)
+							{
+								// TODO: implement win action.
 							}
 
 							break;
