@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
+#include "behaviours/MeshRenderer.h"
 #include <algorithm>
-#include <iterator>
 
 Scene::Scene()
 {
@@ -50,7 +50,16 @@ void Scene::Update(float deltaTime)
 
 void Scene::DrawWorld(Shader& shader)
 {
-	for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Draw(shader);
+	for (auto& worldGameObj : m_worldGameObjects) {
+
+		// Don't draw transparent objects
+		std::weak_ptr<MeshRenderer> meshRenderer = worldGameObj->GetBehaviour<MeshRenderer>();
+		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent()) {
+			continue;
+		}
+
+		worldGameObj->Draw(shader);
+	}
 }
 
 void Scene::DrawScreen(Shader& shader)
@@ -83,7 +92,7 @@ bool Scene::AddWorldGameObject(GameObject* gameObject)
 
 	if (it != m_worldGameObjects.end())
 	{
-		DebugLog::Error("A GameObject with that id already exists.");
+		DebugLog::Error("A GameObject with that id: " + std::to_string(gameObject->id) + " already exists.");
 		return false;
 	}
 

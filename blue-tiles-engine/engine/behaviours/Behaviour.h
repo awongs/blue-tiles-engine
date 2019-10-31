@@ -18,7 +18,10 @@ enum class BehaviourType
 	PlayerMovement, 
 	FollowGameObject,
 	Inventory,
-	SimpleGuardMovementBehaviour
+	GuardDetection,
+	SimpleGuardMovementBehaviour,
+	ObjectBehaviour,
+	TileBehaviour
 };
 
 class GameObject;

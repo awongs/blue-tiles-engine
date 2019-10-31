@@ -4,6 +4,8 @@
 #include <glad/glad.h>
 #include <vector>
 
+#include "../behaviours/PointLight.h"
+
 class GeometryBuffer;
 class ShadowBuffer;
 class GameObject;
@@ -39,6 +41,9 @@ public:
 	// Performs a geometry pass in the deferred rendering process.
 	void GeometryPass(Scene& currentScene);
 
+	// Performs a transparency pass.
+	void TransparencyPass(Scene& currentScene);
+
 	// Renders the frame
 	void Render(Scene& currentScene);
 
@@ -65,6 +70,9 @@ private:
 
 	// Pointer to the deferred geometry shader.
 	std::shared_ptr<Shader> m_deferredGeometryShader;
+
+	// Pointer to the transparency shader.
+	std::shared_ptr<Shader> m_transparencyShader;
 
 	// Pointer to the deferred lighting shader.
 	std::shared_ptr<Shader> m_deferredLightingShader;
