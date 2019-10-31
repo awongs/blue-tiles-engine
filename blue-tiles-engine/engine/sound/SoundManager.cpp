@@ -5,11 +5,11 @@
 
 // This is used to store a list of keys. Which is the path to the music files and sound files.
 namespace { 
-    const std::map<std::string, std::string> ID_TO_MUSIC_PATH = {
+    const std::unordered_map<std::string, std::string> ID_TO_MUSIC_PATH = {
         {"alarm", "../Assets/sound-assets/Alert.mp3"}
     };
 
-    const std::map<std::string, std::string> ID_TO_SOUND_PATH = {
+    const std::unordered_map<std::string, std::string> ID_TO_SOUND_PATH = {
         {"door-locked", "../Assets/sound-assets/Door_Locked.wav"},
         {"door-unlocked", "../Assets/sound-assets/Door_Unlocked.wav"},
         {"key-pickup", "../Assets/sound-assets/Key_Pickup.wav"}
@@ -19,8 +19,8 @@ namespace {
 // SoundManager constructor that initialize Mix_OpenAudio and also two maps containing Sound and Music files in a map.
 SoundManager::SoundManager() {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
-		DebugLog::Error("Could not initialize SDL_mixer:" + std::string(Mix_GetError()));
-	}
+	    DebugLog::Error("Could not initialize SDL_mixer:" + std::string(Mix_GetError()));
+	  }
 
     for(auto it = ID_TO_MUSIC_PATH.begin(); it!=ID_TO_MUSIC_PATH.end(); it++) {
         m_musicMap.insert({it->first, std::make_shared<Music>(it->second)});

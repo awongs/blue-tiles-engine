@@ -29,6 +29,19 @@ namespace
 	const glm::vec3 DOOR_SCALE{ LevelScene::TILE_SIZE, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 20 };
 }
 
+
+namespace
+{
+	const std::string KEY_NAME{ "key" };
+	const std::string WALL_NAME{ "wall" };
+	const std::string DOOR_NAME{ "door" };
+	const std::string BLOCK_NAME{ "block" };
+
+	// TODO: Need a more accurate way to determine this.
+	// Just eye-balling it for now...
+	const glm::vec2 WALL_HALF_SIZES{ 3.5f, 0.5f };
+}
+
 LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	: Scene(), m_physEngine(physEngine)
 {
@@ -514,6 +527,98 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 					}
 				}
 			}
+			// Handle collisions against walls, doors, and blocks.
+			else if (otherObj->name == WALL_NAME || isDoor || 
+				otherObj->name.find(BLOCK_NAME) != std::string::npos)
+			{
+				// TODO: Unlock door with red key for now. Change this later to support all key/door types.
+				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
+				if (isDoor)
+				{	
+					if (inventory->GetNumItem(Inventory::ObjectType::RED_KEY) > 0) 
+					{
+						SoundManager::getInstance().getSound("door-unlocked")->play();
+						inventory->RemoveItem(Inventory::ObjectType::RED_KEY);
+						RemoveWorldGameObject(other);
+					}
+					else 
+					{
+						SoundManager::getInstance().getSound("door-locked")->play();
+					}
+				}
+
+				std::shared_ptr<PlayerMovement> playerMovement{ playerObj->GetBehaviour<PlayerMovement>().lock() };
+				if (playerMovement == nullptr)
+					return;
+
+				std::shared_ptr<PhysicsBehaviour> otherPhys{ otherObj->GetBehaviour<PhysicsBehaviour>().lock() };
+				if (otherPhys == nullptr)
+					return;
+
+				Collider *otherCol{ otherPhys->GetCollider() };
+				if (otherCol == nullptr || otherCol->GetType() != Collider::BOX)
+					return;
+
+				// Get the four corner points of the other's collider box.
+				glm::vec3 otherColSize{ otherCol->GetHalfSizes() };
+				glm::vec2 otherBottomLeft{ otherObj->position.x - otherColSize.x, otherObj->position.z + otherColSize.z };
+				glm::vec2 otherBottomRight{ otherObj->position.x + otherColSize.x, otherObj->position.z + otherColSize.z };
+				glm::vec2 otherTopLeft{ otherObj->position.x - otherColSize.x, otherObj->position.z - otherColSize.z };
+				glm::vec2 otherTopRight{ otherObj->position.x + otherColSize.x, otherObj->position.z - otherColSize.z };
+
+				// Calculate the determinant value of point p for the line 
+				// consisting of points a to b.
+				auto calculateDeterminant{ [](glm::vec2 a, glm::vec2 b, glm::vec2 p)
+				{
+					return (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x);
+				} };
+
+				// Check player's position against the two diagonal vectors of 
+				// the other's collider box. The sign of the determinant value
+				// will show which side of the diagonal the player's position
+				// lies on. This will let us find the direction that the player
+				// is colliding from.
+				glm::vec2 playerPos{ playerObj->position.x, playerObj->position.z };
+				bool isCollidingTop{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) > 0 && 
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) < 0 };
+				bool isCollidingBottom{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) < 0 &&
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) > 0 };
+				bool isCollidingLeft{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) > 0 &&
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) > 0 };
+				bool isCollidingRight{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) < 0 &&
+					calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) < 0 };
+
+				// Undo the movement from PlayerMovement.
+				glm::vec3 playerVel{ playerMovement->GetCurrentVelocity() };
+				playerObj->position -= playerVel;
+
+				// Calculate the new velocity vector based on collision 
+				// direction. Handle the two axes separately.
+				glm::vec3 newPlayerVel{ playerVel };
+
+				// Handle the vertical axis.
+				if (isCollidingTop)
+				{
+					newPlayerVel.z = glm::max(newPlayerVel.z, 0.f);
+				}
+				else if (isCollidingBottom)
+				{
+					newPlayerVel.z = glm::min(newPlayerVel.z, 0.f);
+				}
+				
+				// Handle the horizontal axis.
+				if (isCollidingLeft)
+				{
+					newPlayerVel.x = glm::max(newPlayerVel.x, 0.f);
+				}
+				else if (isCollidingRight)
+				{
+					newPlayerVel.x = glm::min(newPlayerVel.x, 0.f);
+				}
+
+				// Apply the new velocity.
+				playerObj->position += newPlayerVel;
+			}
 		}) };
 	ga->AddBehaviour(physBehaviour);
 
@@ -536,6 +641,26 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		ga->AddBehaviour(new GuardDetection(this, playerObj, 
 			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
 
+    SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
+
+		// move to box
+		sgmaib->AddMoveTileAction(1, 2);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddMoveTileAction(1, 1);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddWaitAction(2);
+
+		// move back
+		sgmaib->AddMoveTileAction(1, 2);
+		sgmaib->AddTurnCCWAction();
+		sgmaib->AddMoveTileAction(2, 2);
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddTurnCWAction();
+		sgmaib->AddWaitAction(2);
+    
+		ga->AddBehaviour(sgmaib);
+    
 		m_worldGameObjects.push_back(std::move(ga));
 	}
 
@@ -710,7 +835,6 @@ glm::ivec2 LevelScene::GetLevelSize() const
 
 void LevelScene::AddTile(TileType type, unsigned int tileIndex)
 {
-
 	unsigned int x{ tileIndex % static_cast<unsigned int>(m_levelSize.x) };
 	unsigned int z{ static_cast<unsigned int>(glm::floor(static_cast<float>(tileIndex) / m_levelSize.x)) };
 

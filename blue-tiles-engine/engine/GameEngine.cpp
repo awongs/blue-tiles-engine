@@ -1,13 +1,7 @@
-#include <vector>
-
 #include "GameEngine.h"
 #include "graphics/Renderer.h"
 #include "debugbt/DebugLog.h"
-#include "GameObject.h"
-#include "behaviours/MeshRenderer.h"
 #include "Scene.h"
-#include "physics/PhysicsObject.h"
-#include "input/Input.h"
 #include "graphics/TextRenderer.h"
 #include "MessageSystem.h"
 #include "sound/SoundManager.h"
@@ -36,10 +30,10 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	glViewport(0, 0, vpWidth, vpHeight);
 
 	// text rendering (NOTE: must be created before any buffers!)
-	textRenderer = new TextRenderer(800, 600);
+	textRenderer = new TextRenderer(vpWidth, vpHeight);
 
 	// 3d rendering
-	renderer = new Renderer(&targetContext, 800, 600);
+	renderer = new Renderer(&targetContext, vpWidth, vpHeight);
 
 	m_lastFrameTime = SDL_GetTicks();
 

@@ -6,14 +6,12 @@
 
 #include "../behaviours/PointLight.h"
 
-
 class GeometryBuffer;
 class ShadowBuffer;
 class GameObject;
 class ShaderManager;
 class Shader;
 class Scene;
-
 class DirectionalLight;
 class PointLight;
 class SpotLight;

@@ -1,4 +1,5 @@
 #include "Sound.h"
+#include "../debugbt/DebugLog.h"
 
 /*
 * Function that Attempts to load a sound file.

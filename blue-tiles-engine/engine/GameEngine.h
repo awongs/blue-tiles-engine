@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <sdl2/SDL.h>
-
 #include "physics/PhysicsEngine.h"
 
 class TextRenderer;

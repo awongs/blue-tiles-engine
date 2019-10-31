@@ -1,5 +1,4 @@
 #include "TextBehaviour.h"
-#include "Behaviour.h"
 #include "../GameObject.h"
 #include "../graphics/TextRenderer.h"
 

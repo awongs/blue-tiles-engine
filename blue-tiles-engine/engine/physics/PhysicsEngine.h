@@ -6,10 +6,10 @@
 #include <set>
 #include <vector>
 #include <string>
+#include "PhysicsObject.h"
 
 class Collider;
 class SphereCollider;
-class PhysicsObject;
 
 class PhysicsEngine
 {

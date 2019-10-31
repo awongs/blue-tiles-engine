@@ -1,7 +1,8 @@
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
-#include <algorithm>
 #include "behaviours/MeshRenderer.h"
+#include <algorithm>
+
 Scene::Scene()
 {
 

@@ -1,15 +1,11 @@
 #pragma once
-#include <glad/glad.h>
+
 #include <string>
-#include <list>
 #include <memory>
-#include <iterator>
 #include <glm/glm.hpp>
-#include <vector>
 #include <typeindex>
 #include <unordered_map>
 #include "behaviours/Behaviour.h"
-
 
 class Shader;
 

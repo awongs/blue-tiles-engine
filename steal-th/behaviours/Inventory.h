@@ -6,27 +6,27 @@
 
 class Inventory : public Behaviour {
 public:
-    // Default Constructor
-    Inventory();
+  // Default Constructor
+  Inventory();
 
 	// Define different pickupable items.
-    enum class ItemType {
-        RED_KEY, 
-        BLUE_KEY, 
-        GREEN_KEY,
-		OBJECTIVE_ITEM
-    };
+  enum class ItemType {
+    RED_KEY, 
+    BLUE_KEY, 
+    GREEN_KEY,
+    OBJECTIVE_ITEM
+  };
 
-    // Overridden functions.
+  // Overridden functions.
 	void Update(float deltaTime) override;
 	void Draw(Shader& shader) override;
 	bool HandleMessage(unsigned int senderID, std::string message) override;
     
-    // Increment an item in player's inventory.
-    void AddItem(ItemType type);
+  // Increment an item in player's inventory.
+  void AddItem(ItemType type);
 
-    // Decrement an item in player's inventory.
-    void RemoveItem(ItemType type);
+  // Decrement an item in player's inventory.
+  void RemoveItem(ItemType type);
 	
 	// Get the number of a specific item in the player's inventory.
 	unsigned int GetNumItem(ItemType type);
