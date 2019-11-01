@@ -58,6 +58,10 @@ bool PlayerMovement::HandleMessage(unsigned int senderID, std::string& message)
 	return false;
 }
 
+void PlayerMovement::OnCollisionStay(GLuint other)
+{
+}
+
 glm::vec3 PlayerMovement::GetCurrentVelocity() const
 {
 	return m_currentVelocity;

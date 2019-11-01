@@ -21,6 +21,7 @@ bool Inventory::HandleMessage(unsigned int senderID, std::string& message)
 	return false;
 }
 
+
 void Inventory::AddItem(ItemType type)
 {
 	auto it{ m_items.find(type) };
@@ -28,6 +29,10 @@ void Inventory::AddItem(ItemType type)
 		++it->second;
 	else
 		m_items.insert({ type, 1 });
+}
+
+void Inventory::OnCollisionStay(GLuint other)
+{
 }
 
 void Inventory::RemoveItem(ItemType type)

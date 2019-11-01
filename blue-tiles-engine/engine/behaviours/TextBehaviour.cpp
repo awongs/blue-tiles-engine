@@ -35,3 +35,7 @@ bool TextBehaviour::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }
+
+void TextBehaviour::OnCollisionStay(GLuint other)
+{
+}

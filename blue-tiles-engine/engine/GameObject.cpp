@@ -41,6 +41,14 @@ void GameObject::Draw(Shader& shader)
 	}
 }
 
+void GameObject::OnCollisionStay(GLuint other)
+{
+	for (const auto& behaviour : m_behaviours)
+	{
+		behaviour.second->OnCollisionStay(other);
+	}
+}
+
 glm::mat4 GameObject::GetTransformMatrix() const
 {
 	return m_transformMatrix;

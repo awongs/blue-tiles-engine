@@ -21,6 +21,18 @@ PhysicsBehaviour::PhysicsBehaviour(PhysicsEngine *physEngine,
 	}
 }
 
+PhysicsBehaviour::PhysicsBehaviour(PhysicsEngine* physEngine, GLuint gameObjectId, Collider* collider)
+	: Behaviour(BehaviourType::Physics)
+	, m_physEngine(physEngine)
+	, m_collider(collider)
+{
+	m_onCollision = [this](GLuint other) {
+
+		gameObject->OnCollisionStay(other);
+
+	};
+}
+
 PhysicsBehaviour::~PhysicsBehaviour()
 {
 	// Unregister its corresponding PhysicsObject from the PhysicsEngine.
@@ -47,6 +59,10 @@ bool PhysicsBehaviour::HandleMessage(unsigned int senderID, std::string& message
 	}
 
 	return false;
+}
+
+void PhysicsBehaviour::OnCollisionStay(GLuint other)
+{
 }
 
 Collider *PhysicsBehaviour::GetCollider() const

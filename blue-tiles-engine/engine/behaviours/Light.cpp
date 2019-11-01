@@ -26,3 +26,7 @@ bool Light::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }
+
+void Light::OnCollisionStay(GLuint other)
+{
+}
