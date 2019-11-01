@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="behaviours\ObjectBehaviour.cpp" />
+    <ClCompile Include="behaviours\PlayerItemPickup.cpp" />
     <ClCompile Include="behaviours\SimpleGuardMovementAIBehaviour.cpp" />
     <ClCompile Include="behaviours\FollowGameObject.cpp" />
     <ClCompile Include="behaviours\GuardDetection.cpp" />
@@ -150,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="behaviours\ObjectBehaviour.h" />
+    <ClInclude Include="behaviours\PlayerItemPickup.h" />
     <ClInclude Include="behaviours\SimpleGuardMovementAIBehaviour.h" />
     <ClInclude Include="behaviours\FollowGameObject.h" />
     <ClInclude Include="behaviours\GuardDetection.h" />
