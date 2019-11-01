@@ -5,6 +5,8 @@
 #include "behaviours/Behaviour.h"
 #include "Scene.h"
 
+#include "debugbt/DebugLog.h"
+
 int GameObject::idCounter = 0;
 
 GameObject::GameObject(std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
@@ -87,8 +89,16 @@ std::weak_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)
 
 bool GameObject::HandleMessage(unsigned int senderID, std::string& message, BehaviourType type)
 {
-	if (message.compare("die") && currentScene != nullptr)
+	if (message == "die")
 	{
+		DebugLog::Info(name + " got die message!");
+
+		if (currentScene == nullptr)
+		{
+			DebugLog::Error("CurrentScene is null for " + name + "!");
+			return false;
+		}
+
 		if (isScreenObject) currentScene->RemoveScreenGameObject(id);
 		else currentScene->RemoveWorldGameObject(id);
 	}
