@@ -19,6 +19,8 @@ public:
 
 	ObjectType GetType() const;
 
+	bool pickedUp;
+
 private:
 	// This object's type.
 	// We need this to differentiate between pick-upable objects.

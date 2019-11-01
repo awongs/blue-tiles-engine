@@ -43,6 +43,9 @@ void PlayerItemPickup::OnCollisionStay(GLuint other)
 
 	if (otherObjBehaviour != nullptr)
 	{
+		// don't pick up an item thats already been picked up.
+		if (otherObjBehaviour->pickedUp) return;
+
 		std::shared_ptr<Inventory> inventory{ gameObject->GetBehaviour<Inventory>().lock() };
 
 		if (inventory != nullptr)
@@ -53,6 +56,8 @@ void PlayerItemPickup::OnCollisionStay(GLuint other)
 			{
 				SoundManager::getInstance().getSound("key-pickup")->play();
 				inventory->AddItem(Inventory::ItemType::RED_KEY);
+				DebugLog::Info(gameObject->name + " picked up a RED_KEY");
+				otherObjBehaviour->pickedUp = true;
 				MessageSystem::SendMessageToObject(gameObject->id, other, BehaviourType::NONE, "die");
 				break;
 			}
@@ -61,6 +66,8 @@ void PlayerItemPickup::OnCollisionStay(GLuint other)
 			{
 				SoundManager::getInstance().getSound("key-pickup")->play();
 				inventory->AddItem(Inventory::ItemType::BLUE_KEY);
+				DebugLog::Info(gameObject->name + " picked up a BLUE_KEY");
+				otherObjBehaviour->pickedUp = true;
 				MessageSystem::SendMessageToObject(gameObject->id, other, BehaviourType::NONE, "die");
 				break;
 			}
@@ -69,6 +76,8 @@ void PlayerItemPickup::OnCollisionStay(GLuint other)
 			{
 				SoundManager::getInstance().getSound("key-pickup")->play();
 				inventory->AddItem(Inventory::ItemType::GREEN_KEY);
+				DebugLog::Info(gameObject->name + " picked up a GREEN_KEY");
+				otherObjBehaviour->pickedUp = true;
 				MessageSystem::SendMessageToObject(gameObject->id, other, BehaviourType::NONE, "die");
 				break;
 			}
@@ -78,6 +87,8 @@ void PlayerItemPickup::OnCollisionStay(GLuint other)
 				// TODO: replace key pickup sound.
 				SoundManager::getInstance().getSound("key-pickup")->play();
 				inventory->AddItem(Inventory::ItemType::OBJECTIVE_ITEM);
+				DebugLog::Info(gameObject->name + " picked up a OBJECTIVE_ITEM");
+				otherObjBehaviour->pickedUp = true;
 				MessageSystem::SendMessageToObject(gameObject->id, other, BehaviourType::NONE, "die");
 				break;
 			}
