@@ -78,6 +78,9 @@ public:
 	// Pointer to the current scene that this gameobject is in.
 	Scene* currentScene;
 
+	// Flag if this gameobject is a screen object in the current scene.
+	bool isScreenObject;
+
 private:
 	// Hashmap of behaviours currently attached to this game object.
 	// Access using std::type_index(typeid(childBehaviour)).
