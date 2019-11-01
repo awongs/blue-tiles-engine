@@ -106,6 +106,7 @@ bool Scene::AddWorldGameObject(GameObject* gameObject)
 		return false;
 	}
 
+	gameObject->currentScene = this;
 	m_worldGameObjects.push_back(std::unique_ptr<GameObject>(gameObject));
 	return true;
 }
@@ -144,6 +145,8 @@ bool Scene::AddScreenGameObject(GameObject* gameObject)
 		DebugLog::Error("A GameObject with that id already exists.");
 		return false;
 	}
+
+	gameObject->currentScene = this;
 	m_screenGameObjects.push_back(std::unique_ptr<GameObject>(gameObject));
 	return true;
 }

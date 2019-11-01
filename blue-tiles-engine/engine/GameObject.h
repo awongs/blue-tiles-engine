@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include "behaviours/Behaviour.h"
 
+class Scene;
 class Shader;
 
 class GameObject
@@ -73,6 +74,9 @@ public:
 
 	// The game object's forward vector.
 	glm::vec3 forward;
+
+	// Pointer to the current scene that this gameobject is in.
+	Scene* currentScene;
 
 private:
 	// Hashmap of behaviours currently attached to this game object.
