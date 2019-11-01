@@ -10,7 +10,7 @@ public:
 	// Overridden functions.
 	void Update(float deltaTime) override;
 	void Draw(Shader& shader) override;
-	bool HandleMessage(unsigned int senderID, std::string message) override;
+	bool HandleMessage(unsigned int senderID, std::string& message) override;
 
 	glm::vec3 GetCurrentVelocity() const;
 

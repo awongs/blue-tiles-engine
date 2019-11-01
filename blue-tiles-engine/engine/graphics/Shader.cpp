@@ -22,7 +22,7 @@ GLuint Shader::GetProgramHandle() const
 	return m_programHandle;
 }
 
-void Shader::SetUniform1i(const std::string name, const int value)
+void Shader::SetUniform1i(const std::string& name, const int value)
 {
 	int id = getUniformLocation(name);
 
@@ -37,7 +37,7 @@ void Shader::SetUniform1i(const std::string name, const int value)
 	}
 }
 
-void Shader::SetUniform1f(const std::string name, const float value)
+void Shader::SetUniform1f(const std::string& name, const float value)
 {
 	int id = getUniformLocation(name);
 
@@ -52,7 +52,7 @@ void Shader::SetUniform1f(const std::string name, const float value)
 	}
 }
 
-void Shader::SetUniform2f(const std::string name, const glm::vec2 values)
+void Shader::SetUniform2f(const std::string& name, const glm::vec2 values)
 {
 	int id = getUniformLocation(name);
 
@@ -67,7 +67,7 @@ void Shader::SetUniform2f(const std::string name, const glm::vec2 values)
 	}
 }
 
-void Shader::SetUniform3f(const std::string name, const glm::vec3 values)
+void Shader::SetUniform3f(const std::string& name, const glm::vec3 values)
 {
 	int id = getUniformLocation(name);
 
@@ -82,7 +82,7 @@ void Shader::SetUniform3f(const std::string name, const glm::vec3 values)
 	}
 }
 
-void Shader::SetUniform4f(const std::string name, const glm::vec4 values)
+void Shader::SetUniform4f(const std::string& name, const glm::vec4 values)
 {
 	int id = getUniformLocation(name);
 
@@ -97,7 +97,7 @@ void Shader::SetUniform4f(const std::string name, const glm::vec4 values)
 	}
 }
 
-void Shader::SetUniformMatrix4fv(const std::string name, const glm::mat4& matrix)
+void Shader::SetUniformMatrix4fv(const std::string& name, const glm::mat4& matrix)
 {
 	int id = getUniformLocation(name);
 
@@ -112,7 +112,7 @@ void Shader::SetUniformMatrix4fv(const std::string name, const glm::mat4& matrix
 	}
 }
 
-int Shader::getUniformLocation(const std::string uniformName)
+int Shader::getUniformLocation(const std::string& uniformName)
 {
 	// Check if this uniform is in the cache.
 	if (m_uniformMap.count(uniformName) == 0)

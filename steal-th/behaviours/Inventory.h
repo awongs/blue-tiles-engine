@@ -20,7 +20,7 @@ public:
   // Overridden functions.
 	void Update(float deltaTime) override;
 	void Draw(Shader& shader) override;
-	bool HandleMessage(unsigned int senderID, std::string message) override;
+	bool HandleMessage(unsigned int senderID, std::string& message) override;
     
   // Increment an item in player's inventory.
   void AddItem(ItemType type);

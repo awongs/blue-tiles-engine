@@ -13,12 +13,12 @@ namespace MessageSystem
 		GLOBAL FUNCTIONS
 	*/
 
-	void SendMessageToObject(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message)
+	void SendMessageToObject(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, const std::string& message)
 	{
 		MessageManager::instance->QueueMessage(senderID, targetID, targetBehaviour, message);
 	}
 
-	void BroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
+	void BroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, const std::string& message)
 	{
 		MessageManager::instance->QueueBroadcastMessage(senderID, targetBehaviour, message);
 	}
@@ -42,7 +42,7 @@ namespace MessageSystem
 	{
 	}
 
-	void MessageManager::QueueMessage(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, std::string message)
+	void MessageManager::QueueMessage(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, const std::string& message)
 	{
 		ObjectMessage msg;
 
@@ -55,7 +55,7 @@ namespace MessageSystem
 		else messageQueue.push(msg);
 	}
 
-	void MessageManager::QueueBroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, std::string message)
+	void MessageManager::QueueBroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, const std::string& message)
 	{
 		ObjectMessage msg;
 

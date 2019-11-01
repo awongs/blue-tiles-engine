@@ -54,12 +54,14 @@ void Scene::DrawWorld(Shader& shader)
 {
 	for (auto& worldGameObj : m_worldGameObjects)
 	{
-    // Don't draw transparent objects
-		std::weak_ptr<MeshRenderer> meshRenderer = worldGameObj->GetBehaviour<MeshRenderer>();
+		// Don't draw transparent objects
+		std::weak_ptr<MeshRenderer> meshRenderer = std::static_pointer_cast<MeshRenderer>(worldGameObj->GetBehaviour(BehaviourType::MeshRenderer).lock());
+
 		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent()) 
-    {
+		{
 			continue;
-	  }
+		}
+		
     
 		// Only draw objects that are within the camera's view
 		// Note: Does not consider model size

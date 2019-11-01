@@ -13,7 +13,7 @@ void ObjectBehaviour::Draw(Shader& shader)
 {
 }
 
-bool ObjectBehaviour::HandleMessage(unsigned int senderID, std::string message)
+bool ObjectBehaviour::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }

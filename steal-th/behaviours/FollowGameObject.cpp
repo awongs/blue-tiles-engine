@@ -27,7 +27,7 @@ void FollowGameObject::Draw(Shader& shader)
 	// Do nothing
 }
 
-bool FollowGameObject::HandleMessage(unsigned int senderID, std::string message)
+bool FollowGameObject::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }

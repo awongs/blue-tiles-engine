@@ -30,7 +30,7 @@ TextRenderer::~TextRenderer()
 	delete m_shaderManager;
 }
 
-void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3& color)
+void TextRenderer::RenderText(std::string& text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3& color)
 {
 	// Enable culling and specify which face to cull
 	glEnable(GL_CULL_FACE);
@@ -89,12 +89,12 @@ void TextRenderer::RenderText(std::string text, GLfloat x, GLfloat y, GLfloat sc
 	glDisable(GL_BLEND);
 }
 
-void TextRenderer::RenderText(std::string text, glm::vec3& pos, GLfloat scale, glm::vec3& color)
+void TextRenderer::RenderText(std::string& text, glm::vec3& pos, GLfloat scale, glm::vec3& color)
 {
 	RenderText(text, pos.x, pos.y, scale, color);
 }
 
-void TextRenderer::RenderText(std::string text, glm::vec2& pos, GLfloat scale, glm::vec3& color)
+void TextRenderer::RenderText(std::string& text, glm::vec2& pos, GLfloat scale, glm::vec3& color)
 {
 	RenderText(text, pos.x, pos.y, scale, color);
 }

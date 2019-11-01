@@ -224,7 +224,7 @@ void Renderer::GeometryPass(Scene& currentScene)
 
 void Renderer::TransparencyPass(Scene& currentScene) {
 	// Bind the geometry buffer
-	//glBindFramebuffer(GL_FRAMEBUFFER, m_geometryBuffer->GetBufferID());
+	glBindFramebuffer(GL_FRAMEBUFFER, m_geometryBuffer->GetBufferID());
 
 	// Enable blending
 	glEnable(GL_BLEND);
@@ -238,11 +238,15 @@ void Renderer::TransparencyPass(Scene& currentScene) {
 	m_transparencyShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
 
 	// Draw all transparent objects
-	for (const std::unique_ptr<GameObject>& ga : currentScene.GetWorldGameObjects()) {
-		std::weak_ptr<MeshRenderer> meshRenderer = ga->GetBehaviour<MeshRenderer>();
+	for (const std::unique_ptr<GameObject>& worldGameObj : currentScene.GetWorldGameObjects()) {
+		if (Camera::GetInstance().IsWithinBoundingBox(worldGameObj->position))
+		{
+			std::weak_ptr<MeshRenderer> meshRenderer = std::static_pointer_cast<MeshRenderer>(worldGameObj->GetBehaviour(BehaviourType::MeshRenderer).lock());
 
-		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent()) {
-			ga->Draw(*m_transparencyShader);
+			if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent())
+			{
+				worldGameObj->Draw(*m_transparencyShader);
+			}
 		}
 	}
 

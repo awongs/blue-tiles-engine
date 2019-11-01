@@ -76,7 +76,7 @@ std::weak_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)
 	return std::weak_ptr<Behaviour>();
 }
 
-bool GameObject::HandleMessage(unsigned int senderID, std::string message, BehaviourType type)
+bool GameObject::HandleMessage(unsigned int senderID, std::string& message, BehaviourType type)
 {
 	std::weak_ptr<Behaviour> behav = GetBehaviour(type);
 

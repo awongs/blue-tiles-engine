@@ -16,7 +16,7 @@ void Inventory::Update(float deltaTime) {}
 
 void Inventory::Draw(Shader &shader) {}
 
-bool Inventory::HandleMessage(unsigned int senderID, std::string message)
+bool Inventory::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }

@@ -176,7 +176,7 @@ void GuardDetection::Update(float deltaTime)
 
 void GuardDetection::Draw(Shader& shader) {}
 
-bool GuardDetection::HandleMessage(unsigned int senderID, std::string message) {
+bool GuardDetection::HandleMessage(unsigned int senderID, std::string& message) {
     return false;
 }
 

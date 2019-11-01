@@ -13,7 +13,7 @@ void TileBehaviour::Draw(Shader& shader)
 {
 }
 
-bool TileBehaviour::HandleMessage(unsigned int senderID, std::string message)
+bool TileBehaviour::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }

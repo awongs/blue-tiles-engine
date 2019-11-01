@@ -110,7 +110,7 @@ void MeshRenderer::Draw(Shader& shader)
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-bool MeshRenderer::HandleMessage(unsigned int senderID, std::string message)
+bool MeshRenderer::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }

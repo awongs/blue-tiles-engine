@@ -22,7 +22,7 @@ void Light::Draw(Shader& shader)
 	// Do nothing
 }
 
-bool Light::HandleMessage(unsigned int senderID, std::string message)
+bool Light::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }

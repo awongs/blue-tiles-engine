@@ -15,7 +15,7 @@ public:
 
 	// Note: Does not render the light, only use this for drawing a debug cube
 	virtual void Draw(Shader& shader) override; 
-	virtual bool HandleMessage(unsigned int senderID, std::string message) override;
+	virtual bool HandleMessage(unsigned int senderID, std::string& message) override;
 
 protected:
 	// Constuctor.

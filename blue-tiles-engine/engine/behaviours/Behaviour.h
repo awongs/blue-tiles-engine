@@ -41,7 +41,7 @@ public:
 	virtual void Draw(Shader& shader) = 0;
 
 	// Handles messages
-	virtual bool HandleMessage(unsigned int senderID, std::string message) = 0;
+	virtual bool HandleMessage(unsigned int senderID, std::string& message) = 0;
 
 	// Get this behaviour's type.
 	BehaviourType GetType() const;

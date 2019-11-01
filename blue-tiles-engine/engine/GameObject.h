@@ -26,7 +26,7 @@ public:
 	virtual void Draw(Shader& shader);
 
 	// Handles messages
-	virtual bool HandleMessage(unsigned int senderID, std::string message, BehaviourType type);
+	virtual bool HandleMessage(unsigned int senderID, std::string& message, BehaviourType type);
 
 	// Accessor for the transform matrix.
 	glm::mat4 GetTransformMatrix() const;
@@ -38,11 +38,13 @@ public:
 	std::weak_ptr<Behaviour> GetBehaviour(BehaviourType type);
 
 	// Gets behaviour of type T. Returns an empty weak pointer if it doesn't exist.
+	// Significantly slower than the other GetBehaviour, so don't call this multiple
+	// times per frame.
 	template <typename T>
 	std::weak_ptr<T> GetBehaviour()
 	{
 		std::type_index index(typeid(T));
-		if (m_behaviours.count(std::type_index(typeid(T))) != 0)
+		if (m_behaviours.count(index) != 0)
 		{
 			return std::static_pointer_cast<T>(m_behaviours[index]);
 		}
@@ -77,5 +79,6 @@ private:
 
 	// The game object's transform/model matrix.
 	glm::mat4 m_transformMatrix;
+
 	static int idCounter;
 };
