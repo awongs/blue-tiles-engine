@@ -795,6 +795,8 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				}
 			}
 
+			ga->currentScene = this;
+
 			m_worldGameObjects.push_back(std::move(ga));
 
 			break;
