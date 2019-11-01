@@ -2,6 +2,7 @@
 #include "debugbt/DebugLog.h"
 #include "behaviours/MeshRenderer.h"
 #include <algorithm>
+#include <iterator>
 
 Scene::Scene()
 {
