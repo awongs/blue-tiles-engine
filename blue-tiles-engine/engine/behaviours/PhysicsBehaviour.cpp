@@ -50,7 +50,7 @@ void PhysicsBehaviour::Draw(Shader &shader)
 {
 }
 
-bool PhysicsBehaviour::HandleMessage(unsigned int senderID, std::string message)
+bool PhysicsBehaviour::HandleMessage(unsigned int senderID, std::string& message)
 {
 	if (message == PhysicsEngine::COLLISION_MESSAGE_STR)
 	{

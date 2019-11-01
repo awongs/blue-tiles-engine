@@ -53,7 +53,7 @@ void PlayerMovement::Draw(Shader& shader)
 	// Do nothing
 }
 
-bool PlayerMovement::HandleMessage(unsigned int senderID, std::string message)
+bool PlayerMovement::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }

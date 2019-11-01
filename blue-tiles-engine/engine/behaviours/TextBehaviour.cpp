@@ -31,7 +31,7 @@ void TextBehaviour::Draw(Shader& shader)
 {
 }
 
-bool TextBehaviour::HandleMessage(unsigned int senderID, std::string message)
+bool TextBehaviour::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }

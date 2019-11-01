@@ -18,7 +18,10 @@ enum class BehaviourType
 	PlayerMovement, 
 	FollowGameObject,
 	Inventory,
-	SimpleGuardMovementBehaviour
+	GuardDetection,
+	SimpleGuardMovementBehaviour,
+	ObjectBehaviour,
+	TileBehaviour
 };
 
 class GameObject;
@@ -40,7 +43,7 @@ public:
 	virtual void OnCollisionStay(GLuint other) = 0;
 
 	// Handles messages
-	virtual bool HandleMessage(unsigned int senderID, std::string message) = 0;
+	virtual bool HandleMessage(unsigned int senderID, std::string& message) = 0;
 
 	// Get this behaviour's type.
 	BehaviourType GetType() const;

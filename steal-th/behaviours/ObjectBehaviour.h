@@ -1,11 +1,15 @@
 #pragma once
+
 #include <engine/behaviours/Behaviour.h>
 
-class PlayerMovement : public Behaviour
+#include "../gameobjects/Object.h"
+
+class ObjectBehaviour : public Behaviour
 {
+
 public:
 	// Constructor.
-	PlayerMovement(float speed);
+	ObjectBehaviour(ObjectType type);
 
 	// Overridden functions.
 	void Update(float deltaTime) override;
@@ -13,14 +17,10 @@ public:
 	bool HandleMessage(unsigned int senderID, std::string& message) override;
 	void OnCollisionStay(GLuint other) override;
 
-	glm::vec3 GetCurrentVelocity() const;
+	ObjectType GetType() const;
 
 private:
-
-	// Movement speed in OpengL units per second.
-	float m_speed;
-
-	// The player's velocity for this current frame.
-	// This will be influenced by m_speed.
-	glm::vec3 m_currentVelocity = glm::vec3(0);
+	// This object's type.
+	// We need this to differentiate between pick-upable objects.
+	ObjectType m_type;
 };

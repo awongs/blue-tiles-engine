@@ -72,6 +72,16 @@ MeshRenderer::~MeshRenderer()
 	glDeleteVertexArrays(1, &m_vertexArrayObjectID);
 }
 
+bool MeshRenderer::IsTransparent()
+{
+	return m_isTransparent;
+}
+
+void MeshRenderer::SetTransparent(bool transparent)
+{
+	m_isTransparent = transparent;
+}
+
 void MeshRenderer::Update(float deltaTime)
 {
 }
@@ -100,7 +110,7 @@ void MeshRenderer::Draw(Shader& shader)
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-bool MeshRenderer::HandleMessage(unsigned int senderID, std::string message)
+bool MeshRenderer::HandleMessage(unsigned int senderID, std::string& message)
 {
 	return false;
 }

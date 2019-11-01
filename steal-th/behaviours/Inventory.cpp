@@ -1,79 +1,54 @@
 #include "Inventory.h"
 #include <engine/debugbt/DebugLog.h>
-namespace {
-    void DecrementMinZero(unsigned int & value) {
-        if(value > 0) {
-            value--;
-        }
-    }
+
+namespace
+{
+	void DecrementMinZero(unsigned int &value)
+	{
+		if (value > 0)
+			value--;
+	}
 }
-Inventory::Inventory() : Behaviour(BehaviourType::Inventory) {
-    m_redKey = 0;
-    m_blueKey = 0;
-    m_greenKey = 0;
-}
+
+Inventory::Inventory() : Behaviour(BehaviourType::Inventory) {}
 
 void Inventory::Update(float deltaTime) {}
 
-void Inventory::Draw(Shader& shader) {}
+void Inventory::Draw(Shader &shader) {}
 
-bool Inventory::HandleMessage(unsigned int senderID, std::string message) { 
-    return false;
+bool Inventory::HandleMessage(unsigned int senderID, std::string& message)
+{
+	return false;
+}
+
+
+void Inventory::AddItem(ItemType type)
+{
+	auto it{ m_items.find(type) };
+	if (it != m_items.end())
+		++it->second;
+	else
+		m_items.insert({ type, 1 });
 }
 
 void Inventory::OnCollisionStay(GLuint other)
 {
 }
 
-void Inventory::AddItem(ObjectType type) {
-    switch(type) {
-        case ObjectType::RED_KEY:
-            m_redKey++;
-            DebugLog::Info("Red Key:" + std::to_string(m_redKey));
-            break;
-
-        case ObjectType::BLUE_KEY:
-            m_blueKey++;
-            break;
-        
-        case ObjectType::GREEN_KEY:
-            m_greenKey++;
-            break;
-    }
-}
-
-void Inventory::RemoveItem(ObjectType type) {
-       switch(type) {
-        case ObjectType::RED_KEY:
-            DecrementMinZero(m_redKey);
-			DebugLog::Info("Red Key:" + std::to_string(m_redKey));
-            break;
-
-        case ObjectType::BLUE_KEY:
-            DecrementMinZero(m_blueKey);
-            break;
-        
-        case ObjectType::GREEN_KEY:
-            DecrementMinZero(m_greenKey);
-            break;
-    }
-}
-
-unsigned int Inventory::GetNumItem(ObjectType type)
+void Inventory::RemoveItem(ItemType type)
 {
-	switch (type)
-	{
-		case ObjectType::RED_KEY:
-			return m_redKey;
-			break;
+	auto it{ m_items.find(type) };
+	if (it != m_items.end())
+		DecrementMinZero(it->second);
+}
 
-		case ObjectType::BLUE_KEY:
-			return m_blueKey;
-			break;
+unsigned int Inventory::GetNumItem(ItemType type)
+{
+	auto it{ m_items.find(type) };
+	if (it != m_items.end())
+		return it->second;
 
-		case ObjectType::GREEN_KEY:
-			return m_greenKey;
-			break;
-	}
+	// No item found, so the inventory doesn't contain it.
+	return 0;
 }
 

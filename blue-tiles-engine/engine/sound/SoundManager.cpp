@@ -19,8 +19,8 @@ namespace {
 // SoundManager constructor that initialize Mix_OpenAudio and also two maps containing Sound and Music files in a map.
 SoundManager::SoundManager() {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
-		DebugLog::Error("Could not initialize SDL_mixer:" + std::string(Mix_GetError()));
-	}
+	    DebugLog::Error("Could not initialize SDL_mixer:" + std::string(Mix_GetError()));
+	  }
 
     for(auto it = ID_TO_MUSIC_PATH.begin(); it!=ID_TO_MUSIC_PATH.end(); it++) {
         m_musicMap.insert({it->first, std::make_shared<Music>(it->second)});

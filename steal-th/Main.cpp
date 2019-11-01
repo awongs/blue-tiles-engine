@@ -21,9 +21,19 @@
 #include "Level.h"
 #include "scenes/LevelScene.h"
 
+// Window size settings.
+constexpr int WINDOW_WIDTH = 800;
+constexpr int WINDOW_HEIGHT = 600;
+
+// Camera settings.
+constexpr float CAMERA_FOV = glm::radians(60.0f);
+constexpr float CAMERA_NEAR_CLIP = 1.0f;
+constexpr float CAMERA_FAR_CLIP = 50.0f;
+constexpr glm::vec3 CAMERA_ORIENTATION = glm::vec3(glm::radians(75.0f), 0.0f, 0.0f);
+
 int main()
 {
-	GameWindow gameWin(800, 600);
+	GameWindow gameWin(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	int windowSetupStatus = gameWin.SetupSDLWindow();
 
@@ -39,25 +49,29 @@ int main()
 	// Create the level
 	Level* l = new Level("level0");
 	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l, physEngine);
+
+	// Setup the camera.
+	Camera::GetInstance().SetOrientation(CAMERA_ORIENTATION);
+	Camera::GetInstance().CalculatePerspectiveView(CAMERA_FOV, WINDOW_WIDTH / WINDOW_HEIGHT, CAMERA_NEAR_CLIP, CAMERA_FAR_CLIP);
 	
 	// -- Testing --
 	srand(time(0));
 
 	// Add a directional light
-	GameObject* ga = new GameObject(420);
+	GameObject* ga = new GameObject();
 	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
 	
 	level->AddWorldGameObject(ga);
 	
 	// Test text
-	GameObject* text = new GameObject(48456);
+	GameObject* text = new GameObject();
 	text->AddBehaviour(new TextBehaviour("OZMA", 2, glm::vec3(1, 0, 0)));
 	level->AddScreenGameObject(text);
 
 	// Add test lighting
 	for (int i = 0; i < 32; i++)
 	{
-		GameObject* ga = new GameObject(999 + i);
+		GameObject* ga = new GameObject();
 		ga->position = level->GetWorldGameObjectByIndex(i)->position;
 
 		glm::vec3 randomColour = glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f));

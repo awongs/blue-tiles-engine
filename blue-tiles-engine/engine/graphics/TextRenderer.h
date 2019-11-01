@@ -38,13 +38,13 @@ public:
 	~TextRenderer();
 
 	// Renders text to the screen at the x and y position 
-	void RenderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3& color);
+	void RenderText(std::string& text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3& color);
 
 	// Renders text to the screen at the x and y position
-	void RenderText(std::string text, glm::vec3& pos, GLfloat scale, glm::vec3& color);
+	void RenderText(std::string& text, glm::vec3& pos, GLfloat scale, glm::vec3& color);
 
 	// Renders text to the screen at the x and y position
-	void RenderText(std::string text, glm::vec2& pos, GLfloat scale, glm::vec3& color);
+	void RenderText(std::string& text, glm::vec2& pos, GLfloat scale, glm::vec3& color);
 
 	// Renders text with all of the TextBehaviours in the scene 
 	void RenderScreenText(Scene& scene);

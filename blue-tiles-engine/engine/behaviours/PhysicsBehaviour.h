@@ -25,7 +25,7 @@ public:
 	virtual void Draw(Shader &shader);
 
 	// Handles messages
-	virtual bool HandleMessage(unsigned int senderID, std::string message);
+	virtual bool HandleMessage(unsigned int senderID, std::string& message);
 
 	void OnCollisionStay(GLuint other) override;
 

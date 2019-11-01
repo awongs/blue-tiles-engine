@@ -18,7 +18,7 @@ struct PLight
 	float linear; // 52
 	float quadratic; // 56
 
-	// OpenGL pads uniform structs to multiples of 4 bytes
+	// OpenGL pads uniform structs to multiples of 16 bytes
 	glm::vec2 padding; // 64
 };
 

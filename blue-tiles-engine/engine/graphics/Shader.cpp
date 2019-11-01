@@ -22,9 +22,9 @@ GLuint Shader::GetProgramHandle() const
 	return m_programHandle;
 }
 
-void Shader::SetUniform1i(const std::string name, const int value) const
+void Shader::SetUniform1i(const std::string& name, const int value)
 {
-	int id = glGetUniformLocation(m_programHandle, name.c_str());
+	int id = getUniformLocation(name);
 
 	if (id != -1)
 	{
@@ -37,9 +37,9 @@ void Shader::SetUniform1i(const std::string name, const int value) const
 	}
 }
 
-void Shader::SetUniform1f(const std::string name, const float value) const
+void Shader::SetUniform1f(const std::string& name, const float value)
 {
-	int id = glGetUniformLocation(m_programHandle, name.c_str());
+	int id = getUniformLocation(name);
 
 	if (id != -1)
 	{
@@ -52,9 +52,9 @@ void Shader::SetUniform1f(const std::string name, const float value) const
 	}
 }
 
-void Shader::SetUniform2f(const std::string name, const glm::vec2 values) const
+void Shader::SetUniform2f(const std::string& name, const glm::vec2 values)
 {
-	int id = glGetUniformLocation(m_programHandle, name.c_str());
+	int id = getUniformLocation(name);
 
 	if (id != -1)
 	{
@@ -67,9 +67,9 @@ void Shader::SetUniform2f(const std::string name, const glm::vec2 values) const
 	}
 }
 
-void Shader::SetUniform3f(const std::string name, const glm::vec3 values) const
+void Shader::SetUniform3f(const std::string& name, const glm::vec3 values)
 {
-	int id = glGetUniformLocation(m_programHandle, name.c_str());
+	int id = getUniformLocation(name);
 
 	if (id != -1)
 	{
@@ -82,9 +82,9 @@ void Shader::SetUniform3f(const std::string name, const glm::vec3 values) const
 	}
 }
 
-void Shader::SetUniform4f(const std::string name, const glm::vec4 values) const
+void Shader::SetUniform4f(const std::string& name, const glm::vec4 values)
 {
-	int id = glGetUniformLocation(m_programHandle, name.c_str());
+	int id = getUniformLocation(name);
 
 	if (id != -1)
 	{
@@ -97,9 +97,9 @@ void Shader::SetUniform4f(const std::string name, const glm::vec4 values) const
 	}
 }
 
-void Shader::SetUniformMatrix4fv(const std::string name, const glm::mat4& matrix) const
+void Shader::SetUniformMatrix4fv(const std::string& name, const glm::mat4& matrix)
 {
-	int id = glGetUniformLocation(m_programHandle, name.c_str());
+	int id = getUniformLocation(name);
 
 	if (id != -1)
 	{
@@ -110,4 +110,15 @@ void Shader::SetUniformMatrix4fv(const std::string name, const glm::mat4& matrix
 	{
 		DebugLog::Error("Couldn't find a uniform matrix named: " + name);
 	}
+}
+
+int Shader::getUniformLocation(const std::string& uniformName)
+{
+	// Check if this uniform is in the cache.
+	if (m_uniformMap.count(uniformName) == 0)
+	{
+		m_uniformMap[uniformName] = glGetUniformLocation(m_programHandle, uniformName.c_str());
+	}
+
+	return m_uniformMap[uniformName];
 }

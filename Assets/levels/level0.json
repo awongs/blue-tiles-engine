@@ -1,87 +1,36 @@
 {
-  "info": {
-    "level": 0,
-	"startPos" : 0,
-	"width" : 10,
-	"length" : 10
-  },
-  "rooms": [
+    "info":
     {
-		"roomid": 0,
-	    "gridUsed" : [0,1,2,10,11,12,20,21,22],
-	    "doors" : [
-			{
-			  "doorid" : 0,
-			  "location" : 21,
-			  "keyRequired" : "key1",
-			  "facing" : "down",
-			  "exit" : true
-			}
-		],
-		"walls" : [
-			{
-				"doorid" : 0,
-				"location" : 0,
-				"facing" : "upleft"
-			},
-			{
-				"doorid" : 1,
-				"location" : 1,
-				"facing" : "up"
-			},
-			{
-				"doorid" : 2,
-				"location" : 2,
-				"facing" : "upright"
-			},
-			{
-				"doorid" : 3,
-				"location" : 10,
-				"facing" : "left"
-			},
-			{
-				"doorid" : 4,
-				"location" : 12,
-				"facing" : "right"
-			},
-			{
-				"doorid" : 5,
-				"location" : 20,
-				"facing" : "downleft"
-			},
-			{
-				"doorid" : 6,
-				"location" : 22,
-				"facing" : "downright"
-			}
-		]
-	}
-  ],
-  "objects" : [
-    {
-      "objectid" : 0,
-      "name" : "key1",
-      "location": 2,
-      "rotation": 0.0
+        "level": 0,
+        "size": { "x": 12, "z": 12 },
+        "playerSpawn": { "x": 1, "z": 1 }
     },
-    {
-      "objectid" : 1,
-      "name" : "block",
-      "location": 1,
-      "rotation": 0.0
-    }
-	],
-  "guards": [
-    {
-      "guardid" : 0,
-      "location": 22,
-	  "range" : 1.0,
-      "rotation": {
-        "angle" : -90.0,
-        "rotateFrom" : -90.0,
-        "rotateTo" : 0.0,
-        "interval" : 5.0
-      }
-    }
-  ]
+
+    "layout":
+    [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,
+        1, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    ],
+
+    "objects" : [
+        { "type" : "red_key", "position": { "x": 3, "z": 1 }, "rotation": 0.0 },
+        { "type" : "blue_key", "position": { "x": 2, "z": 2 }, "rotation": 0.0 },
+        { "type" : "green_key", "position": { "x": 3, "z": 2 }, "rotation": 0.0 },
+        { "type" : "objective_item", "position": { "x": 2, "z": 3 }, "rotation": 0.0 }
+    ],
+
+    "guards": [
+        { "guardId" : 0, "position": { "x": 3, "z": 3 }, "tileViewDistance": 3, "tileViewRadius": 3,
+        "rotation": { "angle" : -90.0, "rotateFrom" : -90.0, "rotateTo" : 0.0, "interval" : 5.0 } }
+    ]
 }

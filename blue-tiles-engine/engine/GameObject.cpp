@@ -18,16 +18,6 @@ GameObject::GameObject(std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 	id = idCounter++;
 }
 
-GameObject::GameObject(int _id, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
-	: id(_id)
-	, name(n)
-	, position(pos)
-	, rotation(rot)
-	, scale(sca)
-	, m_transformMatrix(glm::mat4(1))
-{
-}
-
 GameObject::~GameObject()
 {
 	
@@ -94,7 +84,7 @@ std::weak_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)
 	return std::weak_ptr<Behaviour>();
 }
 
-bool GameObject::HandleMessage(unsigned int senderID, std::string message, BehaviourType type)
+bool GameObject::HandleMessage(unsigned int senderID, std::string& message, BehaviourType type)
 {
 	std::weak_ptr<Behaviour> behav = GetBehaviour(type);
 

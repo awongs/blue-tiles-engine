@@ -141,7 +141,7 @@ void SimpleGuardMovementAIBehaviour::Draw(Shader& shader)
 {
 }
 
-bool SimpleGuardMovementAIBehaviour::HandleMessage(unsigned int senderID, std::string message)
+bool SimpleGuardMovementAIBehaviour::HandleMessage(unsigned int senderID, std::string& message)
 {
 	// Pause the action processing.
 	if (message == "Pause SGMAI") m_isPaused = true;
