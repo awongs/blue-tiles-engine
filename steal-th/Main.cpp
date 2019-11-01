@@ -58,20 +58,20 @@ int main()
 	srand(time(0));
 
 	// Add a directional light
-	GameObject* ga = new GameObject(420);
+	GameObject* ga = new GameObject();
 	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
 	
 	level->AddWorldGameObject(ga);
 	
 	// Test text
-	GameObject* text = new GameObject(48456);
+	GameObject* text = new GameObject();
 	text->AddBehaviour(new TextBehaviour("OZMA", 2, glm::vec3(1, 0, 0)));
 	level->AddScreenGameObject(text);
 
 	// Add test lighting
 	for (int i = 0; i < 32; i++)
 	{
-		GameObject* ga = new GameObject(999 + i);
+		GameObject* ga = new GameObject();
 		ga->position = level->GetWorldGameObjectByIndex(i)->position;
 
 		glm::vec3 randomColour = glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f));

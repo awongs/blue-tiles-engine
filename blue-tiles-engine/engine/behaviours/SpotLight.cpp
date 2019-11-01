@@ -2,6 +2,8 @@
 #include "../graphics/Shader.h"
 #include "../GameObject.h"
 
+#include <ctime>
+#include <glm/gtc/random.hpp>
 SpotLight::SpotLight(glm::vec3 colour, glm::vec3 direction, float innerRadius, float outerRadius, 
 	float ambient, float diffuse, float specular, 
 	float constant, float linear, float quadratic)

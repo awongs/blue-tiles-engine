@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
+#include "behaviours/MeshRenderer.h"
 #include <algorithm>
 #include <iterator>
 #include "graphics/Camera.h"
@@ -53,6 +54,13 @@ void Scene::DrawWorld(Shader& shader)
 {
 	for (auto& worldGameObj : m_worldGameObjects)
 	{
+    // Don't draw transparent objects
+		std::weak_ptr<MeshRenderer> meshRenderer = worldGameObj->GetBehaviour<MeshRenderer>();
+		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent()) 
+    {
+			continue;
+	  }
+    
 		// Only draw objects that are within the camera's view
 		// Note: Does not consider model size
 		if (Camera::GetInstance().IsWithinBoundingBox(worldGameObj->position))
@@ -92,7 +100,7 @@ bool Scene::AddWorldGameObject(GameObject* gameObject)
 
 	if (it != m_worldGameObjects.end())
 	{
-		DebugLog::Error("A GameObject with that id already exists.");
+		DebugLog::Error("A GameObject with that id: " + std::to_string(gameObject->id) + " already exists.");
 		return false;
 	}
 

@@ -72,6 +72,16 @@ MeshRenderer::~MeshRenderer()
 	glDeleteVertexArrays(1, &m_vertexArrayObjectID);
 }
 
+bool MeshRenderer::IsTransparent()
+{
+	return m_isTransparent;
+}
+
+void MeshRenderer::SetTransparent(bool transparent)
+{
+	m_isTransparent = transparent;
+}
+
 void MeshRenderer::Update(float deltaTime)
 {
 }

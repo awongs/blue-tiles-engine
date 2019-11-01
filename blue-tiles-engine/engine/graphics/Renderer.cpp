@@ -1,4 +1,5 @@
 #include <memory>
+#include <sstream>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Renderer.h"
@@ -39,7 +40,7 @@ Renderer::Renderer(SDL_GLContext* targetContext, int windowWidth, int windowHeig
 	m_shadowBuffer = std::make_unique<ShadowBuffer>(windowWidth, windowWidth);
 
 	// Create the screen quad
-	m_screenQuad = std::make_unique<GameObject>(7355608, "screenQuad", glm::vec3(), glm::vec3(0, glm::pi<float>(), glm::pi<float>()));
+	m_screenQuad = std::make_unique<GameObject>("screenQuad", glm::vec3(), glm::vec3(0, glm::pi<float>(), glm::pi<float>()));
 	m_screenQuad->AddBehaviour(new MeshRenderer("../Assets/models/quad.obj"));
 
 	DebugLog::Info("Renderer initialization completed!\n");
@@ -66,6 +67,8 @@ void Renderer::SetupShaders()
 	std::string shadowFragment = filemanager::LoadFile("../Assets/shaders/ShadowShader.fsh");
 	std::string deferredGeometryVertex = filemanager::LoadFile("../Assets/shaders/DeferredGeometryPass.vsh");
 	std::string deferredGeometryFragment = filemanager::LoadFile("../Assets/shaders/DeferredGeometryPass.fsh");
+	std::string transparencyVertex = filemanager::LoadFile("../Assets/shaders/TransparencyPass.vsh");
+	std::string transparencyFragment = filemanager::LoadFile("../Assets/shaders/TransparencyPass.fsh");
 	std::string deferredLightingVertex = filemanager::LoadFile("../Assets/shaders/DeferredLightingPass.vsh");
 	std::string deferredLightingFragment = filemanager::LoadFile("../Assets/shaders/DeferredLightingPass.fsh");
 
@@ -78,6 +81,11 @@ void Renderer::SetupShaders()
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, deferredGeometryVertex.c_str());
 	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, deferredGeometryFragment.c_str());
 	m_deferredGeometryShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
+
+	// Compile ozma shader
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, transparencyVertex.c_str());
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, transparencyFragment.c_str());
+	m_transparencyShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
 	// Compile lighting shader
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, deferredLightingVertex.c_str());
@@ -214,10 +222,47 @@ void Renderer::GeometryPass(Scene& currentScene)
 	currentScene.DrawWorld(*m_deferredGeometryShader);
 }
 
+void Renderer::TransparencyPass(Scene& currentScene) {
+	// Bind the geometry buffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, m_geometryBuffer->GetBufferID());
+
+	// Enable blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Use transparency shader
+	m_shaderManager->UseShaderProgram(m_transparencyShader->GetProgramHandle());
+
+	// Set camera matrices in shader
+	m_transparencyShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
+	m_transparencyShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
+
+	// Draw all transparent objects
+	for (const std::unique_ptr<GameObject>& ga : currentScene.GetWorldGameObjects()) {
+		std::weak_ptr<MeshRenderer> meshRenderer = ga->GetBehaviour<MeshRenderer>();
+
+		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent()) {
+			ga->Draw(*m_transparencyShader);
+		}
+	}
+
+	// Disable blending
+	glDisable(GL_BLEND);
+}
+
 void Renderer::Render(Scene& currentScene)
 {
 	ShadowPass(currentScene);
 	GeometryPass(currentScene);
+	TransparencyPass(currentScene);
+
+	// Write depth buffer from geometry pass to main frame buffer
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_geometryBuffer->GetBufferID());
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBlitFramebuffer(
+		0, 0, m_width, m_height, 0, 0, m_width, m_height, GL_DEPTH_BUFFER_BIT, GL_NEAREST
+	);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Bind the default frame buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
