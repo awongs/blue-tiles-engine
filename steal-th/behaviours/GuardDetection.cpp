@@ -180,6 +180,10 @@ bool GuardDetection::HandleMessage(unsigned int senderID, std::string& message) 
     return false;
 }
 
+void GuardDetection::OnCollisionStay(GLuint other)
+{
+}
+
 void GuardDetection::tryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistancePoint)
 {
 	// Rotate the vector (start point to max distance point) by

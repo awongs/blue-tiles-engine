@@ -18,6 +18,10 @@ bool ObjectBehaviour::HandleMessage(unsigned int senderID, std::string& message)
 	return false;
 }
 
+void ObjectBehaviour::OnCollisionStay(GLuint other)
+{
+}
+
 ObjectType ObjectBehaviour::GetType() const
 {
 	return m_type;
