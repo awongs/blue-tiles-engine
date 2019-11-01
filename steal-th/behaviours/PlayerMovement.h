@@ -1,6 +1,8 @@
 #pragma once
 #include <engine/behaviours/Behaviour.h>
 
+class GameObject;
+
 class PlayerMovement : public Behaviour
 {
 public:
@@ -16,6 +18,10 @@ public:
 	glm::vec3 GetCurrentVelocity() const;
 
 private:
+
+	void HandleInteractableConllision(GameObject* otherObj);
+
+	void HandleWallCollision(GameObject* otherObj);
 
 	// Movement speed in OpengL units per second.
 	float m_speed;
