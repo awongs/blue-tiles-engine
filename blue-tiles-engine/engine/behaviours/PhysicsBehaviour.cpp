@@ -31,6 +31,17 @@ PhysicsBehaviour::PhysicsBehaviour(PhysicsEngine* physEngine, GLuint gameObjectI
 		gameObject->OnCollisionStay(other);
 
 	};
+
+	// Register a PhysicsObject to the PhysicsEngine.
+	if (m_physEngine != nullptr)
+	{
+		// Get a new, empty PhysicsObject.
+		PhysicsObject* physObj{ m_physEngine->AddPhysicsObject() };
+
+		// Set the collider for the PhysicsObject.
+		physObj->SetCollider(collider);
+		physObj->SetGameObjectId(gameObjectId);
+	}
 }
 
 PhysicsBehaviour::~PhysicsBehaviour()
