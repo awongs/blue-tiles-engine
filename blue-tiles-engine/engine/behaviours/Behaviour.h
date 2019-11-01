@@ -22,7 +22,8 @@ enum class BehaviourType
 	SimpleGuardMovementBehaviour,
 	ObjectBehaviour,
 	TileBehaviour,
-	NONE
+	NONE,
+	PlayerItemPickup
 };
 
 class GameObject;
