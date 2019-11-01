@@ -21,7 +21,8 @@ enum class BehaviourType
 	GuardDetection,
 	SimpleGuardMovementBehaviour,
 	ObjectBehaviour,
-	TileBehaviour
+	TileBehaviour,
+	NONE
 };
 
 class GameObject;
