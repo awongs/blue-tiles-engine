@@ -3,6 +3,7 @@
 #include "behaviours/MeshRenderer.h"
 #include <algorithm>
 #include <iterator>
+#include "graphics/Camera.h"
 
 Scene::Scene()
 {
@@ -51,15 +52,21 @@ void Scene::Update(float deltaTime)
 
 void Scene::DrawWorld(Shader& shader)
 {
-	for (auto& worldGameObj : m_worldGameObjects) {
-
-		// Don't draw transparent objects
+	for (auto& worldGameObj : m_worldGameObjects)
+	{
+    // Don't draw transparent objects
 		std::weak_ptr<MeshRenderer> meshRenderer = worldGameObj->GetBehaviour<MeshRenderer>();
-		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent()) {
+		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent()) 
+    {
 			continue;
+	  }
+    
+		// Only draw objects that are within the camera's view
+		// Note: Does not consider model size
+		if (Camera::GetInstance().IsWithinBoundingBox(worldGameObj->position))
+		{
+			worldGameObj->Draw(shader);
 		}
-
-		worldGameObj->Draw(shader);
 	}
 }
 

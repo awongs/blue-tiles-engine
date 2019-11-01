@@ -11,11 +11,11 @@ public:
 	// Overridden render.
 	void Render(Shader& shader, int bufferOffset = -1) override;
 
-	// Accessor for the view matrix.
-	glm::mat4 GetViewMatrix() const;
+	// Accessor for the light's direction.
+	glm::vec3 GetDirection() const;
 
-	// Accessor for the projection matrix.
-	glm::mat4 GetProjectionMatrix() const;
+	// Accessor for the light space matrix.
+	glm::mat4 GetLightSpaceMatrix() const;
 
 private:
 
@@ -27,4 +27,7 @@ private:
 
 	// The light's orthographic projection matrix. Used for shadow mapping.
 	glm::mat4 m_projectionMatrix;
+
+	// The light's projection and view matrices combined. Used for shadow mapping.
+	glm::mat4 m_lightSpaceMatrix;
 };

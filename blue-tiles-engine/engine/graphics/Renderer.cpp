@@ -166,7 +166,8 @@ void Renderer::ShadowPass(Scene& currentScene)
 	// Do shadow mapping if there is a directional light
 	if (!m_directionalLight.expired())
 	{
-		glm::mat4 lightSpaceMatrix = m_directionalLight.lock()->GetProjectionMatrix() * m_directionalLight.lock()->GetViewMatrix();
+		std::shared_ptr<DirectionalLight> dirLight = m_directionalLight.lock();
+		glm::mat4 lightSpaceMatrix = dirLight->GetLightSpaceMatrix();
 
 		// Translate by the camera's current position
 		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
@@ -200,12 +201,13 @@ void Renderer::GeometryPass(Scene& currentScene)
 	// Do shadow mapping if there is a directional light
 	if (!m_directionalLight.expired())
 	{
-		glm::mat4 lightSpaceMatrix = m_directionalLight.lock()->GetProjectionMatrix() * m_directionalLight.lock()->GetViewMatrix();
+		std::shared_ptr<DirectionalLight> dirLight = m_directionalLight.lock();
+		glm::mat4 lightSpaceMatrix = dirLight->GetLightSpaceMatrix();
 
 		// Translate by the camera's current position
 		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
 		m_deferredGeometryShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
-		m_deferredGeometryShader->SetUniform3f("lightDirection", glm::vec3(0.0f, 5.0f, 1.0f));
+		m_deferredGeometryShader->SetUniform3f("lightDirection", dirLight->GetDirection());
 	}
 
 	// Set camera matrices in shader
@@ -296,8 +298,11 @@ void Renderer::Render(Scene& currentScene)
 	// Bind the uniform buffer
 	glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBufferObject);
 
+	int pointLightCount = 0;
+	int spotLightcount = 0;
+
 	// Loop backwards since lights may be removed from the list
-	for (int i = m_pointLights.size() - 1, lightCount = 0; i >= 0; i--, lightCount++)
+	for (int i = m_pointLights.size() - 1; i >= 0; i--)
 	{
 		if (m_pointLights[i].expired())
 		{
@@ -305,13 +310,20 @@ void Renderer::Render(Scene& currentScene)
 		}
 		else
 		{
-			m_pointLights[i].lock()->Render(*m_deferredLightingShader, 
-				sizeof(PLight) * lightCount);
+			std::shared_ptr<PointLight> pointLight = m_pointLights[i].lock();
+			
+			// Only render lights that are within the camera's bounding box
+			// Note: Does not consider light radius, but that's fine for almost all lights
+			if (Camera::GetInstance().IsWithinBoundingBox(pointLight->gameObject->position))
+			{
+				pointLight->Render(*m_deferredLightingShader,
+				sizeof(PLight) * pointLightCount++);
+			}
 		}
 	}
 
 	// Loop backwards since lights may be removed from the list
-	for (int i = m_spotLights.size() - 1, lightCount = 0; i >= 0; i--, lightCount++)
+	for (int i = m_spotLights.size() - 1; i >= 0; i--)
 	{
 		if (m_spotLights[i].expired())
 		{
@@ -319,14 +331,21 @@ void Renderer::Render(Scene& currentScene)
 		}
 		else
 		{
-			m_spotLights[i].lock()->Render(*m_deferredLightingShader, 
-				sizeof(PLight) * MAX_POINT_LIGHTS + sizeof(SLight) * lightCount);
+			std::shared_ptr<SpotLight> spotLight = m_spotLights[i].lock();
+
+			// Only render lights that are within the camera's bounding box
+			// Note: Does not consider light radius, but that's fine for almost all lights
+			if (Camera::GetInstance().IsWithinBoundingBox(spotLight->gameObject->position))
+			{
+				spotLight->Render(*m_deferredLightingShader,
+					sizeof(PLight) * MAX_POINT_LIGHTS + sizeof(SLight) * spotLightcount++);
+			}
 		}
 	}
 
 	// Set light counts in shader
-	m_deferredLightingShader->SetUniform1i("totalPointLights", m_pointLights.size());
-	m_deferredLightingShader->SetUniform1i("totalSpotLights", m_spotLights.size());
+	m_deferredLightingShader->SetUniform1i("totalPointLights", pointLightCount);
+	m_deferredLightingShader->SetUniform1i("totalSpotLights", spotLightcount);
 
 	// Draw onto the quad
 	m_screenQuad->Draw(*m_deferredLightingShader);
