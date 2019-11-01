@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "graphics/Shader.h"
 #include "behaviours/Behaviour.h"
+#include "Scene.h"
 
 int GameObject::idCounter = 0;
 
@@ -86,6 +87,12 @@ std::weak_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)
 
 bool GameObject::HandleMessage(unsigned int senderID, std::string& message, BehaviourType type)
 {
+	if (message.compare("die") && currentScene != nullptr)
+	{
+		if (isScreenObject) currentScene->RemoveScreenGameObject(id);
+		else currentScene->RemoveWorldGameObject(id);
+	}
+
 	std::weak_ptr<Behaviour> behav = GetBehaviour(type);
 
 	return behav.expired() ? false : behav.lock()->HandleMessage(senderID, message);
