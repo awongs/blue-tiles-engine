@@ -367,7 +367,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		ga->AddBehaviour(new GuardDetection(this, playerObj, 
 			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
 
-    SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
+		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
 
 		// move to box
 		sgmaib->AddMoveTileAction(1, 2);
