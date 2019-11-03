@@ -127,61 +127,31 @@ void GuardDetection::Update(float deltaTime)
 		glm::vec2 pos{ unrotatedMaxDistPoint };
 		pos.x -= (m_tileViewRadius * LevelScene::TILE_SIZE);
 		pos.x += (i * LevelScene::TILE_SIZE);
-		m_isPlayerDetected |= tryDetectPlayer(frontWorldPos, pos);
+		m_isPlayerDetected |= tryDetectPlayer(guardWorldPos, pos);
 	}
 
 	// Check side for peripheral vision.
-	for (int i = 0; i < m_tileViewRadius; ++i)
+	for (int i = 0; i < m_maxViewDist - 2; ++i)
 	{
-		glm::vec2 startPos{ frontWorldPos };
-		startPos.x -= (2 * LevelScene::TILE_SIZE);
-
-		glm::vec2 endPos{ startPos };
-		endPos.x -= ((m_tileViewRadius - 1) * LevelScene::TILE_SIZE);
-		endPos.y += (i * LevelScene::TILE_SIZE);
-		m_isPlayerDetected |= tryDetectPlayer(startPos, endPos);
+		glm::vec2 endPos{ guardWorldPos };
+		endPos.x -= ((m_tileViewRadius + 1) * LevelScene::TILE_SIZE);
+		endPos.y += ((i + 1) * LevelScene::TILE_SIZE);
+		m_isPlayerDetected |= tryDetectPlayer(guardWorldPos, endPos);
 	}
 
 	// Check the other side for peripheral vision.
-	for (int i = 0; i < m_tileViewRadius; ++i)
+	for (int i = 0; i < m_maxViewDist - 2; ++i)
 	{
-		glm::vec2 startPos{ frontWorldPos };
-		startPos.x += (2 * LevelScene::TILE_SIZE);
-
-		glm::vec2 endPos{ startPos };
-		endPos.x += ((m_tileViewRadius - 1) * LevelScene::TILE_SIZE);
-		endPos.y += (i * LevelScene::TILE_SIZE);
-		m_isPlayerDetected |= tryDetectPlayer(startPos, endPos);
+		glm::vec2 endPos{ guardWorldPos };
+		endPos.x += ((m_tileViewRadius + 1) * LevelScene::TILE_SIZE);
+		endPos.y += ((i + 1) * LevelScene::TILE_SIZE);
+		m_isPlayerDetected |= tryDetectPlayer(guardWorldPos, endPos);
 	}
 
-	// Additional peripheral vision checks.
-	// We need to explicitly check the two tiles beside the front tile,
-	// since we skip it above.
-	bool isSideDetected{ true };
-	glm::vec2 pos{ frontWorldPos.x - LevelScene::TILE_SIZE, frontWorldPos.y };
-	isSideDetected &= tryDetectPlayer(frontWorldPos, pos);
-	glm::vec2 sidePos{ guardWorldPos.x - LevelScene::TILE_SIZE, guardWorldPos.y };
-	isSideDetected &= tryDetectPlayer(sidePos, pos);
-	m_isPlayerDetected |= isSideDetected;
-
-	isSideDetected = true;
-	pos.x = frontWorldPos.x + LevelScene::TILE_SIZE;
-	isSideDetected &= tryDetectPlayer(frontWorldPos, pos);
-	sidePos.x = guardWorldPos.x + LevelScene::TILE_SIZE;
-	isSideDetected &= tryDetectPlayer(sidePos, pos);
-	m_isPlayerDetected |= isSideDetected;
-
-	// Check the tile on the guard, as well as the two tiles
-	// to the side of the guard.
-	glm::vec2 endPos{ guardWorldPos };
-	endPos.x -= LevelScene::TILE_SIZE;
-	m_isPlayerDetected |= tryDetectPlayer(guardWorldPos, endPos);
-	endPos = guardWorldPos;
-	endPos.x += LevelScene::TILE_SIZE;
-	m_isPlayerDetected |= tryDetectPlayer(guardWorldPos, endPos);
-
-	if(m_isPlayerDetected)
+	if (m_isPlayerDetected)
+	{
 		DebugLog::Info("I GOT U IN MY SIGHTS");
+	}
 }
 
 void GuardDetection::Draw(Shader& shader) {}
@@ -241,11 +211,6 @@ bool GuardDetection::tryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistance
 		glm::ivec2 point{ *currentIt };
 		//DebugLog::Info(std::to_string(point.x) + ", " + std::to_string(point.y));
 
-		if (point == playerTilePos)
-		{
-			return true;
-		}
-
 		// Check if the vision ray has hit a wall yet.
 		TileType tile{ m_levelScene->GetTile(point.x, point.y) };
 		if (tile == TileType::WALL ||
@@ -254,6 +219,63 @@ bool GuardDetection::tryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistance
 			tile == TileType::BLUE_DOOR)
 		{
 			return false;
+		}
+
+		// Check if the player is on this tile.
+		if (point == playerTilePos)
+		{
+			return true;
+		}
+
+		// Check adjacent walls to handle corner cases, when looking 
+		// diagonally through this tile.
+		if (currentCount + 1 < output.size())
+		{
+			glm::ivec2 nextPoint{ *(currentIt + (isUsingLow ? -1 : 1)) };
+			glm::ivec2 diff{ nextPoint - point };
+
+			TileType cornerTile{ TileType::FLOOR };
+			TileType cornerTile2{ TileType::FLOOR };
+
+			// Next point is moving toward top-left.
+			if (diff.x < 0 && diff.y < 0)
+			{
+				cornerTile = m_levelScene->GetTile(point.x - 1, point.y);
+				cornerTile2 = m_levelScene->GetTile(point.x, point.y - 1);
+			}
+			// Next point is moving toward top-right.
+			else if (diff.x > 0 && diff.y < 0)
+			{
+				cornerTile = m_levelScene->GetTile(point.x + 1, point.y);
+				cornerTile2 = m_levelScene->GetTile(point.x, point.y - 1);
+			}
+			// Next point is moving toward bottom-left.
+			else if (diff.x < 0 && diff.y > 0)
+			{
+				cornerTile = m_levelScene->GetTile(point.x - 1, point.y);
+				cornerTile2 = m_levelScene->GetTile(point.x, point.y + 1);
+			}
+			// Next point is moving toward bottom-right.
+			else if (diff.x > 0 && diff.y > 0)
+			{
+				cornerTile = m_levelScene->GetTile(point.x + 1, point.y);
+				cornerTile2 = m_levelScene->GetTile(point.x, point.y + 1);
+			}
+
+			bool isBlockingCorner1{ cornerTile == TileType::WALL ||
+				cornerTile == TileType::RED_DOOR ||
+				cornerTile == TileType::GREEN_DOOR ||
+				cornerTile == TileType::BLUE_DOOR };
+
+			bool isBlockingCorner2{ cornerTile2 == TileType::WALL ||
+				cornerTile2 == TileType::RED_DOOR ||
+				cornerTile2 == TileType::GREEN_DOOR ||
+				cornerTile2 == TileType::BLUE_DOOR };
+
+			if (isBlockingCorner1 || isBlockingCorner2)
+			{
+				return false;
+			}
 		}
 
 		// Done checking all points.
