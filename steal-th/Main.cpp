@@ -91,15 +91,12 @@ int main()
 	// Empty loop to prevent the window from closing immediately.
 	while (true)
 	{
-		if (SDL_PollEvent(&windowEvent))
-		{
-			Input::GetInstance().HandleInput(windowEvent);
-			if (windowEvent.type == SDL_QUIT) break;
+		engine->HandleEvent(windowEvent);
 
-			// Quit the game with cancel key.
-			if (Input::GetInstance().IsKeyDown(Input::INPUT_CANCEL))
-				break;
-		}
+		if (windowEvent.type == SDL_QUIT) break;
+
+		// Quit the game with cancel key.
+		if (Input::GetInstance().IsKeyDown(Input::INPUT_CANCEL)) break;
 
 		engine->Update();
 

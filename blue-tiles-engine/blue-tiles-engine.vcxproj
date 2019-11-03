@@ -80,7 +80,7 @@
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\libraries\includes;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\libraries\includes;$(SolutionDir)\libraries\includes\imgui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)\libraries\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -150,6 +150,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\libraries\includes\imgui\imgui.cpp" />
+    <ClCompile Include="..\libraries\includes\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\libraries\includes\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\libraries\includes\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\libraries\includes\imgui\imgui_impl_sdl.cpp" />
+    <ClCompile Include="..\libraries\includes\imgui\imgui_widgets.cpp" />
     <ClCompile Include="engine\behaviours\Behaviour.cpp" />
     <ClCompile Include="engine\behaviours\DirectionalLight.cpp" />
     <ClCompile Include="engine\behaviours\Light.cpp" />
@@ -158,6 +164,7 @@
     <ClCompile Include="engine\behaviours\PointLight.cpp" />
     <ClCompile Include="engine\behaviours\SpotLight.cpp" />
     <ClCompile Include="engine\behaviours\TextBehaviour.cpp" />
+    <ClCompile Include="engine\BTEEvent.cpp" />
     <ClCompile Include="engine\debugbt\DebugLog.cpp" />
     <ClCompile Include="engine\GameEngine.cpp" />
     <ClCompile Include="engine\GameWindow.cpp" />
@@ -185,6 +192,14 @@
     <ClCompile Include="util\MeshManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\libraries\includes\imgui\imconfig.h" />
+    <ClInclude Include="..\libraries\includes\imgui\imgui.h" />
+    <ClInclude Include="..\libraries\includes\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\libraries\includes\imgui\imgui_impl_sdl.h" />
+    <ClInclude Include="..\libraries\includes\imgui\imgui_internal.h" />
+    <ClInclude Include="..\libraries\includes\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\libraries\includes\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\libraries\includes\imgui\imstb_truetype.h" />
     <ClInclude Include="engine\behaviours\Behaviour.h" />
     <ClInclude Include="engine\behaviours\DirectionalLight.h" />
     <ClInclude Include="engine\behaviours\PhysicsBehaviour.h" />
@@ -193,6 +208,7 @@
     <ClInclude Include="engine\behaviours\MeshRenderer.h" />
     <ClInclude Include="engine\behaviours\SpotLight.h" />
     <ClInclude Include="engine\behaviours\TextBehaviour.h" />
+    <ClInclude Include="engine\BTEEvent.h" />
     <ClInclude Include="engine\debugbt\DebugLog.h" />
     <ClInclude Include="engine\GameEngine.h" />
     <ClInclude Include="engine\GameWindow.h" />
