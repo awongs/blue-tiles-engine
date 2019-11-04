@@ -31,3 +31,7 @@ bool FollowGameObject::HandleMessage(unsigned int senderID, std::string& message
 {
 	return false;
 }
+
+void FollowGameObject::OnCollisionStay(GLuint other)
+{
+}

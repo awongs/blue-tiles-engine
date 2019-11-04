@@ -18,6 +18,10 @@ bool TileBehaviour::HandleMessage(unsigned int senderID, std::string& message)
 	return false;
 }
 
+void TileBehaviour::OnCollisionStay(GLuint other)
+{
+}
+
 TileType TileBehaviour::GetType() const
 {
 	return m_type;

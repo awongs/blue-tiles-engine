@@ -16,6 +16,7 @@
 #include "../behaviours/GuardDetection.h"
 #include "../behaviours/ObjectBehaviour.h"
 #include "../behaviours/TileBehaviour.h"
+#include "../behaviours/PlayerItemPickup.h"
 
 const float LevelScene::TILE_SIZE{ 9.f };
 
@@ -294,6 +295,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		// Set object on tile
 		//m_tiles[obj.location].on = obj.name;
 
+		ga->currentScene = this;
+
 		m_worldGameObjects.push_back(std::move(ga));
 	}
 
@@ -307,217 +310,22 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		(float)(level->m_playerSpawnZ) * TILE_SIZE + TILE_SIZE / 2.f
 	);
 
-	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("player", position, glm::vec3(0, 0, 0), glm::vec3(2, 2, 2));
+	GameObject* playerObj = new GameObject("player", position, glm::vec3(0, 0, 0), glm::vec3(2, 2, 2));
 
-	ga->AddBehaviour(meshRenderer);
-	ga->AddBehaviour(new PlayerMovement(10));
-	ga->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
-	ga->AddBehaviour(new Inventory());
+	playerObj->AddBehaviour(meshRenderer);
+	playerObj->AddBehaviour(new PlayerMovement(10));
+	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
+	playerObj->AddBehaviour(new Inventory());
 
-	Collider *playerCol{ new Collider(glm::vec3(2.f)) };
-	GameObject *playerObj = ga.get();
-	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, playerCol, [this, playerObj, playerCol](GLuint other)
-		{
-			GameObject *otherObj{ GetWorldGameObjectById(other) };
+	// item pickup behaviour for player
+	playerObj->AddBehaviour(new PlayerItemPickup());
 
-			// If this is a "key", then pick it up.
-			std::shared_ptr<ObjectBehaviour> otherObjBehaviour{ otherObj->GetBehaviour<ObjectBehaviour>().lock() };
-			if (otherObjBehaviour != nullptr)
-			{
-				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
-				if (inventory != nullptr)
-				{
-					switch (otherObjBehaviour->GetType())
-					{
-						case ObjectType::RED_KEY:
-						{
-							SoundManager::getInstance().getSound("key-pickup")->play();
-							inventory->AddItem(Inventory::ItemType::RED_KEY);
-							break;
-						}
-							
-						case ObjectType::BLUE_KEY:
-						{
-							SoundManager::getInstance().getSound("key-pickup")->play();
-							inventory->AddItem(Inventory::ItemType::BLUE_KEY);
-							break;
-						}
+	// physics collider using player gameobject's on collision callback
+	Collider* playerCol{ new Collider(glm::vec3(2.f)) };
+	playerObj->AddBehaviour(new PhysicsBehaviour(m_physEngine, playerObj->id, playerCol));
 
-						case ObjectType::GREEN_KEY:
-						{
-							SoundManager::getInstance().getSound("key-pickup")->play();
-							inventory->AddItem(Inventory::ItemType::GREEN_KEY);
-							break;
-						}
-
-						case ObjectType::OBJECTIVE_ITEM:
-						{
-							// TODO: replace key pickup sound.
-							SoundManager::getInstance().getSound("key-pickup")->play();
-							inventory->AddItem(Inventory::ItemType::OBJECTIVE_ITEM);
-							break;
-						}
-					}
-				}
-
-				RemoveWorldGameObject(other);
-				return;
-			}
-
-			// Handle collisions against walls and doors.
-			std::shared_ptr<TileBehaviour> otherTile{ otherObj->GetBehaviour<TileBehaviour>().lock() };
-			if (otherTile != nullptr)
-			{
-				TileType type{ otherTile->GetType() };
-				std::shared_ptr<Inventory> inventory{ playerObj->GetBehaviour<Inventory>().lock() };
-				if (inventory != nullptr)
-				{
-					switch (type)
-					{
-						case TileType::RED_DOOR:
-						{
-							if (inventory->GetNumItem(Inventory::ItemType::RED_KEY) > 0)
-							{
-								SoundManager::getInstance().getSound("door-unlocked")->play();
-								inventory->RemoveItem(Inventory::ItemType::RED_KEY);
-								RemoveWorldGameObject(other);
-							}
-							else
-							{
-								SoundManager::getInstance().getSound("door-locked")->play();
-							}
-
-							break;
-						}
-
-						case TileType::BLUE_DOOR:
-						{
-							if (inventory->GetNumItem(Inventory::ItemType::BLUE_KEY) > 0)
-							{
-								SoundManager::getInstance().getSound("door-unlocked")->play();
-								inventory->RemoveItem(Inventory::ItemType::BLUE_KEY);
-								RemoveWorldGameObject(other);
-							}
-							else
-							{
-								SoundManager::getInstance().getSound("door-locked")->play();
-							}
-							break;
-						}
-
-						case TileType::GREEN_DOOR:
-						{
-							if (inventory->GetNumItem(Inventory::ItemType::GREEN_KEY) > 0)
-							{
-								SoundManager::getInstance().getSound("door-unlocked")->play();
-								inventory->RemoveItem(Inventory::ItemType::GREEN_KEY);
-								RemoveWorldGameObject(other);
-							}
-							else
-							{
-								SoundManager::getInstance().getSound("door-locked")->play();
-							}
-
-							break;
-						}
-
-						case TileType::EXIT:
-						{
-							if (inventory->GetNumItem(Inventory::ItemType::OBJECTIVE_ITEM) > 0)
-							{
-								// TODO: implement win action.
-							}
-
-							break;
-						}
-					}
-				}
-
-				switch (type)
-				{
-					case TileType::WALL:
-					case TileType::RED_DOOR:
-					case TileType::BLUE_DOOR:
-					case TileType::GREEN_DOOR:
-					{
-						std::shared_ptr<PlayerMovement> playerMovement{ playerObj->GetBehaviour<PlayerMovement>().lock() };
-						if (playerMovement == nullptr)
-							return;
-
-						std::shared_ptr<PhysicsBehaviour> otherPhys{ otherObj->GetBehaviour<PhysicsBehaviour>().lock() };
-						if (otherPhys == nullptr)
-							return;
-
-						Collider* otherCol{ otherPhys->GetCollider() };
-						if (otherCol == nullptr || otherCol->GetType() != Collider::BOX)
-							return;
-
-						// Get the four corner points of the other's collider box.
-						glm::vec3 otherColSize{ otherCol->GetHalfSizes() };
-						glm::vec2 otherBottomLeft{ otherObj->position.x - otherColSize.x, otherObj->position.z + otherColSize.z };
-						glm::vec2 otherBottomRight{ otherObj->position.x + otherColSize.x, otherObj->position.z + otherColSize.z };
-						glm::vec2 otherTopLeft{ otherObj->position.x - otherColSize.x, otherObj->position.z - otherColSize.z };
-						glm::vec2 otherTopRight{ otherObj->position.x + otherColSize.x, otherObj->position.z - otherColSize.z };
-
-						// Calculate the determinant value of point p for the line 
-						// consisting of points a to b.
-						auto calculateDeterminant{ [](glm::vec2 a, glm::vec2 b, glm::vec2 p)
-						{
-							return (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x);
-						} };
-
-						// Check player's position against the two diagonal vectors of 
-						// the other's collider box. The sign of the determinant value
-						// will show which side of the diagonal the player's position
-						// lies on. This will let us find the direction that the player
-						// is colliding from.
-						glm::vec2 playerPos{ playerObj->position.x, playerObj->position.z };
-						bool isCollidingTop{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) > 0 &&
-							calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) < 0 };
-						bool isCollidingBottom{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) < 0 &&
-							calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) > 0 };
-						bool isCollidingLeft{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) > 0 &&
-							calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) > 0 };
-						bool isCollidingRight{ calculateDeterminant(otherTopRight, otherBottomLeft, playerPos) < 0 &&
-							calculateDeterminant(otherTopLeft, otherBottomRight, playerPos) < 0 };
-
-						// Undo the movement from PlayerMovement.
-						glm::vec3 playerVel{ playerMovement->GetCurrentVelocity() };
-						playerObj->position -= playerVel;
-
-						// Calculate the new velocity vector based on collision 
-						// direction. Handle the two axes separately.
-						glm::vec3 newPlayerVel{ playerVel };
-
-						// Handle the vertical axis.
-						if (isCollidingTop)
-						{
-							newPlayerVel.z = glm::max(newPlayerVel.z, 0.f);
-						}
-						else if (isCollidingBottom)
-						{
-							newPlayerVel.z = glm::min(newPlayerVel.z, 0.f);
-						}
-
-						// Handle the horizontal axis.
-						if (isCollidingLeft)
-						{
-							newPlayerVel.x = glm::max(newPlayerVel.x, 0.f);
-						}
-						else if (isCollidingRight)
-						{
-							newPlayerVel.x = glm::min(newPlayerVel.x, 0.f);
-						}
-
-						// Apply the new velocity.
-						playerObj->position += newPlayerVel;
-					}
-				}
-			}
-		}) };
-	ga->AddBehaviour(physBehaviour);
-
-	m_worldGameObjects.push_back(std::move(ga));
+	// Add to world
+	AddWorldGameObject(playerObj);
 
 	// Create the guards
 	for (Guard &guard : level->m_guards)
@@ -827,6 +635,8 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 					break;
 				}
 			}
+
+			ga->currentScene = this;
 
 			m_worldGameObjects.push_back(std::move(ga));
 
