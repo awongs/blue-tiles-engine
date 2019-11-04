@@ -50,43 +50,6 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 		TileType type{ static_cast<TileType>(tile) };
 		AddTile(type, i);
-
-		/*for (Wall& wall : room.walls)
-		{
-			if (wall.facing == "upleft")
-			{
-				AddWall("up", wall.location, level->width, level->length);
-				AddWall("left", wall.location, level->width, level->length);
-			}
-			else if (wall.facing == "upright")
-			{
-				AddWall("up", wall.location, level->width, level->length);
-				AddWall("right", wall.location, level->width, level->length);
-			}
-			else if (wall.facing == "downleft")
-			{
-				AddWall("down", wall.location, level->width, level->length);
-				AddWall("left", wall.location, level->width, level->length);
-			}
-			else if (wall.facing == "downright")
-			{
-				AddWall("down", wall.location, level->width, level->length);
-				AddWall("right", wall.location, level->width, level->length);
-			}
-			else
-			{
-				AddWall(wall.facing, wall.location, level->width, level->length);
-			}
-		}
-		for (Door& door : room.doors)
-		{
-			AddDoor(door.facing, DOOR_NAME + std::to_string(door.doorid), door.location, level->width, level->length);
-		}
-
-		for (int x : room.gridUsed)
-		{
-			gridsUsed.push_back(x);
-		}*/
 	}
 
 	// Create the world
@@ -98,104 +61,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			AddTile(TileType::FLOOR, i, j);
 		}
 	}
-	//		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/quad.obj");
-	//		meshRenderer->SetTexture("../Assets/textures/panel.png");
-
-	//		glm::vec3 position = glm::vec3(
-	//			i * TILE_SIZE + TILE_SIZE / 2.f, -0.5, 
-	//			j * TILE_SIZE + TILE_SIZE / 2.f);
-	//		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_numGameObjects, "FLOOR", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(TILE_SIZE / 2.f));
-
-	//		// Current location
-	//		//int currLoc = i + j * level->m_sizeZ;
-
-	//		//// Set tile num
-	//		//m_tiles[currLoc].num = currLoc;
-
-	//		//// Set tile center
-	//		//m_tiles[currLoc].center = position;
-
-	//		//// Set tile coords
-	//		//m_tiles[currLoc].startX = i * TILE_SIZE;
-	//		//m_tiles[currLoc].endX = i * TILE_SIZE + TILE_SIZE;
-	//		//m_tiles[currLoc].startZ = j * TILE_SIZE;
-	//		//m_tiles[currLoc].endZ = j * TILE_SIZE + TILE_SIZE;
-
-	//		ga->AddBehaviour(meshRenderer);
-
-	//		m_numGameObjects++;
-	//		m_worldGameObjects.push_back(std::move(ga));
-
-	//		//int currGrid = i + (j * 10);
-
-	//		// Add walls if to edge of world if not part of a room
-	//		//if (find(gridsUsed.begin(), gridsUsed.end(), currGrid) == gridsUsed.end())
-	//		//{
-	//		//	if (j == 0)
-	//		//	{
-	//		//		AddWall("up", currGrid, level->width, level->length);
-	//		//		//DebugLog::Info("Adding wall to: " + std::to_string(currGrid));
-	//		//	}
-	//		//	if (j == level->length-1)
-	//		//	{
-	//		//		AddWall("down", currGrid, level->width, level->length);
-	//		//		//DebugLog::Info("Adding wall to: " + std::to_string(currGrid));
-	//		//	}
-	//		//	if (i == 0)
-	//		//	{
-	//		//		AddWall("left", currGrid, level->width, level->length);
-	//		//	}
-	//		//	if (i == level->width-1)
-	//		//	{
-	//		//		AddWall("right", currGrid, level->width, level->length);
-	//		//	}
-	//		//}
-
-	//		// Make sure all tiles know of previous tile's walls/doors
-	//		//if (i != 0)
-	//		//{
-	//		//	// Set current tile as right tile of previous tile
-	//		//	m_tiles[currLoc - 1].tileRight = &m_tiles[currLoc];
-
-	//		//	// Set previous tile as left of current tile
-	//		//	m_tiles[currLoc].tileLeft = &m_tiles[currLoc - 1];
-
-	//		//	// Does the tile to the left have a wall/door on the right?
-	//		//	if (m_tiles[currLoc - 1].right != "none")
-	//		//	{
-	//		//		m_tiles[currLoc].left = m_tiles[currLoc - 1].right;
-	//		//	}
-
-	//		//	// Does the current tile have a wall/door on the left?
-	//		//	if (m_tiles[currLoc].left != "none")
-	//		//	{
-	//		//		m_tiles[currLoc - 1].right = m_tiles[currLoc].left;
-	//		//	}
-	//		//}
-
-	//		//if (j != 0)
-	//		//{
-	//		//	// Set current tile as down tile of previous tile
-	//		//	m_tiles[currLoc - level->length].tileDown = &m_tiles[currLoc];
-
-	//		//	// Set previous tile as up of current tile
-	//		//	m_tiles[currLoc].tileUp = &m_tiles[currLoc - level->length];
-
-	//		//	// Does the tile above have a wall/door on the bottom?
-	//		//	if (m_tiles[currLoc - level->length].down != "none")
-	//		//	{
-	//		//		m_tiles[currLoc].up = m_tiles[currLoc - level->length].down;
-	//		//	}
-
-	//		//	// Does the current tile have a wall/door on the top?
-	//		//	if (m_tiles[currLoc].up != "none")
-	//		//	{
-	//		//		m_tiles[currLoc - level->length].down = m_tiles[currLoc].up;
-	//		//	}
-	//		//}
-	//	}
-	//}
-
+	
 	// Create the objects
 	for (Object& obj : level->m_objects)
 	{
@@ -260,43 +126,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		ga->AddBehaviour(physBehaviour);
 		ga->AddBehaviour(objBehaviour);
 
-		/*if (obj.name.find(KEY_NAME) != std::string::npos)
-		{
-			meshRenderer = new MeshRenderer("../Assets/models/key.obj");
-			meshRenderer->SetTexture("../Assets/textures/key.png");
-			scale = glm::vec3(0.5, 0.5, 0.5);
-
-			Collider *keyCol{ new Collider(glm::vec3(2.f)) };
-			PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, keyCol, [this](GLuint other)
-				{
-
-				}) };
-			ga->AddBehaviour(physBehaviour);
-		}
-		else if (obj.name.find(BLOCK_NAME) != std::string::npos) {
-			meshRenderer = new MeshRenderer("../Assets/models/cube.obj");
-			meshRenderer->SetTexture("../Assets/textures/crate.jpg");
-			scale = glm::vec3(8, 8, 8);
-
-			Collider *keyCol{ new Collider(glm::vec3(3.f)) };
-			PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, keyCol, [this](GLuint other)
-				{
-
-				}) };
-			ga->AddBehaviour(physBehaviour);
-		}
-		else
-		{
-			meshRenderer = new MeshRenderer("../Assets/models/golden_goose.obj");
-			meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
-			scale = glm::vec3(0.5, 0.5, 0.5);
-		}*/
-		
-		// Set object on tile
-		//m_tiles[obj.location].on = obj.name;
-
 		ga->currentScene = this;
-
 		m_worldGameObjects.push_back(std::move(ga));
 	}
 
@@ -344,7 +174,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		ga->AddBehaviour(new GuardDetection(this, playerObj, 
 			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
 
-    SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
+		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
 
 		// move to box
 		sgmaib->AddMoveTileAction(1, 2);
@@ -366,24 +196,6 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
     
 		m_worldGameObjects.push_back(std::move(ga));
 	}
-
-	// ----- For testing -----
-	/*int testTile = 13;
-	DebugLog::Info("center X = " + std::to_string(tiles[testTile].center.x));
-	DebugLog::Info("center Y = " + std::to_string(tiles[testTile].center.y));
-	DebugLog::Info("center Z = " + std::to_string(tiles[testTile].center.z));
-	DebugLog::Info("StartX = " + std::to_string(tiles[testTile].startX));
-	DebugLog::Info("EndX = " + std::to_string(tiles[testTile].endX));
-	DebugLog::Info("StartZ = " + std::to_string(tiles[testTile].startZ));
-	DebugLog::Info("endZ = " + std::to_string(tiles[testTile].endZ));
-	DebugLog::Info("Up = " + tiles[testTile].up);
-	DebugLog::Info("Down = " + tiles[testTile].down);
-	DebugLog::Info("Left = " + tiles[testTile].left);
-	DebugLog::Info("Right = " + tiles[testTile].right);
-	DebugLog::Info("TileUp = " + std::to_string(tiles[testTile].tileUp->num));
-	DebugLog::Info("TileDown = " + std::to_string(tiles[testTile].tileDown->num));
-	DebugLog::Info("TileLeft = " + std::to_string(tiles[testTile].tileLeft->num));
-	DebugLog::Info("TileRight = " + std::to_string(tiles[testTile].tileRight->num));*/
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const
@@ -409,132 +221,6 @@ glm::ivec2 LevelScene::GetLevelSize() const
 {
 	return m_levelSize;
 }
-
-//void LevelScene::AddWall(std::string facing, int location, int width, int length)
-//{
-//	MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-//	meshRenderer->SetTexture("../Assets/textures/wall.jpg");
-//
-//	glm::vec3 position;
-//	glm::vec3 rotation;
-//	glm::vec3 colliderSize;
-//
-//	if (facing == "up")
-//	{
-//		position = glm::vec3(
-//			(float)(location % width) * TILE_SIZE + TILE_SIZE / 2.f,
-//			0, 
-//			(float)(location / length) * TILE_SIZE
-//		);
-//		rotation = glm::vec3(0, 0, 0);
-//		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
-//		m_tiles[location].up = WALL_NAME;
-//	}
-//	else if (facing == "down")
-//	{
-//		position = glm::vec3(
-//			(float)(location % width) * TILE_SIZE + TILE_SIZE / 2.f,
-//			0, 
-//			(float)(location / length) * TILE_SIZE + TILE_SIZE
-//		);
-//		rotation = glm::vec3(0, 0, 0);
-//		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
-//		m_tiles[location].down = WALL_NAME;
-//	}
-//	else if (facing == "left")
-//	{
-//		position = glm::vec3(
-//			(float)(location % width) * TILE_SIZE,
-//			0,
-//			(float)(location / length) * TILE_SIZE + TILE_SIZE / 2.f
-//		);
-//		rotation = glm::vec3(0, glm::radians(90.0), 0);
-//		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
-//		m_tiles[location].left = WALL_NAME;
-//	}
-//	else if (facing == "right")
-//	{
-//		position = glm::vec3(
-//			(float)(location % width) * TILE_SIZE + TILE_SIZE,
-//			0, 
-//			(float)(location / length) * TILE_SIZE + TILE_SIZE / 2.f);
-//		rotation = glm::vec3(0, glm::radians(90.0), 0);
-//		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
-//		m_tiles[location].right = WALL_NAME;
-//	}
-//
-//	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_numGameObjects, WALL_NAME, position, rotation, glm::vec3(9, 9, 9));
-//	ga->AddBehaviour(meshRenderer);
-//
-//	Collider *collider{ new Collider(colliderSize) };
-//	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, collider, [](GLuint) {}) };
-//	ga->AddBehaviour(physBehaviour);
-//
-//	m_numGameObjects++;
-//	m_worldGameObjects.push_back(std::move(ga));
-//}
-
-//void LevelScene::AddDoor(std::string facing, std::string name, int location, int width, int length)
-//{
-//	MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/door.obj");
-//	meshRenderer->SetTexture("../Assets/textures/door.png");
-//
-//	glm::vec3 position;
-//	glm::vec3 rotation;
-//	glm::vec3 colliderSize;
-//
-//	if (facing == "up")
-//	{
-//		position = glm::vec3(
-//			(float)(location % width) * TILE_SIZE + TILE_SIZE / 2.f, 
-//			0, 
-//			(float)(location / length) * TILE_SIZE);
-//		rotation = glm::vec3(0, 0, 0);
-//		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
-//		m_tiles[location].up = DOOR_NAME;
-//	}
-//	else if (facing == "down")
-//	{
-//		position = glm::vec3(
-//			(float)(location % width) * TILE_SIZE + 4.5,
-//			0, 
-//			(float)(location / length) * TILE_SIZE + TILE_SIZE
-//		);
-//		rotation = glm::vec3(0, 0, 0);
-//		colliderSize = glm::vec3(WALL_HALF_SIZES.x, 0.f, WALL_HALF_SIZES.y);
-//		m_tiles[location].down = DOOR_NAME;
-//	}
-//	else if (facing == "left")
-//	{
-//		position = glm::vec3(
-//			(float)(location % width) * TILE_SIZE,
-//			0, 
-//			(float)(location / length) * TILE_SIZE + TILE_SIZE / 2.f);
-//		rotation = glm::vec3(0, glm::radians(90.0), 0);
-//		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
-//		m_tiles[location].left = DOOR_NAME;
-//	}
-//	else if (facing == "right")
-//	{
-//		position = glm::vec3(
-//			(float)(location % width) * TILE_SIZE + TILE_SIZE,
-//			0, 
-//			(float)(location / length) * TILE_SIZE + TILE_SIZE / 2.f);
-//		rotation = glm::vec3(0, glm::radians(90.0), 0);
-//		colliderSize = glm::vec3(WALL_HALF_SIZES.y, 0.f, WALL_HALF_SIZES.x);
-//		m_tiles[location].right = DOOR_NAME;
-//	}
-//
-//	std::unique_ptr<GameObject> ga = std::make_unique<GameObject>(m_numGameObjects, name, position, rotation, glm::vec3(TILE_SIZE));
-//	ga->AddBehaviour(meshRenderer);
-//
-//	Collider *collider{ new Collider(colliderSize) };
-//	PhysicsBehaviour *physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, collider, [](GLuint) {}) };
-//	ga->AddBehaviour(physBehaviour);
-//
-//	m_numGameObjects++;
-//	m_worldGameObjects.push_back(std::move(ga));
-//}
 
 void LevelScene::AddTile(TileType type, unsigned int tileIndex)
 {

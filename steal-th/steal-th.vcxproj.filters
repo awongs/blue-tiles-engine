@@ -66,9 +66,6 @@
     <ClInclude Include="gameobjects\Object.h">
       <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
-    <ClInclude Include="gameobjects\Room.h">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClInclude>
     <ClInclude Include="Level.h">
       <Filter>Source Files</Filter>
     </ClInclude>

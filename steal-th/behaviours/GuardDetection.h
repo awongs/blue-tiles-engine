@@ -23,9 +23,10 @@ private:
 	// Try to detect the player by using the line algorithm with
 	// a start point and the point at the maximum view distance 
 	// from the guard, in world coordinates.
-	void tryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistancePoint);
+	// Returns true if player was detected, otherwise returns false.
+	bool tryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistancePoint);
 
-	bool m_playerDetected;
+	bool m_isPlayerDetected;
 
 	// Defines how far and wide a guard can detect players.
 	float m_maxViewDist{ 0 };
