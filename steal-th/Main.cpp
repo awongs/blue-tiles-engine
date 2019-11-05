@@ -52,14 +52,14 @@ int main()
 
 	// Setup the camera.
 	Camera::GetInstance().SetOrientation(CAMERA_ORIENTATION);
-	Camera::GetInstance().CalculatePerspectiveView(CAMERA_FOV, WINDOW_WIDTH / WINDOW_HEIGHT, CAMERA_NEAR_CLIP, CAMERA_FAR_CLIP);
+	Camera::GetInstance().CalculatePerspectiveView(CAMERA_FOV, (float)WINDOW_WIDTH / WINDOW_HEIGHT, CAMERA_NEAR_CLIP, CAMERA_FAR_CLIP);
 	
 	// -- Testing --
 	srand(time(0));
 
 	// Add a directional light
 	GameObject* ga = new GameObject();
-	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
+	ga->AddBehaviour(new DirectionalLight(glm::vec3(0.6f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
 	
 	level->AddWorldGameObject(ga);
 	
@@ -69,7 +69,7 @@ int main()
 	level->AddScreenGameObject(text);
 
 	// Add test lighting
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < 0; i++)
 	{
 		GameObject* ga = new GameObject();
 		ga->position = level->GetWorldGameObjectByIndex(i)->position;

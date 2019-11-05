@@ -14,6 +14,7 @@ SpotLight::SpotLight(glm::vec3 colour, glm::vec3 direction, float innerRadius, f
 	, m_constant(constant)
 	, m_linear(linear)
 	, m_quadratic(quadratic)
+	, m_positionOffset(0)
 {
 	// Initialize the struct values
 	m_lightStruct = std::shared_ptr<SLight>(new SLight());
@@ -43,5 +44,12 @@ void SpotLight::Render(Shader& shader, int bufferOffset)
 void SpotLight::Update(float deltaTime)
 {
 	// Offset a value over because the uniform buffer offsets by 4 bytes
-	m_lightStruct->position = glm::vec4(0.0f, gameObject->position);
+	m_lightStruct->position = glm::vec4(0.0f, gameObject->position + m_positionOffset);
+	m_lightStruct->direction = glm::vec4(0.0f, gameObject->forward);
+	m_lightStruct->colour = glm::vec4(0.0f, m_colour);
+}
+
+void SpotLight::SetPositionOffset(const glm::vec3 positionOffset)
+{
+	m_positionOffset = positionOffset;
 }

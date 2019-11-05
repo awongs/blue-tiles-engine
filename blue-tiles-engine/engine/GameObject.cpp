@@ -71,7 +71,7 @@ void GameObject::UpdateTransformMatrix()
 	m_transformMatrix = glm::scale((translationMatrix * rotationMatrix), scale);
 
 	// Forward vector is equal to the z column in the rotation matrix
-	forward = glm::normalize(glm::vec3(-rotationMatrix[0][2], -rotationMatrix[1][2], -rotationMatrix[2][2]));
+	forward = glm::normalize(glm::vec3(-rotationMatrix[0][2], -rotationMatrix[1][2], rotationMatrix[2][2]));
 }
 
 std::weak_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)

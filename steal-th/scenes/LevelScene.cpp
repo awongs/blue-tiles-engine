@@ -1,6 +1,7 @@
 
 #include <engine/behaviours/MeshRenderer.h>
 #include <engine/behaviours/PhysicsBehaviour.h>
+#include <engine/behaviours/SpotLight.h>
 #include <engine/physics/Collider.h>
 #include <engine/sound/SoundManager.h>
 #include <engine/sound/Music.h>
@@ -17,6 +18,7 @@
 #include "../behaviours/ObjectBehaviour.h"
 #include "../behaviours/TileBehaviour.h"
 #include "../behaviours/PlayerItemPickup.h"
+
 
 const float LevelScene::TILE_SIZE{ 9.f };
 
@@ -160,19 +162,21 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	// Create the guards
 	for (Guard &guard : level->m_guards)
 	{
-		MeshRenderer *meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
+		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
 		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
 
 		glm::vec3 position = glm::vec3(
 			(float)(guard.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
-			0, 
+			0,
 			(float)(guard.tileZ) * TILE_SIZE + TILE_SIZE / 2.f);
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("guard", 
+		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("guard",
 			position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
 		ga->AddBehaviour(meshRenderer);
-		ga->AddBehaviour(new GuardDetection(this, playerObj, 
-			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
+
+		// Add guard detection behaviour
+		ga->AddBehaviour(new GuardDetection(this, playerObj,
+			guard.tileViewDistance* LevelScene::TILE_SIZE, guard.tileViewRadius));
 
 		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
 
@@ -191,9 +195,14 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		sgmaib->AddTurnCWAction();
 		sgmaib->AddTurnCWAction();
 		sgmaib->AddWaitAction(2);
-    
+
 		ga->AddBehaviour(sgmaib);
-    
+
+		// Add a spot light in front of the guard
+		float theta = atan2f(guard.tileViewRadius * LevelScene::TILE_SIZE, guard.tileViewDistance * LevelScene::TILE_SIZE);
+		SpotLight* guardCone = new SpotLight(glm::vec3(1), ga->forward, theta, theta * 1.25f);
+		ga->AddBehaviour(guardCone);
+		
 		m_worldGameObjects.push_back(std::move(ga));
 	}
 }
