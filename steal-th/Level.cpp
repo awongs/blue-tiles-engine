@@ -70,10 +70,10 @@ void Level::LoadLevel(std::string jsonFile)
 		thisGuard.tileZ = guard["position"].value("z", 0);
 		thisGuard.tileViewDistance = guard.value("tileViewDistance", 0);
 		thisGuard.tileViewRadius = guard.value("tileViewRadius", 0);
-		thisGuard.rotAngle = guard["rotation"].value("angle", 0.f);
-		thisGuard.rotFrom = guard["rotation"].value("rotateFrom", 0.f);
-		thisGuard.rotTo = guard["rotation"].value("rotateTo", 0.f);
-		thisGuard.interval = guard["rotation"].value("interval", 0.f);
+		thisGuard.rotAngle = guard.value("angle", 0.f);
+		for (const auto move : guard["movement"]) {
+			thisGuard.movement.push_back(move);
+		}
 
 		m_guards.push_back(thisGuard);
 	}

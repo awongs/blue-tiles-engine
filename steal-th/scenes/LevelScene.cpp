@@ -180,7 +180,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
 
-		// move to box
+		/*// move to box
 		sgmaib->AddMoveTileAction(1, 2);
 		sgmaib->AddTurnCWAction();
 		sgmaib->AddMoveTileAction(1, 1);
@@ -194,7 +194,12 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		sgmaib->AddMoveTileAction(2, 2);
 		sgmaib->AddTurnCWAction();
 		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);
+		sgmaib->AddWaitAction(2);*/
+
+		// Setting guard movement
+		for (std::string move : guard.movement) {
+			
+		}
 
 		ga->AddBehaviour(sgmaib);
 

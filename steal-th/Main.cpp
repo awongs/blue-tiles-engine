@@ -47,7 +47,7 @@ int main()
 	PhysicsEngine *physEngine{ engine->GetPhysicsEngine() };
 
 	// Create the level
-	Level* l = new Level("level0");
+	Level* l = new Level("level1");
 	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l, physEngine);
 
 	// Setup the camera.
