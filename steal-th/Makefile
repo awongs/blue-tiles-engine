@@ -1,5 +1,5 @@
 #OBJS All c or cpp files
-OBJS =  Main.cpp Level.cpp ../blue-tiles-engine/glad.c scenes/LevelScene.cpp behaviours/PlayerMovement.cpp behaviours/FollowGameObject.cpp behaviours/Inventory.cpp behaviours/SimpleGuardMovementAIBehaviour.cpp 
+OBJS =  Main.cpp Level.cpp ../blue-tiles-engine/glad.c scenes/LevelScene.cpp behaviours/PlayerMovement.cpp behaviours/FollowGameObject.cpp behaviours/Inventory.cpp behaviours/SimpleGuardMovementAIBehaviour.cpp behaviours/TileBehaviour.cpp behaviours/ObjectBehaviour.cpp behaviours/PlayerItemPickup.cpp behaviours/GuardDetection.cpp  
 
 #CC Which Compiler to use.
 CC = g++
