@@ -1,6 +1,7 @@
 #pragma once
 
 #include <engine/behaviours/Behaviour.h>
+#include <engine/behaviours/SpotLight.h>
 #include <glm/glm.hpp>
 
 class LevelScene;
@@ -18,7 +19,7 @@ public:
 	void Draw(Shader &shader) override;
 	bool HandleMessage(unsigned int senderID, std::string& message) override;
 	void OnCollisionStay(GLuint other) override;
-
+	
 private:
 	// Try to detect the player by using the line algorithm with
 	// a start point and the point at the maximum view distance 
@@ -38,4 +39,7 @@ private:
 
 	// Hold a raw pointer to the player GameObject.
 	GameObject *m_playerObj{ nullptr };
+
+	// A spot light for the guard's detection cone.
+	std::weak_ptr<SpotLight> m_detectionCone;
 };

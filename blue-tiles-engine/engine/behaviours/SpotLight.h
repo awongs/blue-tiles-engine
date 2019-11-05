@@ -37,6 +37,9 @@ public:
 	// Overridden update.
 	virtual void Update(float deltaTime) override;
 
+	// Setter for the position offset.
+	void SetPositionOffset(const glm::vec3 positionOffset);
+
 private:
 	// Struct representation of this light source.
 	std::shared_ptr<SLight> m_lightStruct;
@@ -58,4 +61,7 @@ private:
 
 	// Quadratic attenuation factor.
 	float m_quadratic;
+
+	// How much to offset the position of the spot light by.
+	glm::vec3 m_positionOffset;
 };

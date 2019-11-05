@@ -3,12 +3,14 @@
 #include "../gameobjects/Tile.h"
 
 #include <engine/debugbt/DebugLog.h>
+#include <engine/behaviours/SpotLight.h>
 #include <engine/GameObject.h>
 #include <vector>
 #include <cmath>
 #include <glm/gtx/rotate_vector.hpp>
 
 #include <iostream>
+
 
 namespace {
     /* 
@@ -130,6 +132,7 @@ void GuardDetection::Update(float deltaTime)
 		m_isPlayerDetected |= tryDetectPlayer(guardWorldPos, pos);
 	}
 
+	/* HARD MODE
 	// Check side for peripheral vision.
 	for (int i = 0; i < m_maxViewDist - 2; ++i)
 	{
@@ -147,10 +150,25 @@ void GuardDetection::Update(float deltaTime)
 		endPos.y += ((i + 1) * LevelScene::TILE_SIZE);
 		m_isPlayerDetected |= tryDetectPlayer(guardWorldPos, endPos);
 	}
+	*/
 
+	// Set colour of guard spot light depending on player detection.
+	std::weak_ptr<SpotLight> guardCone = std::static_pointer_cast<SpotLight>(gameObject->GetBehaviour(BehaviourType::SpotLight).lock());
 	if (m_isPlayerDetected)
 	{
-		DebugLog::Info("I GOT U IN MY SIGHTS");
+		if (!guardCone.expired()) 
+		{
+			guardCone.lock()->SetColour(glm::vec3(10.0f, 0.0f, 0.0));
+		}
+
+		//DebugLog::Info("I GOT U IN MY SIGHTS");
+	}
+	else 
+	{
+		if (!guardCone.expired()) 
+		{
+			guardCone.lock()->SetColour(glm::vec3(10.0f));
+		}
 	}
 }
 
