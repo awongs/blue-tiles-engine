@@ -6,6 +6,7 @@
 #include <set>
 #include <vector>
 #include <string>
+#include <mutex>
 #include "PhysicsObject.h"
 
 class Collider;
@@ -137,9 +138,15 @@ private:
 	// Roughly check for potential collisions using bounding boxes.
 	void DoBroadPhase();
 
+	// Performs narrow phase collsion check on all broad phase detection.
+	void DoNarrowPhase();
+
+	// Performs narrow phase collsion check on all broad phase detection.
+	void DoNarrowPhaseThreaded(const unsigned int numThread);
+
 	// Detect collisions more precisely, given that they were
 	// detected during broad phase.
-	void DoNarrowPhase();
+	void DoNarrowPhaseRanged(int startIndex, int endIndex);
 
 	// Handle all detected collisions.
 	void HandleCollisions();
@@ -203,4 +210,10 @@ private:
 	// Hold pairs of physics components that collided after narrow phase
 	// for this frame.
 	std::vector<std::pair<PhysicsObject *, PhysicsObject *>> m_collisions;
+
+	// Mutex used for m_collisions
+	std::mutex m_collisionVectorMutex;
+
+	// List of threads used for threaded narrow phase
+	std::vector<std::thread*> m_narrowPhaseThreads;
 };
