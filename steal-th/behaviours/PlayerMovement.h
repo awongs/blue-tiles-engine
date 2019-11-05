@@ -1,6 +1,8 @@
 #pragma once
 #include <engine/behaviours/Behaviour.h>
 
+class GameObject;
+
 class PlayerMovement : public Behaviour
 {
 public:
@@ -11,10 +13,15 @@ public:
 	void Update(float deltaTime) override;
 	void Draw(Shader& shader) override;
 	bool HandleMessage(unsigned int senderID, std::string& message) override;
+	void OnCollisionStay(GLuint other) override;
 
 	glm::vec3 GetCurrentVelocity() const;
 
 private:
+
+	void HandleInteractableConllision(GameObject* otherObj);
+
+	void HandleWallCollision(GameObject* otherObj);
 
 	// Movement speed in OpengL units per second.
 	float m_speed;

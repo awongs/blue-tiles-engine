@@ -21,7 +21,9 @@ enum class BehaviourType
 	GuardDetection,
 	SimpleGuardMovementBehaviour,
 	ObjectBehaviour,
-	TileBehaviour
+	TileBehaviour,
+	NONE,
+	PlayerItemPickup
 };
 
 class GameObject;
@@ -39,6 +41,8 @@ public:
 
 	// Draw
 	virtual void Draw(Shader& shader) = 0;
+
+	virtual void OnCollisionStay(GLuint other) = 0;
 
 	// Handles messages
 	virtual bool HandleMessage(unsigned int senderID, std::string& message) = 0;

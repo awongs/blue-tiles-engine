@@ -3,6 +3,9 @@
 #include "GameObject.h"
 #include "graphics/Shader.h"
 #include "behaviours/Behaviour.h"
+#include "Scene.h"
+
+#include "debugbt/DebugLog.h"
 
 int GameObject::idCounter = 0;
 
@@ -41,6 +44,14 @@ void GameObject::Draw(Shader& shader)
 	}
 }
 
+void GameObject::OnCollisionStay(GLuint other)
+{
+	for (const auto& behaviour : m_behaviours)
+	{
+		behaviour.second->OnCollisionStay(other);
+	}
+}
+
 glm::mat4 GameObject::GetTransformMatrix() const
 {
 	return m_transformMatrix;
@@ -60,7 +71,7 @@ void GameObject::UpdateTransformMatrix()
 	m_transformMatrix = glm::scale((translationMatrix * rotationMatrix), scale);
 
 	// Forward vector is equal to the z column in the rotation matrix
-	forward = glm::normalize(glm::vec3(-rotationMatrix[0][2], -rotationMatrix[1][2], -rotationMatrix[2][2]));
+	forward = glm::normalize(glm::vec3(-rotationMatrix[0][2], -rotationMatrix[1][2], rotationMatrix[2][2]));
 }
 
 std::weak_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)
@@ -78,6 +89,20 @@ std::weak_ptr<Behaviour> GameObject::GetBehaviour(BehaviourType type)
 
 bool GameObject::HandleMessage(unsigned int senderID, std::string& message, BehaviourType type)
 {
+	if (message == "die")
+	{
+		DebugLog::Info(name + " got die message!");
+
+		if (currentScene == nullptr)
+		{
+			DebugLog::Error("CurrentScene is null for " + name + "!");
+			return false;
+		}
+
+		if (isScreenObject) currentScene->RemoveScreenGameObject(id);
+		else currentScene->RemoveWorldGameObject(id);
+	}
+
 	std::weak_ptr<Behaviour> behav = GetBehaviour(type);
 
 	return behav.expired() ? false : behav.lock()->HandleMessage(senderID, message);

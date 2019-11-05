@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include "behaviours/Behaviour.h"
 
+class Scene;
 class Shader;
 
 class GameObject
@@ -24,6 +25,8 @@ public:
 	
 	// Draw
 	virtual void Draw(Shader& shader);
+
+	virtual void OnCollisionStay(GLuint other);
 
 	// Handles messages
 	virtual bool HandleMessage(unsigned int senderID, std::string& message, BehaviourType type);
@@ -71,6 +74,12 @@ public:
 
 	// The game object's forward vector.
 	glm::vec3 forward;
+
+	// Pointer to the current scene that this gameobject is in.
+	Scene* currentScene;
+
+	// Flag if this gameobject is a screen object in the current scene.
+	bool isScreenObject;
 
 private:
 	// Hashmap of behaviours currently attached to this game object.

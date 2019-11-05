@@ -55,15 +55,15 @@
     <ClCompile Include="behaviours\TileBehaviour.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="behaviours\PlayerItemPickup.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Guard.h">
       <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
     <ClInclude Include="gameobjects\Object.h">
-      <Filter>Source Files\gameobjects</Filter>
-    </ClInclude>
-    <ClInclude Include="gameobjects\Room.h">
       <Filter>Source Files\gameobjects</Filter>
     </ClInclude>
     <ClInclude Include="Level.h">
@@ -97,6 +97,9 @@
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
     <ClInclude Include="behaviours\TileBehaviour.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\PlayerItemPickup.h">
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
   </ItemGroup>

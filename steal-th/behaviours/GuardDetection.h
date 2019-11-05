@@ -1,6 +1,7 @@
 #pragma once
 
 #include <engine/behaviours/Behaviour.h>
+#include <engine/behaviours/SpotLight.h>
 #include <glm/glm.hpp>
 
 class LevelScene;
@@ -17,14 +18,16 @@ public:
 	void Update(float deltaTime) override;
 	void Draw(Shader &shader) override;
 	bool HandleMessage(unsigned int senderID, std::string& message) override;
-
+	void OnCollisionStay(GLuint other) override;
+	
 private:
 	// Try to detect the player by using the line algorithm with
 	// a start point and the point at the maximum view distance 
 	// from the guard, in world coordinates.
-	void tryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistancePoint);
+	// Returns true if player was detected, otherwise returns false.
+	bool tryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistancePoint);
 
-	bool m_playerDetected;
+	bool m_isPlayerDetected;
 
 	// Defines how far and wide a guard can detect players.
 	float m_maxViewDist{ 0 };
@@ -36,4 +39,7 @@ private:
 
 	// Hold a raw pointer to the player GameObject.
 	GameObject *m_playerObj{ nullptr };
+
+	// A spot light for the guard's detection cone.
+	std::weak_ptr<SpotLight> m_detectionCone;
 };

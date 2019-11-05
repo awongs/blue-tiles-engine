@@ -30,7 +30,7 @@
     ],
 
     "guards": [
-        { "guardId" : 0, "position": { "x": 3, "z": 3 }, "tileViewDistance": 3, "tileViewRadius": 3,
-        "rotation": { "angle" : -90.0, "rotateFrom" : -90.0, "rotateTo" : 0.0, "interval" : 5.0 } }
+        { "guardId" : 0, "position": { "x": 2, "z": 2 }, "tileViewDistance": 3, "tileViewRadius": 2,
+        "rotation": { "angle" : -90.0, "rotateFrom" : 0.0, "rotateTo" : 0.0, "interval" : 5.0 } }
     ]
 }
