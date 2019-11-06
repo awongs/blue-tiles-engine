@@ -2,8 +2,13 @@
 
 //Magic number to store the platform name.
 static constexpr int PLATFORM_NAME_SIZE = 1024;
+static constexpr int BUILD_LOG_SIZE = 16384;
 OpenCLManager::OpenCLManager() {
-
+    m_context = 0;
+    m_commandQueue = 0;
+    m_program = 0;
+    m_device = 0;
+    m_kernel = 0;
 }
 
 OpenCLManager::~OpenCLManager() {
@@ -94,7 +99,7 @@ cl_command_queue OpenCLManager::CreateCommandQueue(cl_context context, cl_device
         return NULL;
     }
 
-    DebugLog::info("\n There are " + std::to_string(numDevices) + " devices. \n");
+    DebugLog::Info("\n There are " + std::to_string(numDevices) + " devices. \n");
 
     //Get list of devices
     cl_device_id *deviceList;
@@ -135,7 +140,7 @@ cl_command_queue OpenCLManager::CreateCommandQueue(cl_context context, cl_device
         DebugLog::Info(" " + std::to_string(deviceList[i]) + ":");
         // device type
        errNum = clGetDeviceInfo(deviceList[i], CL_DEVICE_TYPE, sizeof(cl_device_type), (void *)&devType, &retSize);
-        if (!CheckOpenCLError(errNum, "ERROR getting device info!")) {
+        if (!CheckOpenCLError(errNum, "Error getting device info!")) {
             free(deviceList);
             return NULL;
         }
@@ -160,7 +165,7 @@ cl_command_queue OpenCLManager::CreateCommandQueue(cl_context context, cl_device
         char devName[PLATFORM_NAME_SIZE];
         errNum = clGetDeviceInfo(deviceList[i], CL_DEVICE_NAME, 1024, (void *)devName, &retSize);
         
-        if (!CheckOpenCLError(errNum, "ERROR getting device name!")) {
+        if (!CheckOpenCLError(errNum, "Error getting device name!")) {
             free(deviceList);
             return NULL;
         }
@@ -171,7 +176,7 @@ cl_command_queue OpenCLManager::CreateCommandQueue(cl_context context, cl_device
 
     if(commandQueue == NULL) {
         free(deviceList);
-        DebugLog::ERROR("Failed to create commandQueue for device 0");
+        DebugLog::Error("Failed to create commandQueue for device 0");
         return NULL;
     }
 
@@ -179,5 +184,47 @@ cl_command_queue OpenCLManager::CreateCommandQueue(cl_context context, cl_device
     free(deviceList);
     
     return commandQueue;
+}
+
+cl_program OpenCLManager::createProgram(cl_context context, cl_device_id device, const char* fileName) {
+    cl_int errNum;
+    cl_program program;
+
+    std::ifstream kernelFile(fileName, std::ios::in);
+
+    if(!kernelFile.is_open()) {
+        DebugLog::Error("Failed to open file for reading: " + std::string(filename));
+        return NULL;
     }
+
+    std::ostringstream oss;
+
+    oss << kernelFile.rdbuf();
+
+    std::string srcStdStr = oss.str();
+    const char* strcStr = src.StdStr.c_str();
+    program = clCreateProgramWithSource(context, 1,
+                                        (const char**)& srcStr,
+                                        NULL, NULL);
+    
+    if(program == NULL) {
+        DebugLog::Error("Failed to create CL program from source \n");
+        return NULL;
+    }
+
+    errNum = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
+
+    if(errNum != CL_SUCCESS) {
+        //Determine the reason of Error
+        char buildLog[BUILD_LOG_SIZE];
+        clGetProgramBuildInfo(program, device, CL_PROGRAM_BUID_LOG,
+                                sizeof(buildLog), buildLog, NULL);
+        
+        DebugLog::Error("Error in kernel: \n");
+        DebugLog::Error(std::string(buildLog));
+        clReleaseProgram(program);
+        return NULL;
+    }
+
+    return program;
 }
