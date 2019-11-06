@@ -5,6 +5,9 @@
 #include <engine/debugbt/DebugLog.h>
 #include <engine/behaviours/SpotLight.h>
 #include <engine/GameObject.h>
+#include <engine/sound/SoundManager.h>
+#include <engine/sound/Music.h>
+#include <engine/sound/Sound.h>
 #include <vector>
 #include <cmath>
 #include <glm/gtx/rotate_vector.hpp>
@@ -161,6 +164,7 @@ void GuardDetection::Update(float deltaTime)
 			guardCone.lock()->SetColour(glm::vec3(10.0f, 0.0f, 0.0));
 		}
 
+		SoundManager::getInstance().getSound("detected")->play();
 		//DebugLog::Info("I GOT U IN MY SIGHTS");
 	}
 	else 

@@ -149,7 +149,13 @@ void PlayerMovement::HandleInteractableConllision(GameObject* otherObj)
 	{
 		if (inventory->GetNumItem(Inventory::ItemType::OBJECTIVE_ITEM) > 0)
 		{
-			// TODO: implement win action.
+			SoundManager::getInstance().getSound("door-unlocked")->play();
+			inventory->RemoveItem(Inventory::ItemType::GREEN_KEY);
+			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
+		}
+		else
+		{
+			SoundManager::getInstance().getSound("door-locked")->play();
 		}
 
 		break;
@@ -175,6 +181,7 @@ void PlayerMovement::HandleWallCollision(GameObject* otherObj)
 	case TileType::RED_DOOR:
 	case TileType::BLUE_DOOR:
 	case TileType::GREEN_DOOR:
+	case TileType::EXIT:
 	{
 		std::shared_ptr<PlayerMovement> playerMovement{ gameObject->GetBehaviour<PlayerMovement>().lock() };
 		if (playerMovement == nullptr)
