@@ -1,7 +1,10 @@
 #pragma once
 #include <CL/cl.h>
 #include "debugbt/DebugLog.h"
-
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 class OpenCLManager {
 public:
 //Default Constructor

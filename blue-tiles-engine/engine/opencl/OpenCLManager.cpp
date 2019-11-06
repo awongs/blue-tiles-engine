@@ -33,7 +33,7 @@ cl_context OpenCLManager::createContext() {
         DebugLog::Error("Failed to create context");
     }
 
-    DebugLog::Info("platforms in total" + std::toString(numPlatforms));
+    DebugLog::Info("platforms in total" + std::to_string(numPlatforms));
 
     //Get information about the platform
     char pname[PLATFORM_NAME_SIZE];
