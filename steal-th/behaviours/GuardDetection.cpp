@@ -8,6 +8,7 @@
 #include <engine/sound/SoundManager.h>
 #include <engine/sound/Music.h>
 #include <engine/sound/Sound.h>
+#include <engine/behaviours/TextBehaviour.h>
 #include <vector>
 #include <cmath>
 #include <glm/gtx/rotate_vector.hpp>
@@ -165,7 +166,14 @@ void GuardDetection::Update(float deltaTime)
 		}
 
 		SoundManager::getInstance().getSound("detected")->play();
-		//DebugLog::Info("I GOT U IN MY SIGHTS");
+		SoundManager::getInstance().getMusic("music")->stop();
+		SoundManager::getInstance().getSound("lose")->play();
+		m_levelScene->stopUpdates();
+		DebugLog::Info("Detected. Game over");
+		GameObject* text = new GameObject();
+		text->AddBehaviour(new TextBehaviour("Lose!", 2, glm::vec3(1, 0, 0)));
+		m_levelScene->AddScreenGameObject(text);
+		// NEED UI!!!
 	}
 	else 
 	{

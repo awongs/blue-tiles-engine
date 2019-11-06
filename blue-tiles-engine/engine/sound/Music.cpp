@@ -35,3 +35,14 @@ void Music::play() const {
 		DebugLog::Error("Failed");
 	}
 }
+
+// Stop music
+void Music::stop() const {
+	if (!m_music) {
+		DebugLog::Error(Mix_GetError());
+		return;
+	}
+	if ((Mix_HaltMusic()) != 0) {
+		DebugLog::Error("Failed");
+	}
+}

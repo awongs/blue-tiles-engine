@@ -14,7 +14,10 @@ namespace {
 		{"detected", "../Assets/sound-assets/detected.wav"},
         {"door-locked", "../Assets/sound-assets/Door_Locked.wav"},
         {"door-unlocked", "../Assets/sound-assets/Door_Unlocked.wav"},
-        {"key-pickup", "../Assets/sound-assets/Key_Pickup.wav"}
+        {"key-pickup", "../Assets/sound-assets/Key_Pickup.wav"},
+		{"win", "../Assets/sound-assets/Win.wav"},
+		{"tech-pickup", "../Assets/sound-assets/success.wav"},
+		{"lose", "../Assets/sound-assets/Lose.wav"}
     };
 }
 

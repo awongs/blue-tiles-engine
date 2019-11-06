@@ -64,9 +64,9 @@ int main()
 	level->AddWorldGameObject(ga);
 	
 	// Test text
-	GameObject* text = new GameObject();
+	/*GameObject* text = new GameObject();
 	text->AddBehaviour(new TextBehaviour("OZMA", 2, glm::vec3(1, 0, 0)));
-	level->AddScreenGameObject(text);
+	level->AddScreenGameObject(text);*/
 
 	// Add test lighting
 	for (int i = 0; i < 0; i++)

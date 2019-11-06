@@ -85,7 +85,7 @@ void PlayerItemPickup::OnCollisionStay(GLuint other)
 			case ObjectType::OBJECTIVE_ITEM:
 			{
 				// TODO: replace key pickup sound.
-				SoundManager::getInstance().getSound("key-pickup")->play();
+				SoundManager::getInstance().getSound("tech-pickup")->play();
 				inventory->AddItem(Inventory::ItemType::OBJECTIVE_ITEM);
 				DebugLog::Info(gameObject->name + " picked up a OBJECTIVE_ITEM");
 				otherObjBehaviour->pickedUp = true;

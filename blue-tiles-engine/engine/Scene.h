@@ -53,10 +53,15 @@ public:
 
 	// Removes a screen game object from the screen game objects vector by id
 	bool RemoveScreenGameObject(const GLuint id);
+
+	// Stops scene from updating game objects
+	void stopUpdates();
   
 protected:
 	std::vector<std::unique_ptr<GameObject>> m_worldGameObjects;
 	std::vector<std::unique_ptr<GameObject>> m_screenGameObjects;
+
+	bool isGameOver;
 
 	// Remove all world game objects that were flagged.
 	void RemoveWorldGameObjects();
