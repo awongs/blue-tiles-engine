@@ -34,7 +34,7 @@ void Animator::Update(float deltaTime)
 	}
 
 	std::unordered_map<std::string, glm::mat4> currentPose = calculateCurrentPose();
-	applyPoseToJoints(currentPose, animatedMesh.lock()->rootJoint, glm::mat4(1));
+	applyPoseToJoints(currentPose, *(animatedMesh.lock()->rootJoint), glm::mat4(1));
 }
 
 void Animator::Draw(Shader& shader)

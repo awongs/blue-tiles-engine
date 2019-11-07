@@ -150,6 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\animation\AnimatedMesh.cpp" />
     <ClCompile Include="engine\animation\Animation.cpp" />
     <ClCompile Include="engine\animation\Animator.cpp" />
     <ClCompile Include="engine\animation\Joint.cpp" />
@@ -186,6 +187,7 @@
     <ClCompile Include="engine\sound\Sound.cpp" />
     <ClCompile Include="engine\sound\SoundManager.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="util\FileManager.cpp" />
     <ClCompile Include="util\MeshManager.cpp" />
   </ItemGroup>

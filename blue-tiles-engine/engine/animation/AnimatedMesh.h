@@ -6,28 +6,24 @@
 #include <memory>
 
 #include "../behaviours/MeshRenderer.h"
+#include "../../util/MeshManager.h"
 #include "Joint.h"
 
 class Texture;
 class Animator;
 
+using meshmanager::AnimatedVertex;
+
 // Code referenced from: https://www.youtube.com/watch?v=f3Cr8Yx3GGA
 class AnimatedMesh : public Behaviour // TODO: Maybe try to inherit from MeshRenderer instead.
 {
-	struct AnimatedVertex
-	{
-		glm::vec3 position;
-		glm::vec2 uv;
-		glm::vec3 normal;
-		glm::ivec3 jointIds;
-		glm::vec3 jointWeights;
-	};
-
 public:
-	AnimatedMesh(const std::string objFilePath);
+	AnimatedMesh(std::string objPath, std::string skeletonPath, std::shared_ptr<Joint> rootJoint, int jointCount);
 
 	// Loads and sets the current texture.
 	void SetTexture(std::string texturePath);
+
+	void SetupBuffers();
 
 	// TODO: Load animation info somewhere.
 
@@ -38,7 +34,7 @@ public:
 	void OnCollisionStay(GLuint other) override;
 
 	// TODO: Lazy copying
-	Joint rootJoint;
+	std::shared_ptr<Joint> rootJoint;
 
 	// Total number of joints.
 	int jointCount;

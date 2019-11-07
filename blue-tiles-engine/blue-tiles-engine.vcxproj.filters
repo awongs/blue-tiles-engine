@@ -159,6 +159,12 @@
     <ClCompile Include="engine\animation\Animation.cpp">
       <Filter>Source Files\engine\animation</Filter>
     </ClCompile>
+    <ClCompile Include="engine\animation\AnimatedMesh.cpp">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="pugixml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
