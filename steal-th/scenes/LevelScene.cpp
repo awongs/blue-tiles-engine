@@ -177,6 +177,10 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 		ga->AddBehaviour(meshRenderer);
 
+		// Add physics behaviour.
+		Collider* guardCol{ new Collider(glm::vec3(1.5f)) };
+		ga->AddBehaviour(new PhysicsBehaviour(m_physEngine, ga->id, guardCol));
+
 		// Add guard detection behaviour
 		ga->AddBehaviour(new GuardDetection(this, playerObj,
 			guard.tileViewDistance* LevelScene::TILE_SIZE, guard.tileViewRadius));

@@ -73,7 +73,7 @@ void PlayerMovement::OnCollisionStay(GLuint other)
 {
 	GameObject* otherObj{ gameObject->currentScene->GetWorldGameObjectById(other) };
 
-	HandleInteractableConllision(otherObj);
+	HandleInteractableCollision(otherObj);
 	HandleWallCollision(otherObj);
 }
 
@@ -82,7 +82,12 @@ glm::vec3 PlayerMovement::GetCurrentVelocity() const
 	return m_currentVelocity;
 }
 
-void PlayerMovement::HandleInteractableConllision(GameObject* otherObj)
+void PlayerMovement::ResetVelocity()
+{
+	m_currentVelocity = glm::vec3(0);
+}
+
+void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 {
 	// get tile behaviour
 	std::shared_ptr<TileBehaviour> tile{ otherObj->GetBehaviour<TileBehaviour>().lock() };
