@@ -5,6 +5,10 @@
 #include <engine/debugbt/DebugLog.h>
 #include <engine/behaviours/SpotLight.h>
 #include <engine/GameObject.h>
+#include <engine/sound/SoundManager.h>
+#include <engine/sound/Music.h>
+#include <engine/sound/Sound.h>
+#include <engine/behaviours/TextBehaviour.h>
 #include <vector>
 #include <cmath>
 #include <glm/gtx/rotate_vector.hpp>
@@ -161,7 +165,15 @@ void GuardDetection::Update(float deltaTime)
 			guardCone.lock()->SetColour(glm::vec3(10.0f, 0.0f, 0.0));
 		}
 
-		//DebugLog::Info("I GOT U IN MY SIGHTS");
+		SoundManager::getInstance().getSound("detected")->play();
+		SoundManager::getInstance().getMusic("music")->stop();
+		SoundManager::getInstance().getSound("lose")->play();
+		m_levelScene->stopUpdates();
+		DebugLog::Info("Detected. Game over");
+		GameObject* text = new GameObject();
+		text->AddBehaviour(new TextBehaviour("Lose!", 2, glm::vec3(1, 0, 0)));
+		m_levelScene->AddScreenGameObject(text);
+		// NEED UI!!!
 	}
 	else 
 	{
