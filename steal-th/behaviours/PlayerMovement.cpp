@@ -7,6 +7,8 @@
 #include <engine/Scene.h>
 #include <engine/behaviours/PhysicsBehaviour.h>
 #include <engine/physics/Collider.h>
+#include <engine/debugbt/DebugLog.h>
+#include <engine/behaviours/TextBehaviour.h>
 
 #include "PlayerMovement.h"
 #include "Inventory.h"
@@ -149,7 +151,20 @@ void PlayerMovement::HandleInteractableConllision(GameObject* otherObj)
 	{
 		if (inventory->GetNumItem(Inventory::ItemType::OBJECTIVE_ITEM) > 0)
 		{
-			// TODO: implement win action.
+			SoundManager::getInstance().getMusic("music")->stop();
+			SoundManager::getInstance().getSound("win")->play();
+			inventory->RemoveItem(Inventory::ItemType::OBJECTIVE_ITEM);
+			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
+			gameObject->currentScene->stopUpdates();
+			DebugLog::Info("Player reached exit. Game over.");
+			GameObject* text = new GameObject();
+			text->AddBehaviour(new TextBehaviour("Win!", 2, glm::vec3(1, 0, 0)));
+			gameObject->currentScene->AddScreenGameObject(text);
+			// Need UI!!!!!
+		}
+		else
+		{
+			SoundManager::getInstance().getSound("door-locked")->play();
 		}
 
 		break;
@@ -175,6 +190,7 @@ void PlayerMovement::HandleWallCollision(GameObject* otherObj)
 	case TileType::RED_DOOR:
 	case TileType::BLUE_DOOR:
 	case TileType::GREEN_DOOR:
+	case TileType::EXIT:
 	{
 		std::shared_ptr<PlayerMovement> playerMovement{ gameObject->GetBehaviour<PlayerMovement>().lock() };
 		if (playerMovement == nullptr)

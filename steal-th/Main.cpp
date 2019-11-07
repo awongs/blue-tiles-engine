@@ -50,7 +50,7 @@ int main()
 	PhysicsEngine *physEngine{ engine->GetPhysicsEngine() };
 
 	// Create the level
-	Level* l = new Level("level0");
+	Level* l = new Level("level1");
 	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l, physEngine);
 
 	// Setup the camera.
@@ -67,9 +67,9 @@ int main()
 	level->AddWorldGameObject(ga);
 	
 	// Test text
-	GameObject* text = new GameObject();
+	/*GameObject* text = new GameObject();
 	text->AddBehaviour(new TextBehaviour("OZMA", 2, glm::vec3(1, 0, 0)));
-	level->AddScreenGameObject(text);
+	level->AddScreenGameObject(text);*/
 
 	// Inventory textures
 	GameObject* menu = new GameObject();

@@ -159,6 +159,9 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	// Add to world
 	AddWorldGameObject(playerObj);
 
+	// Play music
+	SoundManager::getInstance().getMusic("music")->play();
+
 	// Create the guards
 	for (Guard &guard : level->m_guards)
 	{
@@ -180,7 +183,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
 
-		// move to box
+		/*// move to box
 		sgmaib->AddMoveTileAction(1, 2);
 		sgmaib->AddTurnCWAction();
 		sgmaib->AddMoveTileAction(1, 1);
@@ -194,7 +197,35 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		sgmaib->AddMoveTileAction(2, 2);
 		sgmaib->AddTurnCWAction();
 		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);
+		sgmaib->AddWaitAction(2);*/
+
+		// Setting guard movement
+		for (std::string move : guard.movement) {
+			if (move == "turncw") {
+				sgmaib->AddTurnCWAction();
+			}
+			else if (move == "turnccw") {
+				sgmaib->AddTurnCCWAction();
+			}
+			else if (move.find("move") != std::string::npos) {
+				std::string value1;
+				std::string value2;
+				bool split = false;
+				for (int i = 5; i < std::strlen(move.c_str()); i++) {
+					if (move[i] == ',') {
+						split = true;
+					}
+					if (move[i] != ',' && split == false) {
+						value1 += move[i];
+					}
+					else if(move[i] != ',' && split == true){
+						value2 += move[i];
+					}
+				}
+				//DebugLog::Info(value1 + " " + value2);
+				sgmaib->AddMoveTileAction(std::stoi(value1), std::stoi(value2));
+			}
+		}
 
 		ga->AddBehaviour(sgmaib);
 
@@ -266,6 +297,7 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 		case TileType::RED_DOOR:
 		case TileType::BLUE_DOOR:
 		case TileType::GREEN_DOOR:
+		case TileType::EXIT:
 		{
 
 			glm::vec3 position = glm::vec3(
@@ -307,7 +339,7 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				}
 				case TileType::BLUE_DOOR:
 				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/door.obj");
+					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
 					meshRenderer->SetTransparent(true);
 					meshRenderer->SetTexture("../Assets/textures/blue_key_block.png");
 					ga->AddBehaviour(meshRenderer);
@@ -319,7 +351,7 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				}
 				case TileType::GREEN_DOOR:
 				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/door.obj");
+					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
 					meshRenderer->SetTransparent(true);
 					meshRenderer->SetTexture("../Assets/textures/green_key_block.png");
 					ga->AddBehaviour(meshRenderer);
@@ -327,6 +359,18 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::GREEN_DOOR) };
 					ga->AddBehaviour(tileBehaviour);
 					m_tiles[tileIndex] = TileType::GREEN_DOOR;
+					break;
+				}
+				case TileType::EXIT:
+				{
+					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
+					meshRenderer->SetTransparent(true);
+					meshRenderer->SetTexture("../Assets/textures/exit.jpg");
+					ga->AddBehaviour(meshRenderer);
+
+					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::EXIT) };
+					ga->AddBehaviour(tileBehaviour);
+					m_tiles[tileIndex] = TileType::EXIT;
 					break;
 				}
 			}
@@ -338,10 +382,11 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 			break;
 		}
 
-		case TileType::EXIT:
+		/*case TileType::EXIT:
 		{
+
 			break;
-		}
+		}*/
 
 	}
 }

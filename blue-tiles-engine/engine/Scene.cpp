@@ -9,11 +9,12 @@
 
 Scene::Scene()
 {
-
+	isGameOver = false;
 }
 
 Scene::Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::vector<std::unique_ptr<GameObject>>& screenGameObjects)
 {
+	isGameOver = false;
 	for (int i = 0; i < static_cast<int>(worldGameObjects.size()) - 2; ++i)
 	{
 		for (int j = i + 1; j < worldGameObjects.size(); ++j)
@@ -45,7 +46,10 @@ Scene::~Scene()
 
 void Scene::Update(float deltaTime)
 {
-	for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Update(deltaTime);
+	if (!isGameOver)
+	{
+		for (auto& worldGameObj : m_worldGameObjects) worldGameObj->Update(deltaTime);
+	}
 	for (auto& screenGameObj : m_screenGameObjects) screenGameObj->Update(deltaTime);
 
 	// Remove all flagged world game objects before doing anything else.
@@ -222,4 +226,9 @@ void Scene::RemoveWorldGameObjects()
 	}
 
 	m_worldGameObjectsToRemove.clear();
+}
+
+void Scene::stopUpdates()
+{
+	isGameOver = true;
 }
