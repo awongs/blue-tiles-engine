@@ -120,12 +120,10 @@ void GuardDetection::Update(float deltaTime)
 		return;
 
 	// The guard's tile position is point 1 for the line algorithm.
-	// We want this to be the tile directly in front of the guard.
 	glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
-	glm::vec2 frontWorldPos{ guardWorldPos.x, guardWorldPos.y + LevelScene::TILE_SIZE };
 
 	// For rotation == 0.f, the guard is facing down.
-	glm::vec2 unrotatedMaxDistPoint{ frontWorldPos.x, frontWorldPos.y + m_maxViewDist };
+	glm::vec2 unrotatedMaxDistPoint{ guardWorldPos.x, guardWorldPos.y + m_maxViewDist };
 
 	// Check if the guard can detect the player at its maximum view distance.
 	int numEndTiles{ m_tileViewRadius * 2 };
