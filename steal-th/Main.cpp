@@ -74,7 +74,7 @@ int main()
 
 	// Inventory textures
 	GameObject* menu = new GameObject();
-	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(300, 100), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize));
+	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize));
 	GameObject* testString = new GameObject();
 	testString->AddBehaviour(new UITextBehaviour("Hello, World"));
 	testString->SetParent(menu);
