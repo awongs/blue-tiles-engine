@@ -40,6 +40,9 @@
     <Filter Include="Source Files\engine\behaviours\Lighting">
       <UniqueIdentifier>{baf4a58e-998c-44dd-905b-cc6c5a4fdae8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\opencl">
+      <UniqueIdentifier>{98baab58-155d-458b-8673-c69ab4622e8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -141,6 +144,9 @@
     <ClCompile Include="engine\behaviours\PhysicsBehaviour.cpp">
       <Filter>Source Files\engine\behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="engine\opencl\OpenCLManager.cpp">
+      <Filter>Source Files\engine\opencl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -238,6 +244,9 @@
     </ClInclude>
     <ClInclude Include="engine\behaviours\PhysicsBehaviour.h">
       <Filter>Source Files\engine\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\opencl\OpenCLManager.h">
+      <Filter>Source Files\engine\opencl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

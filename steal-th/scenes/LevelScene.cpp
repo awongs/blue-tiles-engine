@@ -231,6 +231,14 @@ glm::ivec2 LevelScene::GetLevelSize() const
 	return m_levelSize;
 }
 
+void LevelScene::GetTiles(std::vector<int>& output) const
+{
+	for (const TileType& tile : m_tiles)
+	{
+		output.push_back(static_cast<int>(tile));
+	}
+}
+
 void LevelScene::AddTile(TileType type, unsigned int tileIndex)
 {
 	unsigned int x{ tileIndex % static_cast<unsigned int>(m_levelSize.x) };

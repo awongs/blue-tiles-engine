@@ -94,19 +94,59 @@ namespace {
 			 }
 		 }
 	 }
+
+	 const int NUM_VALUES_PER_POINT{ 2 };
 }
 
-GuardDetection::GuardDetection(LevelScene *levelScene, GameObject *playerObj,
+GuardDetection::GuardDetection(LevelScene* levelScene, GameObject* playerObj,
 	float maxViewDist, int tileViewRadius) :
 	Behaviour(BehaviourType::GuardDetection),
-	m_levelScene(levelScene), m_playerObj(playerObj), 
-	m_maxViewDist(maxViewDist), m_tileViewRadius(tileViewRadius)
+	m_levelScene(levelScene), m_playerObj(playerObj),
+	m_maxViewDist(maxViewDist), m_tileViewRadius(tileViewRadius),
+	m_numDetectionRays(2 * tileViewRadius + 1)
 {
-	m_isPlayerDetected = false;
+	m_openCLManager = std::make_unique<OpenCLManager>("../Assets/opencl/guard_detection.cl", "guard_detection");
+
 }
 
 void GuardDetection::Update(float deltaTime)
 {
+	if (!m_isInitialized)
+	{
+		m_isInitialized = true;
+
+		std::vector<float> endpointsX, endpointsZ;
+		GetDetectionRayEndPoints(endpointsX, endpointsZ);
+		cl_mem endpointsXBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsX[0]) };
+		m_openCLManager->SetKernelArg(0, sizeof(cl_mem), &endpointsXBuffer);
+		cl_mem endpointsZBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsZ[0]) };
+		m_openCLManager->SetKernelArg(1, sizeof(cl_mem), &endpointsZBuffer);
+
+		cl_mem outputBuffer{ m_openCLManager->CreateOutputBuffer(sizeof(bool) * m_numDetectionRays) };
+		m_openCLManager->SetKernelArg(2, sizeof(cl_mem), &outputBuffer);
+
+		m_openCLManager->SetKernelArg(3, sizeof(float), &gameObject->position.x);
+		m_openCLManager->SetKernelArg(4, sizeof(float), &gameObject->position.z);
+		m_openCLManager->SetKernelArg(5, sizeof(float), &gameObject->rotation.y);
+		m_openCLManager->SetKernelArg(6, sizeof(float), &LevelScene::TILE_SIZE);
+	
+		glm::ivec2 levelSize{ m_levelScene->GetLevelSize() };
+		m_openCLManager->SetKernelArg(7, sizeof(int), &levelSize.x);
+		m_openCLManager->SetKernelArg(8, sizeof(int), &levelSize.y);
+
+		std::vector<int> tiles;
+		m_levelScene->GetTiles(tiles);
+		cl_mem tilesBuffer{ m_openCLManager->CreateInputBuffer(sizeof(int) * tiles.size(), &tiles[0]) };
+		m_openCLManager->SetKernelArg(9, sizeof(cl_mem), &tilesBuffer);
+
+		m_openCLManager->SetKernelArg(10, sizeof(float), &m_playerObj->position.x);
+		m_openCLManager->SetKernelArg(11, sizeof(float), &m_playerObj->position.y);
+
+		const int MAX_VIEW_DIST_TILES{ static_cast<int>(m_maxViewDist / LevelScene::TILE_SIZE) };
+		cl_mem lineAlgBuffer{ m_openCLManager->CreateInputBuffer(sizeof(int) * NUM_VALUES_PER_POINT * MAX_VIEW_DIST_TILES * 2, NULL) };
+		m_openCLManager->SetKernelArg(12, sizeof(cl_mem), &lineAlgBuffer);
+	}
+
 	// Reset the detected flag.
 	m_isPlayerDetected = false;
 
@@ -114,23 +154,39 @@ void GuardDetection::Update(float deltaTime)
 	if (m_levelScene == nullptr)
 		return;
 
-	// The guard's tile position is point 1 for the line algorithm.
-	// We want this to be the tile directly in front of the guard.
-	glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
-	glm::vec2 frontWorldPos{ guardWorldPos.x, guardWorldPos.y + LevelScene::TILE_SIZE };
+	//// The guard's tile position is point 1 for the line algorithm.
+	//// We want this to be the tile directly in front of the guard.
+	//glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
+	//glm::vec2 frontWorldPos{ guardWorldPos.x, guardWorldPos.y + LevelScene::TILE_SIZE };
 
-	// For rotation == 0.f, the guard is facing down.
-	glm::vec2 unrotatedMaxDistPoint{ frontWorldPos.x, frontWorldPos.y + m_maxViewDist };
+	//// For rotation == 0.f, the guard is facing down.
+	//glm::vec2 unrotatedMaxDistPoint{ frontWorldPos.x, frontWorldPos.y + m_maxViewDist };
 
-	// Check if the guard can detect the player at its maximum view distance.
-	int numEndTiles{ m_tileViewRadius * 2 };
-	for (int i = 0; i < numEndTiles + 1; ++i)
+	//// Check if the guard can detect the player at its maximum view distance.
+	//int numEndTiles{ m_tileViewRadius * 2 };
+	//for (int i = 0; i < numEndTiles + 1; ++i)
+	//{
+	//	glm::vec2 pos{ unrotatedMaxDistPoint };
+	//	pos.x -= (m_tileViewRadius * LevelScene::TILE_SIZE);
+	//	pos.x += (i * LevelScene::TILE_SIZE);
+	//	m_isPlayerDetected |= TryDetectPlayer(guardWorldPos, pos);
+	//}
+
+	size_t globalWorkSize[1]{ m_numDetectionRays };
+	size_t localWorkSize[1]{ 1 };
+	m_openCLManager->EnqueueKernel(1, globalWorkSize, localWorkSize);
+
+	/*m_openCLManager->ReadOutput(&m_outputBuffer, sizeof(bool) * m_numDetectionRays);
+	std::cout << "Output buffer size: " << m_outputBuffer.size() << std::endl;
+	for (const bool& flag : m_outputBuffer)
 	{
-		glm::vec2 pos{ unrotatedMaxDistPoint };
-		pos.x -= (m_tileViewRadius * LevelScene::TILE_SIZE);
-		pos.x += (i * LevelScene::TILE_SIZE);
-		m_isPlayerDetected |= tryDetectPlayer(guardWorldPos, pos);
-	}
+		m_isPlayerDetected |= flag;
+
+		if (m_isPlayerDetected)
+		{
+			break;
+		}
+	}*/
 
 	/* HARD MODE
 	// Check side for peripheral vision.
@@ -182,7 +238,28 @@ void GuardDetection::OnCollisionStay(GLuint other)
 {
 }
 
-bool GuardDetection::tryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistancePoint)
+void GuardDetection::GetDetectionRayEndPoints(std::vector<float>& endpointsX,
+	std::vector<float>& endpointsZ) const
+{
+	// The guard's tile position is point 1 for the line algorithm.
+	glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
+
+	// For rotation == 0.f, the guard is facing down.
+	glm::vec2 unrotatedMaxDistPoint{ guardWorldPos.x, guardWorldPos.y + m_maxViewDist };
+
+	// Check if the guard can detect the player at its maximum view distance.
+	for (int i = 0; i < m_numDetectionRays; ++i)
+	{
+		glm::vec2 pos{ unrotatedMaxDistPoint };
+		pos.x -= (m_tileViewRadius * LevelScene::TILE_SIZE);
+		pos.x += (i * LevelScene::TILE_SIZE);
+
+		endpointsX.push_back(pos.x);
+		endpointsZ.push_back(pos.y);
+	}
+}
+
+bool GuardDetection::TryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistancePoint)
 {
 	// Rotate the vector (start point to max distance point) by
 	// the guard's rotation.
