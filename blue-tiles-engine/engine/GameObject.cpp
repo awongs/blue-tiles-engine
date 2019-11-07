@@ -15,6 +15,7 @@ GameObject::GameObject(std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 	, rotation(rot)
 	, scale(sca)
 	, m_transformMatrix(glm::mat4(1))
+	, isVisible(true)
 {
 	// We increment counter but don't decrement because we don't keep track of which
 	// GameObject ids are destroyed

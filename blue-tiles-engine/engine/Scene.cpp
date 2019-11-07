@@ -60,6 +60,7 @@ void Scene::DrawWorld(Shader& shader)
 {
 	for (auto& worldGameObj : m_worldGameObjects)
 	{
+		if (!worldGameObj->isVisible) continue;
 		// Don't draw transparent objects
 		std::weak_ptr<MeshRenderer> meshRenderer = std::static_pointer_cast<MeshRenderer>(worldGameObj->GetBehaviour(BehaviourType::MeshRenderer).lock());
 
@@ -82,12 +83,14 @@ void Scene::DrawScreen(Shader& shader)
 {
 	for (auto& screenGameObj : m_screenGameObjects)
 	{
+		if (!screenGameObj->isVisible) continue;
 		DrawUIGameObject(screenGameObj.get(), shader);
 	}
 }
 
 void Scene::DrawUIGameObject(GameObject* gameObject, Shader& shader)
 {
+	if (!gameObject->isVisible) return;
 	// Determine if we're in a menu
 	std::weak_ptr<UIMenuBehaviour> uiMenu = std::static_pointer_cast<UIMenuBehaviour>(gameObject->GetBehaviour(BehaviourType::UIMenuBehaviour).lock());
 

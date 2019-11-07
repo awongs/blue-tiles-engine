@@ -103,6 +103,9 @@ public:
 	// Flag if this gameobject is a screen object in the current scene.
 	bool isScreenObject;
 
+	// If the GameObject should be rendered
+	bool isVisible;
+
 private:
 	// Hashmap of behaviours currently attached to this game object.
 	// Access using std::type_index(typeid(childBehaviour)).
