@@ -21,6 +21,10 @@ Scene::Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::ve
 			{
 				DebugLog::Warn(std::string("World GameObject has a matching id: " + std::to_string(worldGameObjects[i]->id)));
 			}
+			else if (worldGameObjects[i]->name == worldGameObjects[j]->name)
+			{
+				DebugLog::Warn(std::string("World GameObject has a matching name: " + std::to_string(worldGameObjects[i]->id)));
+			}
 		}
 	}
 	for (int i = 0; i < static_cast<int>(worldGameObjects.size()) - 2; ++i)
@@ -30,6 +34,10 @@ Scene::Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::ve
 			if (screenGameObjects[i]->id == screenGameObjects[j]->id)
 			{
 				DebugLog::Warn(std::string("Screen GameObject has a matching id: " + std::to_string(screenGameObjects[i]->id)));
+			}
+			else if (screenGameObjects[i]->name == screenGameObjects[j]->name)
+			{
+				DebugLog::Warn(std::string("Screen GameObject has a matching name: " + std::to_string(screenGameObjects[i]->id)));
 			}
 		}
 	}
@@ -100,6 +108,14 @@ GameObject* Scene::GetWorldGameObjectById(const GLuint id)
 	return nullptr;
 }
 
+GameObject* Scene::GetWorldGameObjectByName(const std::string name)
+{
+	for (auto& worldGameObject : m_worldGameObjects)
+		if (worldGameObject->name == name)
+			return worldGameObject.get();
+	return nullptr;
+}
+
 bool Scene::AddWorldGameObject(GameObject* gameObject)
 {
 	auto it = find_if(m_worldGameObjects.begin(), m_worldGameObjects.end(), [&](std::unique_ptr<GameObject>& obj) { return obj->id == gameObject->id; });
@@ -138,6 +154,14 @@ GameObject* Scene::GetScreenGameObjectById(const GLuint id)
 {
 	for (auto& screenGameObject : m_screenGameObjects)
 		if (screenGameObject->id == id)
+			return screenGameObject.get();
+	return nullptr;
+}
+
+GameObject* Scene::GetScreenGameObjectByName(const std::string name)
+{
+	for (auto& screenGameObject : m_screenGameObjects)
+		if (screenGameObject->name == name)
 			return screenGameObject.get();
 	return nullptr;
 }

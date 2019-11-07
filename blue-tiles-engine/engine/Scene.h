@@ -33,6 +33,9 @@ public:
 	// Returns a world game object that matches the id in the list of world game objects
 	GameObject* GetWorldGameObjectById(const GLuint id);
 
+	// Returns a world game object that matches the name in the list of world game objects
+	GameObject* GetWorldGameObjectByName(const std::string name);
+
 	// Adds a world game object to the world game objects vector
 	bool AddWorldGameObject(GameObject* gameObject);
 
@@ -47,6 +50,9 @@ public:
 
 	// Returns a screen game object that matches the id in the list of screen game objects
 	GameObject* GetScreenGameObjectById(const GLuint id);
+
+	// Returns a screen game object that matches the name in the list of screen game objects
+	GameObject* GetScreenGameObjectByName(const std::string name);
 
 	// Adds a screen game object to the screen game objects vector
 	bool AddScreenGameObject(GameObject* gameObject);
