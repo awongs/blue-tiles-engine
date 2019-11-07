@@ -19,6 +19,7 @@
 #include <engine/behaviours/TextBehaviour.h>
 #include <engine/behaviours/UIMenuBehaviour.h>
 #include <engine/behaviours/UIImageBehaviour.h>
+#include <engine/behaviours/UIButtonBehaviour.h>
 #include <engine/behaviours/UITextBehaviour.h>
 #include <util/FileManager.h>
 
@@ -91,6 +92,11 @@ int main()
 	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
 	blueKey->SetParent(menu);
 	level->AddScreenGameObject(menu);
+	GameObject* testButton = new GameObject();
+	testButton->AddBehaviour(new UIButtonBehaviour("Hello World", [] {
+		DebugLog::Info("Hello World!");
+	}));
+	testButton->SetParent(menu);
 
 	// Add test lighting
 	for (int i = 0; i < 0; i++)

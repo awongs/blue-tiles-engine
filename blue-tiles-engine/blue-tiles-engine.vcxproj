@@ -164,6 +164,7 @@
     <ClCompile Include="engine\behaviours\PointLight.cpp" />
     <ClCompile Include="engine\behaviours\SpotLight.cpp" />
     <ClCompile Include="engine\behaviours\TextBehaviour.cpp" />
+    <ClCompile Include="engine\behaviours\UIButtonBehaviour.cpp" />
     <ClCompile Include="engine\behaviours\UIImageBehaviour.cpp" />
     <ClCompile Include="engine\behaviours\UIMenuBehaviour.cpp" />
     <ClCompile Include="engine\behaviours\UITextBehaviour.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="engine\behaviours\MeshRenderer.h" />
     <ClInclude Include="engine\behaviours\SpotLight.h" />
     <ClInclude Include="engine\behaviours\TextBehaviour.h" />
+    <ClInclude Include="engine\behaviours\UIButtonBehaviour.h" />
     <ClInclude Include="engine\behaviours\UIImageBehaviour.h" />
     <ClInclude Include="engine\behaviours\UIMenuBehaviour.h" />
     <ClInclude Include="engine\behaviours\UITextBehaviour.h" />

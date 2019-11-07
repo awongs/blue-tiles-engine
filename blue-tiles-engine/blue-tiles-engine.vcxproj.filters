@@ -168,6 +168,9 @@
     <ClCompile Include="engine\behaviours\UITextBehaviour.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\behaviours\UIButtonBehaviour.cpp">
+      <Filter>Source Files\engine\behaviours</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -298,6 +301,9 @@
     </ClInclude>
     <ClInclude Include="engine\behaviours\UITextBehaviour.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\UIButtonBehaviour.h">
+      <Filter>Source Files\engine\behaviours</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
