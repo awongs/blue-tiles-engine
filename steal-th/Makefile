@@ -9,7 +9,7 @@ CC = g++
 COMPILER_FLAGS = -I../libraries/includes -I../blue-tiles-engine/ -L../libraries/libs 
 
 #LINKER_FLAGS Specifies the libraries to link against
-LINKER_FLAGS = -lSDL2 -lSDL2_mixer -lSDL2_image -lGL -ldl -lGL -lfreetype
+LINKER_FLAGS = -lSDL2 -lSDL2_mixer -lSDL2_image -lGL -ldl -lGL -lfreetype -lOpenCL
 
 #OBJ_NAME The name of the output file
 OBJ_NAME = blue-engine
