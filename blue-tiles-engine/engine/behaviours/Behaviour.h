@@ -25,7 +25,8 @@ enum class BehaviourType
 	NONE,
 	PlayerItemPickup,
 	UIMenuBehaviour,
-	UIImageBehaviour
+	UIImageBehaviour,
+	UITextBehaviour
 };
 
 class GameObject;

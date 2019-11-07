@@ -2,24 +2,23 @@
 
 #include <string>
 #include <memory>
-#include <imgui/imgui.h>
 #include "Behaviour.h"
 #include "../graphics/Texture.h"
 
-class UIImageBehaviour : public Behaviour
+class UITextBehaviour : public Behaviour
 {
 public:
 	// Default constructor
-	UIImageBehaviour(std::string filePath);
+	UITextBehaviour(std::string text);
 	
 	// Destructor
-	virtual ~UIImageBehaviour();
+	virtual ~UITextBehaviour();
 
-	// Getter for image size
-	ImVec2 GetSize();
+	// Getter for display text
+	std::string GetText();
 
-	// Setter for image size
-	void SetSize(ImVec2 size);
+	// Setter for display text
+	void SetText(std::string text);
 
 	// Overridden functions
 	void Update(float deltaTime) override;
@@ -27,10 +26,7 @@ public:
 	bool HandleMessage(unsigned int senderID, std::string& message) override;
 	void OnCollisionStay(GLuint other) override;
 private:
-	// Texture containing the image
-	std::shared_ptr<Texture> m_texture;
-
-	// Size of the image
-	ImVec2 m_size;
+	// The string to display
+	std::string m_text;
 };
 

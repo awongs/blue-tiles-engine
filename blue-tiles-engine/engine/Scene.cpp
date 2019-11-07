@@ -105,13 +105,7 @@ void Scene::DrawUIGameObject(GameObject* gameObject, Shader& shader)
 	}
 	else
 	{
-		// Check if this is another UI element
-		std::weak_ptr<UIImageBehaviour> uiImage = std::static_pointer_cast<UIImageBehaviour>(gameObject->GetBehaviour(BehaviourType::UIImageBehaviour).lock());
-
-		if (!uiImage.expired())
-		{
-			uiImage.lock()->Draw(shader);
-		}
+		gameObject->Draw(shader);
 	}
 }
 

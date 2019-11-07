@@ -19,6 +19,7 @@
 #include <engine/behaviours/TextBehaviour.h>
 #include <engine/behaviours/UIMenuBehaviour.h>
 #include <engine/behaviours/UIImageBehaviour.h>
+#include <engine/behaviours/UITextBehaviour.h>
 #include <util/FileManager.h>
 
 #include "Level.h"
@@ -74,6 +75,9 @@ int main()
 	// Inventory textures
 	GameObject* menu = new GameObject();
 	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(300, 100), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize));
+	GameObject* testString = new GameObject();
+	testString->AddBehaviour(new UITextBehaviour("Hello, World"));
+	testString->SetParent(menu);
 	GameObject* redKey = new GameObject();
 	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/red_key_block.png"));
 	redKey->SetParent(menu);
