@@ -141,9 +141,6 @@
     <ClCompile Include="engine\behaviours\PhysicsBehaviour.cpp">
       <Filter>Source Files\engine\behaviours</Filter>
     </ClCompile>
-    <ClCompile Include="engine\BTEEvent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\libraries\includes\imgui\imgui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -161,6 +158,12 @@
     </ClCompile>
     <ClCompile Include="..\libraries\includes\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\UIMenuBehaviour.cpp">
+      <Filter>Source Files\engine\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\behaviours\UIImageBehaviour.cpp">
+      <Filter>Source Files\engine\behaviours</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -260,9 +263,6 @@
     <ClInclude Include="engine\behaviours\PhysicsBehaviour.h">
       <Filter>Source Files\engine\behaviours</Filter>
     </ClInclude>
-    <ClInclude Include="engine\BTEEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\libraries\includes\imgui\imconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -286,6 +286,12 @@
     </ClInclude>
     <ClInclude Include="..\libraries\includes\imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\UIMenuBehaviour.h">
+      <Filter>Source Files\engine\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\UIImageBehaviour.h">
+      <Filter>Source Files\engine\behaviours</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -17,6 +17,9 @@
 #include <engine/physics/PhysicsEngine.h>
 #include <engine/graphics/Camera.h>
 #include <engine/behaviours/TextBehaviour.h>
+#include <engine/behaviours/UIMenuBehaviour.h>
+#include <engine/behaviours/UIImageBehaviour.h>
+#include <util/FileManager.h>
 
 #include "Level.h"
 #include "scenes/LevelScene.h"
@@ -67,6 +70,20 @@ int main()
 	GameObject* text = new GameObject();
 	text->AddBehaviour(new TextBehaviour("OZMA", 2, glm::vec3(1, 0, 0)));
 	level->AddScreenGameObject(text);
+
+	// Inventory textures
+	GameObject* menu = new GameObject();
+	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(300, 100), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize));
+	GameObject* redKey = new GameObject();
+	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/red_key_block.png"));
+	redKey->SetParent(menu);
+	GameObject* greenKey = new GameObject();
+	greenKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/green_key_block.png"));
+	greenKey->SetParent(menu);
+	GameObject* blueKey = new GameObject();
+	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
+	blueKey->SetParent(menu);
+	level->AddScreenGameObject(menu);
 
 	// Add test lighting
 	for (int i = 0; i < 0; i++)

@@ -24,6 +24,9 @@ public:
 	// Draws screen game objects
 	void DrawScreen(Shader& shader);
 
+	// Draws hierarchal game objects
+	void DrawUIGameObject(GameObject* gameObject, Shader& shader);
+
 	// Returns the vector of world game objects
 	std::vector<std::unique_ptr<GameObject>> const& GetWorldGameObjects() const;
 

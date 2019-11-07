@@ -23,7 +23,9 @@ enum class BehaviourType
 	ObjectBehaviour,
 	TileBehaviour,
 	NONE,
-	PlayerItemPickup
+	PlayerItemPickup,
+	UIMenuBehaviour,
+	UIImageBehaviour
 };
 
 class GameObject;

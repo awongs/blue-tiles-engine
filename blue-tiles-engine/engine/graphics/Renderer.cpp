@@ -357,4 +357,6 @@ void Renderer::Render(Scene& currentScene)
 	// Disable depth test and unbind UBO
 	glDisable(GL_DEPTH_TEST);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	currentScene.DrawScreen(*m_deferredGeometryShader);
 }

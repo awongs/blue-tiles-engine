@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <typeindex>
 #include <unordered_map>
+#include <vector>
 #include "behaviours/Behaviour.h"
 
 class Scene;
@@ -60,6 +61,27 @@ public:
 	// Adds a behaviour
 	void AddBehaviour(Behaviour* behaviour);
 
+	// Returns the parent
+	GameObject* GetParent();
+
+	// Sets the parent of this GameObject
+	void SetParent(GameObject* parent);
+
+	// Returns the child
+	std::vector<GameObject*> GetChildren();
+
+	// Returns the child at the index of the container
+	GameObject* GetChildAtIndex(const size_t index);
+
+	// Adds a child to the list of children
+	void AddChild(GameObject* child);
+
+	// Removes a child at the index
+	void RemoveChild(const size_t index);
+
+	// Removes a child by its id
+	void RemoveChildByID(const GLuint id);
+
 	// id of GameObject
 	GLuint id;
 
@@ -88,6 +110,12 @@ private:
 
 	// The game object's transform/model matrix.
 	glm::mat4 m_transformMatrix;
+
+	// Pointer to the parent of this GameObject, if it exists
+	GameObject* m_parent;
+
+	// List of children, if they exists
+	std::vector<GameObject*> m_children;
 
 	static int idCounter;
 };

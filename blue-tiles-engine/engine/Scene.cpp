@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
 #include "behaviours/MeshRenderer.h"
+#include "behaviours/UIMenuBehaviour.h"
+#include "behaviours/UIImageBehaviour.h"
 #include <algorithm>
 #include <iterator>
 #include "graphics/Camera.h"
@@ -74,7 +76,39 @@ void Scene::DrawWorld(Shader& shader)
 
 void Scene::DrawScreen(Shader& shader)
 {
-	for (auto& screenGameObj : m_screenGameObjects) screenGameObj->Draw(shader);
+	for (auto& screenGameObj : m_screenGameObjects)
+	{
+		DrawUIGameObject(screenGameObj.get(), shader);
+	}
+}
+
+void Scene::DrawUIGameObject(GameObject* gameObject, Shader& shader)
+{
+	// Determine if we're in a menu
+	std::weak_ptr<UIMenuBehaviour> uiMenu = std::static_pointer_cast<UIMenuBehaviour>(gameObject->GetBehaviour(BehaviourType::UIMenuBehaviour).lock());
+
+	if (!uiMenu.expired())
+	{
+		uiMenu.lock()->BeginDraw();
+
+		// Draw the children
+		for (auto gameObjChild : gameObject->GetChildren())
+		{
+			DrawUIGameObject(gameObjChild, shader);
+		}
+
+		uiMenu.lock()->EndDraw();
+	}
+	else
+	{
+		// Check if this is another UI element
+		std::weak_ptr<UIImageBehaviour> uiImage = std::static_pointer_cast<UIImageBehaviour>(gameObject->GetBehaviour(BehaviourType::UIImageBehaviour).lock());
+
+		if (!uiImage.expired())
+		{
+			uiImage.lock()->Draw(shader);
+		}
+	}
 }
 
 std::vector<std::unique_ptr<GameObject>> const& Scene::GetWorldGameObjects() const

@@ -116,3 +116,47 @@ void GameObject::AddBehaviour(Behaviour* behaviour)
 		m_behaviours[std::type_index(typeid(*behaviour))] = std::shared_ptr<Behaviour>(behaviour);
 	}
 }
+
+GameObject* GameObject::GetParent()
+{
+	return m_parent;
+}
+
+void GameObject::SetParent(GameObject* parent)
+{
+	m_parent = parent;
+	parent->AddChild(this);
+}
+
+std::vector<GameObject*> GameObject::GetChildren()
+{
+	return m_children;
+}
+
+GameObject* GameObject::GetChildAtIndex(const size_t index)
+{
+	if (index <= 0 || index > m_children.size()) return nullptr;
+	return m_children[index];
+}
+
+void GameObject::AddChild(GameObject* child)
+{
+	m_children.push_back(child);
+}
+
+void GameObject::RemoveChild(const size_t index)
+{
+	m_children.erase(m_children.begin() + index);
+}
+
+void GameObject::RemoveChildByID(const GLuint id)
+{
+	for (size_t i = 0; i < m_children.size(); i++)
+	{
+		if (m_children[i]->id == id)
+		{
+			RemoveChild(i);
+			break;
+		}
+	}
+}
