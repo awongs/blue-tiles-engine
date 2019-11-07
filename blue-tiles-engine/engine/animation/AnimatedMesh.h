@@ -45,6 +45,10 @@ public:
 private:
 	bool parseJointHierarchy(std::string skeletonPath);
 
+	std::vector<glm::mat4> getJointTransforms();
+
+	void addJointsToArray(Joint& headJoint, std::vector<glm::mat4>& jointMatrices);
+
 	// ID to the vertex buffer object
 	GLuint m_vertexBufferObjectID;
 

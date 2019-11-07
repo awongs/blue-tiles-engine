@@ -15,7 +15,7 @@ public:
 	void AddChild(const std::shared_ptr<Joint> child);
 
 	// Calculates the inverse bind transform.
-	void CalculateInverseBindTransform(const glm::mat4& parentBindTransform);
+	void CalculateInverseBindTransform(const glm::mat4 parentBindTransform);
 
 	// Name of the joint.
 	std::string name;
@@ -33,7 +33,9 @@ public:
 	// Transformation from bind position to animation position.
 	glm::mat4 animatedTransform;
 
-private:
 	// The index of the joint in the skeletal hierarchy.
 	int m_index;
+
+private:
+	
 };

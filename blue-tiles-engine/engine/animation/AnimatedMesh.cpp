@@ -13,6 +13,7 @@
 #include "../GameObject.h"
 #include "../graphics/Shader.h"
 #include "../graphics/Texture.h"
+#include "../input/Input.h"
 
 
 AnimatedMesh::AnimatedMesh(std::string objPath, std::string skeletonPath, std::shared_ptr<Joint> rootJoint, int jointCount)
@@ -72,7 +73,7 @@ void AnimatedMesh::SetupBuffers()
 
 	// Joint weights
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(AnimatedVertex), (GLvoid*)(sizeof(glm::vec3) + sizeof(glm::vec2) + sizeof(glm::vec3) + sizeof(glm::ivec3)));
-	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
 
 	if (glGetError() != GL_NO_ERROR)
 	{
@@ -85,9 +86,23 @@ void AnimatedMesh::SetupBuffers()
 	glBindVertexArray(0);
 }
 
+int ozma = 0;
+bool pressedOnce = false;
+
 void AnimatedMesh::Update(float deltaTime)
 {
+	if (Input::GetInstance().IsKeyDown(Input::INPUT_UP) && !pressedOnce)
+	{
+		ozma++;
+		ozma %= 32;
+		pressedOnce = true;
+	}
+	else if (!Input::GetInstance().IsKeyDown(Input::INPUT_UP) && pressedOnce)
+	{
+		pressedOnce = false;
+	}
 }
+
 
 void AnimatedMesh::Draw(Shader& shader)
 {
@@ -101,6 +116,17 @@ void AnimatedMesh::Draw(Shader& shader)
 
 	// Set model matrix in shader
 	shader.SetUniformMatrix4fv("model", gameObject->GetTransformMatrix());
+
+	//std::unordered_map<std::string, JointTransform>& pose = animator.lock()->currentAnimation->keyFrames[ozma].pose;
+	//std::unordered_map<std::string, glm::mat4>& pose = animator.lock()->currentPose;
+	std::vector<glm::mat4> transforms = getJointTransforms();
+
+	int matrixIndex = 0;
+	for (glm::mat4& t : transforms)
+	{
+		//shader.SetUniformMatrix4fv("jointTransforms[" + std::to_string(matrixIndex++) + "]", pose.at(p.first).GetLocalTransform());
+		shader.SetUniformMatrix4fv("jointTransforms[" + std::to_string(matrixIndex++) + "]", t);
+	}
 
 	// Bind the texture
 	if (m_texture != nullptr)
@@ -132,6 +158,14 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 		return false;
 	}
 
+	// Get total number of joints.
+	jointCount = skeFile.child("COLLADA")
+		.child("library_controllers")
+		.child("controller")
+		.child("skin")
+		.find_child_by_attribute("id", "Body_UntitledController-Joints")
+		.child("Name_array").attribute("count").as_int();
+
 	// Parse information for all joints.
 	std::vector<std::shared_ptr<Joint>> joints;
 	std::string jointArray = skeFile.child("COLLADA")
@@ -153,6 +187,7 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 		}
 
 		joints.push_back(std::make_shared<Joint>(jointCount, jointStr));
+		jointCount++;
 	}
 
 	// Find the root joint.
@@ -198,6 +233,7 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 
 		// Get node as a joint.
 		std::shared_ptr<Joint> currentJoint = *it;
+		//currentJoint->m_index = index++;
 		
 		// Parse matrix string as floats.
 		std::string matrixStr = currentNode.child("matrix").text().as_string();
@@ -238,4 +274,24 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 	}
 
 	rootJoint->CalculateInverseBindTransform(glm::mat4(1));
+}
+
+std::vector<glm::mat4> AnimatedMesh::getJointTransforms()
+{
+	std::vector<glm::mat4> jointMatrices;
+	for (int i = 0; i < jointCount; i++)
+	{
+		jointMatrices.push_back(glm::mat4(1));
+	}
+	addJointsToArray(*rootJoint, jointMatrices);
+	return jointMatrices;
+}
+
+void AnimatedMesh::addJointsToArray(Joint& headJoint, std::vector<glm::mat4>& jointMatrices)
+{
+	jointMatrices[headJoint.m_index] = headJoint.animatedTransform;
+	for (std::shared_ptr<Joint>& childJoint : headJoint.children)
+	{
+		addJointsToArray(*childJoint, jointMatrices);
+	}
 }

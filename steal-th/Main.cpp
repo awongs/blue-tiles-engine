@@ -59,7 +59,7 @@ int main()
 
 	// Add a directional light
 	GameObject* ga = new GameObject();
-	ga->AddBehaviour(new DirectionalLight(glm::vec3(0.6f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
+	ga->AddBehaviour(new DirectionalLight(glm::vec3(5.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
 	
 	level->AddWorldGameObject(ga);
 	

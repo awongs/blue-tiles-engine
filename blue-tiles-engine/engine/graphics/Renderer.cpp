@@ -16,6 +16,7 @@
 #include "../behaviours/PointLight.h"
 #include "../behaviours/SpotLight.h"
 #include "../../util/FileManager.h"
+#include "../animation/AnimatedMesh.h"
 
 // Define maximum light count here. Should match the shader's maximums.
 constexpr unsigned int MAX_POINT_LIGHTS = 256;
@@ -67,6 +68,8 @@ void Renderer::SetupShaders()
 	std::string shadowFragment = filemanager::LoadFile("../Assets/shaders/ShadowShader.fsh");
 	std::string deferredGeometryVertex = filemanager::LoadFile("../Assets/shaders/DeferredGeometryPass.vsh");
 	std::string deferredGeometryFragment = filemanager::LoadFile("../Assets/shaders/DeferredGeometryPass.fsh");
+	std::string animationVertex = filemanager::LoadFile("../Assets/shaders/Animation.vsh");
+	std::string animationFragment = filemanager::LoadFile("../Assets/shaders/Animation.fsh");
 	std::string transparencyVertex = filemanager::LoadFile("../Assets/shaders/TransparencyPass.vsh");
 	std::string transparencyFragment = filemanager::LoadFile("../Assets/shaders/TransparencyPass.fsh");
 	std::string deferredLightingVertex = filemanager::LoadFile("../Assets/shaders/DeferredLightingPass.vsh");
@@ -82,7 +85,12 @@ void Renderer::SetupShaders()
 	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, deferredGeometryFragment.c_str());
 	m_deferredGeometryShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
-	// Compile ozma shader
+	// Compile transparency shader
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, animationVertex.c_str());
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, animationFragment.c_str());
+	m_animationShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
+
+	// Compile transparency shader
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, transparencyVertex.c_str());
 	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, transparencyFragment.c_str());
 	m_transparencyShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
@@ -175,7 +183,29 @@ void Renderer::ShadowPass(Scene& currentScene)
 	}
 
 	// Draw the world
-	currentScene.DrawWorld(*m_shadowShader);
+	//currentScene.DrawWorld(*m_shadowShader);
+	for (auto& worldGameObj : currentScene.GetWorldGameObjects())
+	{
+		// Don't draw transparent objects
+		std::weak_ptr<MeshRenderer> meshRenderer = std::static_pointer_cast<MeshRenderer>(worldGameObj->GetBehaviour(BehaviourType::MeshRenderer).lock());
+
+		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent())
+		{
+			continue;
+		}
+
+		// Only draw objects that are within the camera's view
+		// Note: Does not consider model size
+		if (Camera::GetInstance().IsWithinBoundingBox(worldGameObj->position))
+		{
+			std::weak_ptr<AnimatedMesh> animatedMesh = std::static_pointer_cast<AnimatedMesh>(worldGameObj->GetBehaviour(BehaviourType::AnimatedMesh).lock());
+			if (!animatedMesh.expired())
+			{
+				continue;
+			}
+			worldGameObj->Draw(*m_shadowShader);
+		}
+	}
 
 	// Disable culling and reset face setting
 	// If we end up not using quads for the level floor, keep this enabled for performance
@@ -195,8 +225,7 @@ void Renderer::GeometryPass(Scene& currentScene)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Use geometry shader
-	m_shaderManager->UseShaderProgram(m_deferredGeometryShader->GetProgramHandle());
+	
 
 	// Do shadow mapping if there is a directional light
 	if (!m_directionalLight.expired())
@@ -206,20 +235,62 @@ void Renderer::GeometryPass(Scene& currentScene)
 
 		// Translate by the camera's current position
 		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
+		m_shaderManager->UseShaderProgram(m_deferredGeometryShader->GetProgramHandle());
 		m_deferredGeometryShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
 		m_deferredGeometryShader->SetUniform3f("lightDirection", dirLight->GetDirection());
+		
+		// TODO: Improve this
+		m_shaderManager->UseShaderProgram(m_animationShader->GetProgramHandle());
+		m_animationShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
+		m_animationShader->SetUniform3f("lightDirection", dirLight->GetDirection());
 	}
-
-	// Set camera matrices in shader
-	m_deferredGeometryShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
-	m_deferredGeometryShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_shadowBuffer->GetDepthTexture());
+
+	// Set unfiforms in shader
+	m_shaderManager->UseShaderProgram(m_deferredGeometryShader->GetProgramHandle());
+	m_deferredGeometryShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
+	m_deferredGeometryShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
 	m_deferredGeometryShader->SetUniform1i("uShadowMap", 1);
 
+	m_shaderManager->UseShaderProgram(m_animationShader->GetProgramHandle());
+	m_animationShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
+	m_animationShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
+	m_animationShader->SetUniform1i("uShadowMap", 1);
+
 	// Draw the world
-	currentScene.DrawWorld(*m_deferredGeometryShader);
+	//currentScene.DrawWorld(*m_deferredGeometryShader);
+	for (auto& worldGameObj : currentScene.GetWorldGameObjects())
+	{
+		// Don't draw transparent objects
+		std::weak_ptr<MeshRenderer> meshRenderer = std::static_pointer_cast<MeshRenderer>(worldGameObj->GetBehaviour(BehaviourType::MeshRenderer).lock());
+
+		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent())
+		{
+			continue;
+		}
+
+		// Only draw objects that are within the camera's view
+		// Note: Does not consider model size
+		if (Camera::GetInstance().IsWithinBoundingBox(worldGameObj->position))
+		{
+			// TODO: Improve this
+			std::weak_ptr<AnimatedMesh> animatedMesh = std::static_pointer_cast<AnimatedMesh>(worldGameObj->GetBehaviour(BehaviourType::AnimatedMesh).lock());
+			if (!animatedMesh.expired())
+			{
+				// Use animation shader.
+				m_shaderManager->UseShaderProgram(m_animationShader->GetProgramHandle());
+				worldGameObj->Draw(*m_animationShader);
+			}
+			else
+			{
+				// Use geometry shader.
+				//m_shaderManager->UseShaderProgram(m_deferredGeometryShader->GetProgramHandle());
+				//worldGameObj->Draw(*m_deferredGeometryShader);
+			}
+		}
+	}
 }
 
 void Renderer::TransparencyPass(Scene& currentScene) {

@@ -35,7 +35,7 @@ void Animator::Update(float deltaTime)
 	}
 
 	currentPose = calculateCurrentPose();
-	//applyPoseToJoints(currentPose, *(animatedMesh.lock()->rootJoint), glm::mat4(1));
+	applyPoseToJoints(currentPose, *(animatedMesh.lock()->rootJoint), glm::mat4(1));
 }
 
 void Animator::Draw(Shader& shader)
@@ -58,7 +58,7 @@ std::unordered_map<std::string, glm::mat4> Animator::calculateCurrentPose()
 	return interpolatePoses(keyFrames[0], keyFrames[1], progression);
 }
 
-void Animator::applyPoseToJoints(std::unordered_map<std::string, glm::mat4> currentPose, Joint& joint, glm::mat4 parentTransform)
+void Animator::applyPoseToJoints(std::unordered_map<std::string, glm::mat4>& currentPose, Joint& joint, glm::mat4 parentTransform)
 {
 	glm::mat4 currentLocalTransform = currentPose.at(joint.name);
 	glm::mat4 currentTransform = parentTransform * currentLocalTransform;
@@ -66,7 +66,8 @@ void Animator::applyPoseToJoints(std::unordered_map<std::string, glm::mat4> curr
 	{
 		applyPoseToJoints(currentPose, *childJoint, currentTransform);
 	}
-	currentTransform = currentTransform * joint.inverseBindTransform;
+	glm::mat4 ozma = currentTransform * joint.inverseBindTransform;
+	joint.animatedTransform = ozma;
 }
 
 std::vector<KeyFrame> Animator::getPreviousAndNextFrames()

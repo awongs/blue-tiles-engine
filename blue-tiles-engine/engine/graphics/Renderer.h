@@ -71,6 +71,9 @@ private:
 	// Pointer to the deferred geometry shader.
 	std::shared_ptr<Shader> m_deferredGeometryShader;
 
+	// Pointer to the animation shader.
+	std::shared_ptr<Shader> m_animationShader;
+
 	// Pointer to the transparency shader.
 	std::shared_ptr<Shader> m_transparencyShader;
 

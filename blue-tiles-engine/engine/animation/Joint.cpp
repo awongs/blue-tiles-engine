@@ -14,7 +14,7 @@ void Joint::AddChild(const std::shared_ptr<Joint> child)
 	children.push_back(child);
 }
 
-void Joint::CalculateInverseBindTransform(const glm::mat4& parentBindTransform)
+void Joint::CalculateInverseBindTransform(const glm::mat4 parentBindTransform)
 {
 	glm::mat4 bindTransform = parentBindTransform * localBindTransform;
 	bindTransform = glm::inverse(bindTransform);

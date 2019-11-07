@@ -43,7 +43,7 @@ private:
 	// Calculates and returns the current pose that the animated mesh should be in.
 	// Interpolates between the previous and next keyframes.
 	std::unordered_map<std::string, glm::mat4> calculateCurrentPose();
-	void applyPoseToJoints(std::unordered_map<std::string, glm::mat4> currentPose, Joint& joint, glm::mat4 parentTransform);
+	void applyPoseToJoints(std::unordered_map<std::string, glm::mat4>& currentPose, Joint& joint, glm::mat4 parentTransform);
 	std::vector<KeyFrame> getPreviousAndNextFrames();
 	float calculateProgression(KeyFrame& previousFrame, KeyFrame& nextFrame);
 	std::unordered_map<std::string, glm::mat4> interpolatePoses(KeyFrame& previousFrame, KeyFrame& nextFrame, float progression);
