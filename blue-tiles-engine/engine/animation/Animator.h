@@ -34,6 +34,8 @@ public:
 	// The current animation to play.
 	std::unique_ptr<Animation> currentAnimation;
 
+	std::unordered_map<std::string, glm::mat4> currentPose;
+
 	// The current time in the animation.
 	float animationTime;
 

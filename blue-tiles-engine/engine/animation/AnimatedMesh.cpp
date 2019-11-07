@@ -1,16 +1,19 @@
 #include <pugixml/pugixml.hpp>
 #include <sstream>
 #include <algorithm>
+#include <iostream>
+#include <stack>
 
 #include "AnimatedMesh.h"
+#include "Animation.h"
+#include "Animator.h"
 #include "../../util/FileManager.h"
 
 #include "../debugbt/DebugLog.h"
 #include "../GameObject.h"
 #include "../graphics/Shader.h"
 #include "../graphics/Texture.h"
-#include <iostream>
-#include <stack>
+
 
 AnimatedMesh::AnimatedMesh(std::string objPath, std::string skeletonPath, std::shared_ptr<Joint> rootJoint, int jointCount)
 	: Behaviour(BehaviourType::AnimatedMesh)
@@ -171,7 +174,6 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 
 	// Set root joint.
 	rootJoint = *it;
-	
 
 	// Instantate node stack.
 	std::stack<pugi::xml_node> nodeStack;
@@ -203,15 +205,15 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 		int matrixIndex = 0;
 		while (iss)
 		{
-			std::string matrixStr;
-			iss >> matrixStr;
-			if (matrixStr.length() == 0)
+			std::string floatStr;
+			iss >> floatStr;
+			if (floatStr.length() == 0)
 			{
 				continue;
 			}
 			
 			// Set float value in the current joint's bind transform.
-			currentJoint->localBindTransform[matrixIndex / 4][matrixIndex % 4] = stof(matrixStr);
+			currentJoint->localBindTransform[matrixIndex / 4][matrixIndex % 4] = stof(floatStr);
 			matrixIndex++;
 		}
 
@@ -235,5 +237,5 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 		}
 	}
 
-	std::cout << "TEST";
+	rootJoint->CalculateInverseBindTransform(glm::mat4(1));
 }

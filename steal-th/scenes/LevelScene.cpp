@@ -19,6 +19,10 @@
 #include "../behaviours/TileBehaviour.h"
 #include "../behaviours/PlayerItemPickup.h"
 
+#include <engine/animation/AnimatedMesh.h>
+#include <engine/animation/Animation.h>
+#include <engine/animation/Animator.h>
+
 
 const float LevelScene::TILE_SIZE{ 9.f };
 
@@ -162,8 +166,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	// Create the guards
 	for (Guard &guard : level->m_guards)
 	{
-		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
-		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
+		AnimatedMesh* animatedMesh = new AnimatedMesh("../Assets/models/robot_kyle.obj", "../Assets/animations/KyleWalking.dae", nullptr, 0);
+		animatedMesh->SetTexture("../Assets/textures/robot_kyle.png");
 
 		glm::vec3 position = glm::vec3(
 			(float)(guard.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
@@ -172,7 +176,14 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("guard",
 			position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
-		ga->AddBehaviour(meshRenderer);
+		ga->AddBehaviour(animatedMesh);
+
+		// TEST
+		Animation* walk = Animation::CreateAnimationFromFile("../Assets/animations/KyleWalking.dae");
+		Animator* animator = new Animator(ga->GetBehaviour<AnimatedMesh>());
+		ga->AddBehaviour(animator);
+		animator->StartAnimation(walk);
+		animatedMesh->animator = ga->GetBehaviour<Animator>();
 
 		// Add guard detection behaviour
 		ga->AddBehaviour(new GuardDetection(this, playerObj,

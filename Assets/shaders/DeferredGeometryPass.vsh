@@ -1,6 +1,6 @@
 #version 330 core
 
-#define MAX_JOINTS 50
+#define MAX_JOINTS 64
 #define MAX_WEIGHTS 3
 
 layout (location = 0) in vec3 aPos;
@@ -34,6 +34,22 @@ void main()
 
 	// Shadow mapping coordinates
     fragLightSpacePosition = lightSpace * vec4(fragPosition, 1.0);
+
+	/*
+	// TODO: Clean this up
+	vec4 totalPosition = vec4(0.0);
+	vec4 totalNormal = vec4(0.0);
+
+	for (int i = 0; i < MAX_WEIGHTS; i++) 
+	{
+		mat4 jointTransform = jointTransforms[aJointId[i]];
+		vec4 posePosition = jointTransform * vec4(fragPosition, 1.0);
+		vec4 poseNormal = jointTransform * vec4(fragNormal, 1.0);
+
+		totalPosition += posePosition * aJointWeight[i];
+		totalNormal += poseNormal * aJointWeight[i];
+	}
+	*/
 
 	gl_Position = projection * view * vec4(fragPosition, 1.0);
 }

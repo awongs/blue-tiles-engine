@@ -8,6 +8,14 @@ JointTransform::JointTransform(glm::vec3& position, glm::quat& rotation)
 {
 }
 
+JointTransform::JointTransform(glm::mat4& transformationMatrix)
+{
+	position.x = transformationMatrix[3][0];
+	position.y = transformationMatrix[3][1];
+	position.z = transformationMatrix[3][2];
+	rotation = glm::quat_cast(glm::mat3(transformationMatrix));
+}
+
 glm::mat4 JointTransform::GetLocalTransform() const
 {
 	glm::mat4 localTransform = glm::mat4(1);

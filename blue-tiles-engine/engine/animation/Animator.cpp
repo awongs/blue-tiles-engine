@@ -15,6 +15,7 @@ void Animator::StartAnimation(Animation* animation)
 {
 	animationTime = 0.0f;
 	currentAnimation = std::unique_ptr<Animation>(animation);
+	currentPose = calculateCurrentPose();
 }
 
 void Animator::Update(float deltaTime)
@@ -27,14 +28,14 @@ void Animator::Update(float deltaTime)
 
 	// Increase animation time.
 	animationTime += deltaTime;
-	// TODO: probably make this while loop instead
-	if (animationTime > currentAnimation->length) 
+
+	while (animationTime > currentAnimation->length) 
 	{
 		animationTime -= currentAnimation->length;
 	}
 
-	std::unordered_map<std::string, glm::mat4> currentPose = calculateCurrentPose();
-	applyPoseToJoints(currentPose, *(animatedMesh.lock()->rootJoint), glm::mat4(1));
+	currentPose = calculateCurrentPose();
+	//applyPoseToJoints(currentPose, *(animatedMesh.lock()->rootJoint), glm::mat4(1));
 }
 
 void Animator::Draw(Shader& shader)
@@ -71,8 +72,8 @@ void Animator::applyPoseToJoints(std::unordered_map<std::string, glm::mat4> curr
 std::vector<KeyFrame> Animator::getPreviousAndNextFrames()
 {
 	std::vector<KeyFrame>& allFrames = currentAnimation->keyFrames;
-	KeyFrame& previousFrame = allFrames[0];
-	KeyFrame& nextFrame = allFrames[0];
+	KeyFrame previousFrame = allFrames[0];
+	KeyFrame nextFrame = allFrames[0];
 
 	// TODO: Keep track of current frame instead of looping like this.
 	for (int i = 1; i < allFrames.size(); i++)
