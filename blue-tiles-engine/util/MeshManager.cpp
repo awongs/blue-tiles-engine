@@ -1,4 +1,5 @@
 #include <pugixml/pugixml.hpp>
+#include <iostream>
 #include <sstream>
 #include <cstdio>
 #include <map>
@@ -6,8 +7,7 @@
 #include "MeshManager.h"
 #include "../engine/debugbt/DebugLog.h"
 #include "FileManager.h"
-#include <iostream>
-#include <algorithm>
+
 
 namespace meshmanager
 {
@@ -28,8 +28,8 @@ namespace meshmanager
 		if (cachedObjs.find(filePath) != cachedObjs.end())
 		{
 			std::ostringstream oss;
-			oss << filePath << " is cached, reloading.";
-			DebugLog::Info(oss.str());
+			//oss << filePath << " is cached, reloading.";
+			//DebugLog::Info(oss.str());
 			out_vertices = std::vector<Vertex>(cachedObjs[filePath].vertices);
 			out_indices = std::vector<GLuint>(cachedObjs[filePath].indices);
 			return true;
@@ -204,14 +204,29 @@ namespace meshmanager
 		// Calculate joints and weights for each vertex.
 		for (auto it = vIndices.begin(); it != vIndices.end();)
 		{
-			int numJointsAffecting = vCounts[vCount];
-			glm::vec3 jointIds, jointWeights;
+			size_t numJointsAffecting = vCounts[vCount];
+			glm::ivec3 jointIds;
+			glm::vec3 jointWeights;
 
-			for (size_t j = 0; j < numJointsAffecting && j < MAX_JOINTS_PER_VERTEX; j++)
+			// Get joint ids and weights.
+			for (size_t i = 0; i < numJointsAffecting && i < MAX_JOINTS_PER_VERTEX; i++)
 			{
-				jointIds[j] = vIndices[j];
-				jointWeights[j] = vIndices[j + 1];
+				jointIds[i] = *(it + i * 2);
+				jointWeights[i] = weights[*(it + i * 2 + 1)];
 			}
+
+			// Fill remaining weights with zeros if numJoints is less than the maximum.
+			for (int i = numJointsAffecting; i < MAX_JOINTS_PER_VERTEX; i++)
+			{
+				jointIds[i] = 0;
+				jointWeights[i] = 0.0f;
+			}
+
+			// Normalize the weights.
+			float totalWeight = jointWeights.x + jointWeights.y + jointWeights.z;
+			jointWeights.x /= totalWeight;
+			jointWeights.y /= totalWeight;
+			jointWeights.z /= totalWeight;
 
 			// TODO: Unnecessary copying
 			temp_jointIds.push_back(jointIds);

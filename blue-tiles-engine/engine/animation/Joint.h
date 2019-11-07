@@ -9,7 +9,7 @@
 class Joint
 {
 public:
-	Joint(int index, std::string& name, glm::mat4& localBindTransform);
+	Joint(int index, std::string& name);
 
 	// Adds a child to the list of child joints.
 	void AddChild(const std::shared_ptr<Joint> child);

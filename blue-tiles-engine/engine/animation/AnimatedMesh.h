@@ -43,6 +43,8 @@ public:
 	std::weak_ptr<Animator> animator;
 
 private:
+	bool parseJointHierarchy(std::string skeletonPath);
+
 	// ID to the vertex buffer object
 	GLuint m_vertexBufferObjectID;
 

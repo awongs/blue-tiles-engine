@@ -1,12 +1,12 @@
 #include "Joint.h"
 
-Joint::Joint(int index, std::string& name, glm::mat4& localBindTransform)
+Joint::Joint(int index, std::string& name)
 	: m_index(index)
 	, name(name)
-	, localBindTransform(localBindTransform)
 {
 	localBindTransform = glm::mat4(1);
 	animatedTransform = glm::mat4(1);
+	inverseBindTransform = glm::mat4(1);
 }
 
 void Joint::AddChild(const std::shared_ptr<Joint> child)
