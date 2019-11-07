@@ -15,6 +15,9 @@ public:
 	GuardDetection(LevelScene *levelScene, GameObject *playerObj, 
 		float maxViewDist, int tileViewRadius);
 
+	// Destructor.
+	~GuardDetection();
+
 	// Overridden functions.
 	void Update(float deltaTime) override;
 	void Draw(Shader &shader) override;
@@ -48,9 +51,12 @@ private:
 
 	// A spot light for the guard's detection cone.
 	std::weak_ptr<SpotLight> m_detectionCone;
-	
-	std::unique_ptr<OpenCLManager> m_openCLManager;
+
+	// Store the number of detection rays for this guard.
+	// This is a fixed number, calculated from the guard's view radius.
 	int m_numDetectionRays{ 0 };
-	std::vector<bool> m_outputBuffer;
-	bool m_isInitialized{ false };
+
+	// Store OpenCL-related values.
+	std::unique_ptr<OpenCLManager> m_openCLManager;
+	bool* m_outputBuffer;
 };

@@ -22,7 +22,7 @@ int getTile(__global const int* levelTiles, int levelX, int levelZ, int2 tilePos
 	return levelTiles[index];
 }
 
-void PlotLineLow(int x0, int y0, int x1, int y1, __global int2* output, int* outputSize) {
+void PlotLineLow(int x0, int y0, int x1, int y1, __local int2* output, int* outputSize) {
 	int dx = x1 - x0;
 	int dy = y1 - y0;
 	int yi = 1;
@@ -50,7 +50,7 @@ void PlotLineLow(int x0, int y0, int x1, int y1, __global int2* output, int* out
 	*outputSize = i;
 }
 
-void PlotLineHigh(int x0, int y0, int x1, int y1, __global int2* output, int* outputSize) {
+void PlotLineHigh(int x0, int y0, int x1, int y1, __local int2* output, int* outputSize) {
 	int dx = x1 - x0;
 	int dy = y1 - y0;
 	int xi = 1;
@@ -79,7 +79,7 @@ void PlotLineHigh(int x0, int y0, int x1, int y1, __global int2* output, int* ou
 }
 
 // Returns true if input coordinates were reversed, otherwise returns false.
-bool PlotLine(int x0, int y0, int x1, int y1, __global int2* output, int* outputSize) {
+bool PlotLine(int x0, int y0, int x1, int y1, __local int2* output, int* outputSize) {
 	if (abs(y1 - y0) < abs(x1 - x0)) {
 		if (x0 > x1) {
 			PlotLineLow(x1, y1, x0, y0, output, outputSize);
@@ -114,7 +114,7 @@ __kernel void guard_detection(__global const float* endPointsX,
 	__global const int* levelTiles,
 	const float playerPosX,
 	const float playerPosZ,
-    __global int2* lineAlgOutput)
+    __local int2* lineAlgOutput)
 {
     int gid = get_global_id(0);
 
@@ -143,11 +143,9 @@ __kernel void guard_detection(__global const float* endPointsX,
     }
 
     // Call the line algorithm to get the points on the line.
-    int size = (int)distance(convert_float2(guardTilePos), convert_float2(maxTileDistPoint));
     int outputSize = 0;
     bool isUsingLow = PlotLine(guardTilePos.x, guardTilePos.y, maxTileDistPoint.x, maxTileDistPoint.y, lineAlgOutput, &outputSize);
-
-    printf("Test from kernel\n");
+	
     float2 playerWorldPos = (float2)(playerPosX, playerPosZ);
     int2 playerTilePos = getTileCoordFromPos(playerWorldPos, tileSize);
 
@@ -155,7 +153,7 @@ __kernel void guard_detection(__global const float* endPointsX,
     // guard to furthest.
     // The output of the line algorithm has its points in an order
     // that depends on whether the input coordinates were reversed.
-    __global int2* currentIt = isUsingLow ? lineAlgOutput + outputSize - 1 : lineAlgOutput;
+    __local int2* currentIt = isUsingLow ? lineAlgOutput + outputSize - 1 : lineAlgOutput;
     int currentCount = 0;
 
     // Hold the values corresponding to each tile type.
@@ -167,7 +165,6 @@ __kernel void guard_detection(__global const float* endPointsX,
     // Hold the output value, which is a flag of whether the player
     // was detected.
     bool result = false;
-
     while (true)
     {
     	int2 point = *currentIt;

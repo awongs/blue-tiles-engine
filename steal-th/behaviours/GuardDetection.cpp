@@ -107,45 +107,47 @@ GuardDetection::GuardDetection(LevelScene* levelScene, GameObject* playerObj,
 {
 	m_openCLManager = std::make_unique<OpenCLManager>("../Assets/opencl/guard_detection.cl", "guard_detection");
 
+	cl_mem outputBuffer{ m_openCLManager->CreateOutputBuffer(sizeof(bool) * m_numDetectionRays) };
+	m_openCLManager->SetKernelArg(2, sizeof(cl_mem), &outputBuffer);
+
+	m_openCLManager->SetKernelArg(6, sizeof(float), &LevelScene::TILE_SIZE);
+
+	glm::ivec2 levelSize{ m_levelScene->GetLevelSize() };
+	m_openCLManager->SetKernelArg(7, sizeof(int), &levelSize.x);
+	m_openCLManager->SetKernelArg(8, sizeof(int), &levelSize.y);
+
+	std::vector<int> tiles;
+	m_levelScene->GetTiles(tiles);
+	cl_mem tilesBuffer{ m_openCLManager->CreateInputBuffer(sizeof(int) * tiles.size(), &tiles[0]) };
+	m_openCLManager->SetKernelArg(9, sizeof(cl_mem), &tilesBuffer);
+
+	const int MAX_VIEW_DIST_TILES{ static_cast<int>(m_maxViewDist / LevelScene::TILE_SIZE) };
+	m_openCLManager->SetKernelArg(12, sizeof(int) * NUM_VALUES_PER_POINT * MAX_VIEW_DIST_TILES * 2, NULL);
+
+	m_outputBuffer = new bool[m_numDetectionRays];
+}
+
+GuardDetection::~GuardDetection()
+{
+	delete[] m_outputBuffer;
 }
 
 void GuardDetection::Update(float deltaTime)
 {
-	if (!m_isInitialized)
-	{
-		m_isInitialized = true;
+	// Update these kernel arguments.
+	std::vector<float> endpointsX, endpointsZ;
+	GetDetectionRayEndPoints(endpointsX, endpointsZ);
+	cl_mem endpointsXBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsX[0]) };
+	m_openCLManager->SetKernelArg(0, sizeof(cl_mem), &endpointsXBuffer);
+	cl_mem endpointsZBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsZ[0]) };
+	m_openCLManager->SetKernelArg(1, sizeof(cl_mem), &endpointsZBuffer);
 
-		std::vector<float> endpointsX, endpointsZ;
-		GetDetectionRayEndPoints(endpointsX, endpointsZ);
-		cl_mem endpointsXBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsX[0]) };
-		m_openCLManager->SetKernelArg(0, sizeof(cl_mem), &endpointsXBuffer);
-		cl_mem endpointsZBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsZ[0]) };
-		m_openCLManager->SetKernelArg(1, sizeof(cl_mem), &endpointsZBuffer);
+	m_openCLManager->SetKernelArg(3, sizeof(float), &gameObject->position.x);
+	m_openCLManager->SetKernelArg(4, sizeof(float), &gameObject->position.z);
+	m_openCLManager->SetKernelArg(5, sizeof(float), &gameObject->rotation.y);
 
-		cl_mem outputBuffer{ m_openCLManager->CreateOutputBuffer(sizeof(bool) * m_numDetectionRays) };
-		m_openCLManager->SetKernelArg(2, sizeof(cl_mem), &outputBuffer);
-
-		m_openCLManager->SetKernelArg(3, sizeof(float), &gameObject->position.x);
-		m_openCLManager->SetKernelArg(4, sizeof(float), &gameObject->position.z);
-		m_openCLManager->SetKernelArg(5, sizeof(float), &gameObject->rotation.y);
-		m_openCLManager->SetKernelArg(6, sizeof(float), &LevelScene::TILE_SIZE);
-	
-		glm::ivec2 levelSize{ m_levelScene->GetLevelSize() };
-		m_openCLManager->SetKernelArg(7, sizeof(int), &levelSize.x);
-		m_openCLManager->SetKernelArg(8, sizeof(int), &levelSize.y);
-
-		std::vector<int> tiles;
-		m_levelScene->GetTiles(tiles);
-		cl_mem tilesBuffer{ m_openCLManager->CreateInputBuffer(sizeof(int) * tiles.size(), &tiles[0]) };
-		m_openCLManager->SetKernelArg(9, sizeof(cl_mem), &tilesBuffer);
-
-		m_openCLManager->SetKernelArg(10, sizeof(float), &m_playerObj->position.x);
-		m_openCLManager->SetKernelArg(11, sizeof(float), &m_playerObj->position.y);
-
-		const int MAX_VIEW_DIST_TILES{ static_cast<int>(m_maxViewDist / LevelScene::TILE_SIZE) };
-		cl_mem lineAlgBuffer{ m_openCLManager->CreateInputBuffer(sizeof(int) * NUM_VALUES_PER_POINT * MAX_VIEW_DIST_TILES * 2, NULL) };
-		m_openCLManager->SetKernelArg(12, sizeof(cl_mem), &lineAlgBuffer);
-	}
+	m_openCLManager->SetKernelArg(10, sizeof(float), &m_playerObj->position.x);
+	m_openCLManager->SetKernelArg(11, sizeof(float), &m_playerObj->position.z);
 
 	// Reset the detected flag.
 	m_isPlayerDetected = false;
@@ -176,17 +178,16 @@ void GuardDetection::Update(float deltaTime)
 	size_t localWorkSize[1]{ 1 };
 	m_openCLManager->EnqueueKernel(1, globalWorkSize, localWorkSize);
 
-	/*m_openCLManager->ReadOutput(&m_outputBuffer, sizeof(bool) * m_numDetectionRays);
-	std::cout << "Output buffer size: " << m_outputBuffer.size() << std::endl;
-	for (const bool& flag : m_outputBuffer)
+	m_openCLManager->ReadOutput(&m_outputBuffer[0], sizeof(bool) * m_numDetectionRays);
+	for (int i = 0; i < m_numDetectionRays; ++i)
 	{
-		m_isPlayerDetected |= flag;
+		m_isPlayerDetected |= m_outputBuffer[i];
 
 		if (m_isPlayerDetected)
 		{
 			break;
 		}
-	}*/
+	}
 
 	/* HARD MODE
 	// Check side for peripheral vision.

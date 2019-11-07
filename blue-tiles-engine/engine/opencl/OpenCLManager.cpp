@@ -296,7 +296,7 @@ bool OpenCLManager::ReadOutput(void *output, size_t size)
 
 	if (err != CL_SUCCESS)
 	{
-		//std::cout << err << std::endl;
+		std::cout << err << std::endl;
 		DebugLog::Error("Failed to read output.");
 		return false;
 	}
