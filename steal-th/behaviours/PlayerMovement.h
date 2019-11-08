@@ -16,10 +16,11 @@ public:
 	void OnCollisionStay(GLuint other) override;
 
 	glm::vec3 GetCurrentVelocity() const;
+	void ResetVelocity();
 
 private:
 
-	void HandleInteractableConllision(GameObject* otherObj);
+	void HandleInteractableCollision(GameObject* otherObj);
 
 	void HandleWallCollision(GameObject* otherObj);
 
