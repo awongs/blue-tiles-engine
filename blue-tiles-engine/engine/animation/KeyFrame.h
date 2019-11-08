@@ -9,6 +9,7 @@
 class KeyFrame
 {
 public:
+	// Constructor that takes a timestamp and pose.
 	KeyFrame(float timeStamp, std::unordered_map<std::string, JointTransform>& pose);
 
 	// The start time in the animation that this keyframe represents

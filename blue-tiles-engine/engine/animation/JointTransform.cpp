@@ -10,19 +10,20 @@ JointTransform::JointTransform(glm::vec3& position, glm::quat& rotation)
 
 JointTransform::JointTransform(glm::mat4& transformationMatrix)
 {
+	// Extract position vector from the last row.
+	// Note: GLM matrices seem to have operator[] implemented as [row][column] despite being column major.
 	position.x = transformationMatrix[3][0];
 	position.y = transformationMatrix[3][1];
 	position.z = transformationMatrix[3][2];
+
+	// Convert the transformation matrix into a 3x3 matrix, then into a quaternion.
 	rotation = glm::quat_cast(glm::mat3(transformationMatrix));
 }
 
 glm::mat4 JointTransform::GetLocalTransform() const
 {
-	glm::mat4 localTransform = glm::mat4(1);
-
 	// Apply translation, rotation, and return.
-	localTransform = glm::translate(localTransform, position);
-	return localTransform * glm::mat4_cast(rotation);
+	return glm::translate(glm::mat4(1), position) * glm::mat4_cast(rotation);
 }
 
 JointTransform JointTransform::Interpolate(JointTransform& firstFrame, JointTransform& secondFrame, float progression)

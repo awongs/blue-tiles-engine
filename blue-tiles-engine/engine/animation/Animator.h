@@ -21,7 +21,23 @@ public:
 	Animator(std::weak_ptr<AnimatedMesh> animatedMesh);
 
 	// Starts the animation.
-	void StartAnimation(Animation* animation);
+	void PlayAnimation(std::shared_ptr<Animation> animation);
+	void PlayAnimation(std::string animationName);
+
+	// Stops the currently playing animation.
+	void StopAnimation();
+
+	// Adds an animation to the animation map.
+	void AddAnimation(std::shared_ptr<Animation> animation);
+
+	// Weak pointer to the animated mesh behaviour.
+	std::weak_ptr<AnimatedMesh> animatedMesh;
+
+	// The current animation to play.
+	std::shared_ptr<Animation> currentAnimation;
+
+	// The current time in the animation.
+	float animationTime;
 
 	// Overridden functions.
 	void Update(float deltaTime) override;
@@ -29,23 +45,16 @@ public:
 	bool HandleMessage(unsigned int senderID, std::string& message) override;
 	void OnCollisionStay(GLuint other) override;
 
-	// Weak pointer to the animated mesh behaviour.
-	std::weak_ptr<AnimatedMesh> animatedMesh;
-
-	// The current animation to play.
-	std::unique_ptr<Animation> currentAnimation;
-
-	// The current time in the animation.
-	float animationTime;
-
 private:
+	std::unordered_map<std::string, std::shared_ptr<Animation>> m_animations;
+
 	// Calculates and returns the current pose that the animated mesh should be in.
 	// Interpolates between the previous and next keyframes.
 	std::unordered_map<std::string, glm::mat4> calculateCurrentPose();
 
 	// Recursively calculates and sets the animation matrices for each joint.
 	// I believe this is a Forward Kinematics implementation.
-	void applyPoseToJoints(std::unordered_map<std::string, glm::mat4>& currentPose, Joint& joint, glm::mat4 parentTransform);
+	void applyPoseToJoints(std::unordered_map<std::string, glm::mat4>& currentPose, Joint& joint, glm::mat4& parentTransform);
 
 	// Gets the previous and next keyframes in the animation.
 	std::pair<KeyFrame, KeyFrame> getPreviousAndNextFrames();
@@ -56,5 +65,4 @@ private:
 
 	// Calculates and returns an interpolated pose between the previous and next keyframe.
 	std::unordered_map<std::string, glm::mat4> interpolatePoses(KeyFrame& previousFrame, KeyFrame& nextFrame, float progression);
-
 };

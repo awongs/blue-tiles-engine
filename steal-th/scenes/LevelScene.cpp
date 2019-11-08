@@ -178,12 +178,15 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 		ga->AddBehaviour(animatedMesh);
 
-		// TEST
-		Animation* walk = Animation::CreateAnimationFromFile("../Assets/animations/KyleWalking.dae");
+		// Animations for guards.
+		std::shared_ptr<Animation> walk = Animation::CreateAnimationFromFile("../Assets/animations/KyleWalking.dae");
+		std::shared_ptr<Animation> idle = Animation::CreateAnimationFromFile("../Assets/animations/KyleIdle.dae");
+		std::shared_ptr<Animation> look = Animation::CreateAnimationFromFile("../Assets/animations/KyleLooking.dae");
 		Animator* animator = new Animator(ga->GetBehaviour<AnimatedMesh>());
 		ga->AddBehaviour(animator);
-		animator->StartAnimation(walk);
-		animatedMesh->animator = ga->GetBehaviour<Animator>();
+		animator->AddAnimation(walk);
+		animator->AddAnimation(idle);
+		animator->AddAnimation(look);
 
 		// Add guard detection behaviour
 		ga->AddBehaviour(new GuardDetection(this, playerObj,

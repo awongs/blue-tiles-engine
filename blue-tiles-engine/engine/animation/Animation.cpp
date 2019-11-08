@@ -1,16 +1,16 @@
 #include <pugixml/pugixml.hpp>
 #include <sstream>
-#include <iostream>
 
 #include "Animation.h"
 
-Animation::Animation(float length, std::vector<KeyFrame>& keyFrames)
-	: length(length)
+Animation::Animation(std::string name, float length, std::vector<KeyFrame>& keyFrames)
+	: name(name)
+	, length(length)
 	, keyFrames(keyFrames)
 {
 }
 
-Animation* Animation::CreateAnimationFromFile(std::string filePath)
+std::shared_ptr<Animation> Animation::CreateAnimationFromFile(std::string filePath)
 {
 	pugi::xml_document aniFile;
 
@@ -109,6 +109,7 @@ Animation* Animation::CreateAnimationFromFile(std::string filePath)
 	
 	for (int i = 0; i < timeStamps[0].size(); i++)
 	{
+		// Get all transforms for this joint's keyframes.
 		std::unordered_map<std::string, JointTransform> jointTransforms;
 		for (auto& jtm : jointTransformMatrices)
 		{
@@ -117,6 +118,11 @@ Animation* Animation::CreateAnimationFromFile(std::string filePath)
 
 		keyFrames.push_back(KeyFrame(timeStamps[0][i], jointTransforms));
 	}
-	
-	return new Animation(length, keyFrames);
+
+	// Extract animation file name without the extention.
+	int firstIndex = filePath.find_last_of("/") + 1;
+	int lastIndex = filePath.find_last_of(".");
+	std::string animationName = filePath.substr(firstIndex, lastIndex - firstIndex);
+
+	return std::make_shared<Animation>(animationName, length, keyFrames);
 }

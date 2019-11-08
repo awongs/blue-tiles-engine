@@ -6,7 +6,6 @@
 
 #include "AnimatedMesh.h"
 #include "Animation.h"
-#include "Animator.h"
 #include "../../util/FileManager.h"
 
 #include "../debugbt/DebugLog.h"
@@ -103,14 +102,9 @@ void AnimatedMesh::Draw(Shader& shader)
 	// Set model matrix in shader
 	shader.SetUniformMatrix4fv("model", gameObject->GetTransformMatrix());
 
-	//std::unordered_map<std::string, JointTransform>& pose = animator.lock()->currentAnimation->keyFrames[ozma].pose;
-	//std::unordered_map<std::string, glm::mat4>& pose = animator.lock()->currentPose;
-	std::vector<glm::mat4> transforms = getJointTransforms();
-
 	int matrixIndex = 0;
-	for (glm::mat4& t : transforms)
+	for (glm::mat4& t : getJointTransforms())
 	{
-		//shader.SetUniformMatrix4fv("jointTransforms[" + std::to_string(matrixIndex++) + "]", pose.at(p.first).GetLocalTransform());
 		shader.SetUniformMatrix4fv("jointTransforms[" + std::to_string(matrixIndex++) + "]", t);
 	}
 
@@ -275,7 +269,7 @@ std::vector<glm::mat4> AnimatedMesh::getJointTransforms()
 
 void AnimatedMesh::addJointsToArray(Joint& headJoint, std::vector<glm::mat4>& jointMatrices)
 {
-	jointMatrices[headJoint.m_index] = headJoint.animatedTransform;
+	jointMatrices[headJoint.index] = headJoint.animatedTransform;
 	for (std::shared_ptr<Joint>& childJoint : headJoint.children)
 	{
 		addJointsToArray(*childJoint, jointMatrices);

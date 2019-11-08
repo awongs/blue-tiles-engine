@@ -1,9 +1,10 @@
 #include "Joint.h"
 
 Joint::Joint(int index, std::string& name)
-	: m_index(index)
+	: index(index)
 	, name(name)
 {
+	// Initialize tranform matrices to identity.
 	localBindTransform = glm::mat4(1);
 	animatedTransform = glm::mat4(1);
 	inverseBindTransform = glm::mat4(1);

@@ -7,8 +7,10 @@
 class JointTransform
 {
 public:
-	// Constructors.
+	// Constructor that takes a position vector and a rotation quaternion.
 	JointTransform(glm::vec3& position, glm::quat& rotation);
+
+	// Constructor that takes a transformation matrix.
 	JointTransform(glm::mat4& transformationMatrix);
 
 	// Returns the local transform of this joint.

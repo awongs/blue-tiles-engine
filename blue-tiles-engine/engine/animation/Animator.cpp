@@ -11,10 +11,50 @@ Animator::Animator(std::weak_ptr<AnimatedMesh> animatedMesh)
 {
 }
 
-void Animator::StartAnimation(Animation* animation)
+void Animator::PlayAnimation(std::shared_ptr<Animation> animation)
 {
+	if (animation == nullptr 
+		|| (currentAnimation != nullptr && currentAnimation->name == animation->name))
+	{
+		return;
+	}
+
 	animationTime = 0.0f;
-	currentAnimation = std::unique_ptr<Animation>(animation);
+	currentAnimation = animation;
+}
+
+void Animator::PlayAnimation(std::string animationName)
+{
+	if (m_animations.count(animationName) == 0 
+		|| (currentAnimation != nullptr && currentAnimation->name == animationName))
+	{
+		return;
+	}
+
+	animationTime = 0.0f;
+	currentAnimation = m_animations.at(animationName);
+}
+
+void Animator::AddAnimation(std::shared_ptr<Animation> animation)
+{
+	// Don't add duplicate animations.
+	if (animation == nullptr || m_animations.count(animation->name) != 0)
+	{
+		return;
+	}
+
+	m_animations[animation->name] = animation;
+}
+
+void Animator::StopAnimation()
+{
+	if (currentAnimation == nullptr)
+	{
+		return;
+	}
+
+	animationTime = 0.0f;
+	currentAnimation = nullptr;
 }
 
 void Animator::Update(float deltaTime)
@@ -34,7 +74,8 @@ void Animator::Update(float deltaTime)
 
 	// Calculate the current pose and apply it to all joints.
 	std::unordered_map<std::string, glm::mat4> currentPose = calculateCurrentPose();
-	applyPoseToJoints(currentPose, *(animatedMesh.lock()->rootJoint), glm::mat4(1));
+	glm::mat4 identity = glm::mat4(1);
+	applyPoseToJoints(currentPose, *(animatedMesh.lock()->rootJoint), identity);
 }
 
 std::unordered_map<std::string, glm::mat4> Animator::calculateCurrentPose()
@@ -47,7 +88,7 @@ std::unordered_map<std::string, glm::mat4> Animator::calculateCurrentPose()
 	return interpolatePoses(keyFrames.first, keyFrames.second, progression);
 }
 
-void Animator::applyPoseToJoints(std::unordered_map<std::string, glm::mat4>& currentPose, Joint& joint, glm::mat4 parentTransform)
+void Animator::applyPoseToJoints(std::unordered_map<std::string, glm::mat4>& currentPose, Joint& joint, glm::mat4& parentTransform)
 {
 	// Check if this joint is in the animation pose.
 	if (currentPose.find(joint.name) == currentPose.end())
@@ -58,7 +99,7 @@ void Animator::applyPoseToJoints(std::unordered_map<std::string, glm::mat4>& cur
 	}
 	
 	// Multiply current pose transform with parent and inverse to get the animated transform.
-	glm::mat4 currentLocalTransform = currentPose.at(joint.name);
+	glm::mat4& currentLocalTransform = currentPose.at(joint.name);
 	glm::mat4 currentTransform = parentTransform * currentLocalTransform;
 	joint.animatedTransform = currentTransform * joint.inverseBindTransform;
 

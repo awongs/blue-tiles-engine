@@ -9,12 +9,14 @@
 class Joint
 {
 public:
+	// Constructor, takes a joint index and name.
 	Joint(int index, std::string& name);
 
 	// Adds a child to the list of child joints.
 	void AddChild(const std::shared_ptr<Joint> child);
 
 	// Calculates the inverse bind transform.
+	// TODO: Could read this in from the .dae file instead.
 	void CalculateInverseBindTransform(const glm::mat4 parentBindTransform);
 
 	// Name of the joint.
@@ -34,8 +36,5 @@ public:
 	glm::mat4 animatedTransform;
 
 	// The index of the joint in the skeletal hierarchy.
-	int m_index;
-
-private:
-	
+	int index;
 };

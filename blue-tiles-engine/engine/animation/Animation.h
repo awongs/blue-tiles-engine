@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include <string>
 #include "KeyFrame.h"
 
@@ -9,10 +10,14 @@ class Animation
 {
 public:
 	// Constructor.
-	Animation(float length, std::vector<KeyFrame>& keyFrames);
+	Animation(std::string name, float length, std::vector<KeyFrame>& keyFrames);
 
 	// Creates an animation from a collada file.
-	static Animation* CreateAnimationFromFile(std::string filePath);
+	// TODO: Caching maybe useful?
+	static std::shared_ptr<Animation> CreateAnimationFromFile(std::string filePath);
+
+	// The name of the animation file.
+	std::string name;
 
 	// The length of the animation in seconds.
 	float length;
