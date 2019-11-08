@@ -225,8 +225,6 @@ void Renderer::GeometryPass(Scene& currentScene)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	
-
 	// Do shadow mapping if there is a directional light
 	if (!m_directionalLight.expired())
 	{
@@ -286,8 +284,8 @@ void Renderer::GeometryPass(Scene& currentScene)
 			else
 			{
 				// Use geometry shader.
-				//m_shaderManager->UseShaderProgram(m_deferredGeometryShader->GetProgramHandle());
-				//worldGameObj->Draw(*m_deferredGeometryShader);
+				m_shaderManager->UseShaderProgram(m_deferredGeometryShader->GetProgramHandle());
+				worldGameObj->Draw(*m_deferredGeometryShader);
 			}
 		}
 	}

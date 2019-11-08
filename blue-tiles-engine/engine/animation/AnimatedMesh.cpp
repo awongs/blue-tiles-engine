@@ -86,23 +86,9 @@ void AnimatedMesh::SetupBuffers()
 	glBindVertexArray(0);
 }
 
-int ozma = 0;
-bool pressedOnce = false;
-
 void AnimatedMesh::Update(float deltaTime)
 {
-	if (Input::GetInstance().IsKeyDown(Input::INPUT_UP) && !pressedOnce)
-	{
-		ozma++;
-		ozma %= 32;
-		pressedOnce = true;
-	}
-	else if (!Input::GetInstance().IsKeyDown(Input::INPUT_UP) && pressedOnce)
-	{
-		pressedOnce = false;
-	}
 }
-
 
 void AnimatedMesh::Draw(Shader& shader)
 {
@@ -233,7 +219,6 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 
 		// Get node as a joint.
 		std::shared_ptr<Joint> currentJoint = *it;
-		//currentJoint->m_index = index++;
 		
 		// Parse matrix string as floats.
 		std::string matrixStr = currentNode.child("matrix").text().as_string();
@@ -249,7 +234,7 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 			}
 			
 			// Set float value in the current joint's bind transform.
-			currentJoint->localBindTransform[matrixIndex / 4][matrixIndex % 4] = stof(floatStr);
+			currentJoint->localBindTransform[matrixIndex % 4][matrixIndex / 4] = stof(floatStr);
 			matrixIndex++;
 		}
 
@@ -262,6 +247,7 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 			if (it == joints.end())
 			{
 				// Collada files seem to have extra joints. Skipping over them.
+				//currentJoint->AddChild(std::make_shared<Joint>(jointCount++, childNodeName));
 				continue;
 			}
 

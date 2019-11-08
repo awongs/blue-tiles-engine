@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <memory>
+#include <utility>
 #include <unordered_map>
 
 #include "../behaviours/Behaviour.h"
@@ -34,8 +35,6 @@ public:
 	// The current animation to play.
 	std::unique_ptr<Animation> currentAnimation;
 
-	std::unordered_map<std::string, glm::mat4> currentPose;
-
 	// The current time in the animation.
 	float animationTime;
 
@@ -43,9 +42,19 @@ private:
 	// Calculates and returns the current pose that the animated mesh should be in.
 	// Interpolates between the previous and next keyframes.
 	std::unordered_map<std::string, glm::mat4> calculateCurrentPose();
+
+	// Recursively calculates and sets the animation matrices for each joint.
+	// I believe this is a Forward Kinematics implementation.
 	void applyPoseToJoints(std::unordered_map<std::string, glm::mat4>& currentPose, Joint& joint, glm::mat4 parentTransform);
-	std::vector<KeyFrame> getPreviousAndNextFrames();
+
+	// Gets the previous and next keyframes in the animation.
+	std::pair<KeyFrame, KeyFrame> getPreviousAndNextFrames();
+	
+	// Calculates how far between two frames the animation is on currently.
+	// Returns a value between 0 and 1.
 	float calculateProgression(KeyFrame& previousFrame, KeyFrame& nextFrame);
+
+	// Calculates and returns an interpolated pose between the previous and next keyframe.
 	std::unordered_map<std::string, glm::mat4> interpolatePoses(KeyFrame& previousFrame, KeyFrame& nextFrame, float progression);
 
 };

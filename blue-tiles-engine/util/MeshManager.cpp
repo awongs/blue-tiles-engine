@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdio>
+#include <algorithm>
 #include <map>
 
 #include "MeshManager.h"
@@ -209,10 +210,34 @@ namespace meshmanager
 			glm::vec3 jointWeights;
 
 			// Get joint ids and weights.
+			std::vector<std::pair<int, float>> weightList;
+			for (size_t i = 0; i < numJointsAffecting; i++)
+			{
+				//jointIds[i] = *(it + i * 2);
+				//jointWeights[i] = weights[*(it + i * 2 + 1)];
+				weightList.push_back(std::pair<int, float>(*(it + i * 2), weights[*(it + i * 2 + 1)]));
+			}
+
+			// Sort joint ids by weight.
+			std::sort(weightList.begin(), weightList.end(),
+				[](const std::pair<int, float>& a, const std::pair<int, float>& b) -> bool
+				{
+					return a.second > b.second;
+				}
+			);
+
+			/*
+			for (std::pair<int, float>& p : weightList)
+			{
+				std::cout << std::to_string(p.second) << " ";
+			}
+			std::cout << std::endl;
+			*/
+			
 			for (size_t i = 0; i < numJointsAffecting && i < MAX_JOINTS_PER_VERTEX; i++)
 			{
-				jointIds[i] = *(it + i * 2);
-				jointWeights[i] = weights[*(it + i * 2 + 1)];
+				jointIds[i] = weightList[i].first;
+				jointWeights[i] = weightList[i].second;
 			}
 
 			// Fill remaining weights with zeros if numJoints is less than the maximum.

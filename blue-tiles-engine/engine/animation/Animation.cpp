@@ -94,7 +94,7 @@ Animation* Animation::CreateAnimationFromFile(std::string filePath)
 			glm::mat4 transformMatrix;
 			for (int j = 0; j < 16; j++)
 			{
-				transformMatrix[j / 4][j % 4] = matValues[(i * 16) + j];
+				transformMatrix[j % 4][j / 4] = matValues[(i * 16) + j];
 			}
 			transformMatrices.push_back(transformMatrix);
 		}

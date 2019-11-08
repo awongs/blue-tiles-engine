@@ -150,7 +150,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 	playerObj->AddBehaviour(meshRenderer);
 	playerObj->AddBehaviour(new PlayerMovement(10));
-	//playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
+	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
 	playerObj->AddBehaviour(new Inventory());
 
 	// item pickup behaviour for player
@@ -177,7 +177,6 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
 		ga->AddBehaviour(animatedMesh);
-		ga->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
 
 		// TEST
 		Animation* walk = Animation::CreateAnimationFromFile("../Assets/animations/KyleWalking.dae");
