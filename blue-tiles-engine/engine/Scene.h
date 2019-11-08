@@ -19,6 +19,7 @@ public:
 	void Update(float deltaTime);
 
 	// Draws world game objects
+	[[deprecated]]
 	void DrawWorld(Shader& shader);
 
 	// Draws screen game objects

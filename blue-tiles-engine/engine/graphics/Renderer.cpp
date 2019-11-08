@@ -1,6 +1,6 @@
 #include <memory>
-#include <sstream>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Renderer.h"
 #include "ShaderManager.h"
@@ -17,6 +17,7 @@
 #include "../behaviours/SpotLight.h"
 #include "../../util/FileManager.h"
 #include "../animation/AnimatedMesh.h"
+
 
 // Define maximum light count here. Should match the shader's maximums.
 constexpr unsigned int MAX_POINT_LIGHTS = 256;
@@ -64,31 +65,38 @@ void Renderer::SetupShaders()
 	GLuint fragmentShader;
 
 	// Load shader files into strings
-	std::string shadowVertex = filemanager::LoadFile("../Assets/shaders/ShadowShader.vsh");
-	std::string shadowFragment = filemanager::LoadFile("../Assets/shaders/ShadowShader.fsh");
-	std::string deferredGeometryVertex = filemanager::LoadFile("../Assets/shaders/DeferredGeometryPass.vsh");
-	std::string deferredGeometryFragment = filemanager::LoadFile("../Assets/shaders/DeferredGeometryPass.fsh");
-	std::string animationVertex = filemanager::LoadFile("../Assets/shaders/Animation.vsh");
-	std::string animationFragment = filemanager::LoadFile("../Assets/shaders/Animation.fsh");
-	std::string transparencyVertex = filemanager::LoadFile("../Assets/shaders/TransparencyPass.vsh");
-	std::string transparencyFragment = filemanager::LoadFile("../Assets/shaders/TransparencyPass.fsh");
-	std::string deferredLightingVertex = filemanager::LoadFile("../Assets/shaders/DeferredLightingPass.vsh");
-	std::string deferredLightingFragment = filemanager::LoadFile("../Assets/shaders/DeferredLightingPass.fsh");
+	std::string shadowVertex = filemanager::LoadFile("../Assets/shaders/Shadow.vsh");
+	std::string shadowFragment = filemanager::LoadFile("../Assets/shaders/Shadow.fsh");
+	std::string animationShadowVertex = filemanager::LoadFile("../Assets/shaders/AnimationShadow.vsh");
+	std::string animationShadowFragment = filemanager::LoadFile("../Assets/shaders/AnimationShadow.fsh");
+	std::string geometryVertex = filemanager::LoadFile("../Assets/shaders/Geometry.vsh");
+	std::string geometryFragment = filemanager::LoadFile("../Assets/shaders/Geometry.fsh");
+	std::string animationGeometryVertex = filemanager::LoadFile("../Assets/shaders/AnimationGeometry.vsh");
+	std::string animationGeometryFragment = filemanager::LoadFile("../Assets/shaders/AnimationGeometry.fsh");
+	std::string transparencyVertex = filemanager::LoadFile("../Assets/shaders/Transparency.vsh");
+	std::string transparencyFragment = filemanager::LoadFile("../Assets/shaders/Transparency.fsh");
+	std::string lightingVertex = filemanager::LoadFile("../Assets/shaders/Lighting.vsh");
+	std::string lightingFragment = filemanager::LoadFile("../Assets/shaders/Lighting.fsh");
 
 	// Compile shadow shader
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, shadowVertex.c_str());
 	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, shadowFragment.c_str());
 	m_shadowShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
-	// Compile geometry shader
-	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, deferredGeometryVertex.c_str());
-	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, deferredGeometryFragment.c_str());
-	m_deferredGeometryShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
+	// Compile animation shadow shader
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, animationShadowVertex.c_str());
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, animationShadowFragment.c_str());
+	m_aniShadowShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
-	// Compile transparency shader
-	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, animationVertex.c_str());
-	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, animationFragment.c_str());
-	m_animationShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
+	// Compile geometry shader
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, geometryVertex.c_str());
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, geometryFragment.c_str());
+	m_geometryShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
+
+	// Compile animation geometry shader
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, animationGeometryVertex.c_str());
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, animationGeometryFragment.c_str());
+	m_aniGeometryShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
 	// Compile transparency shader
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, transparencyVertex.c_str());
@@ -96,19 +104,41 @@ void Renderer::SetupShaders()
 	m_transparencyShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
 	// Compile lighting shader
-	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, deferredLightingVertex.c_str());
-	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, deferredLightingFragment.c_str());
-	m_deferredLightingShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
+	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, lightingVertex.c_str());
+	fragmentShader = m_shaderManager->CompileShader(GL_FRAGMENT_SHADER, lightingFragment.c_str());
+	m_lightingShader = m_shaderManager->CreateShaderProgram(vertexShader, fragmentShader);
 
-	// Setup the uniform buffer
-	glGenBuffers(1, &m_uniformBufferObject);
-	glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBufferObject);
+	// Setup the light uniform buffer
+	glGenBuffers(1, &m_lightUniformBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_lightUniformBuffer);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(PLight) * MAX_POINT_LIGHTS + sizeof(SLight) * MAX_SPOT_LIGHTS, NULL, GL_STATIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_uniformBufferObject);
-	
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_lightUniformBuffer);
+
 	// Bind the lighting uniform block to the uniform buffer
-	unsigned int lights_index = glGetUniformBlockIndex(m_deferredLightingShader->GetProgramHandle(), "LightBlock");
-	glUniformBlockBinding(m_deferredLightingShader->GetProgramHandle(), lights_index, 0);
+	int index = glGetUniformBlockIndex(m_lightingShader->GetProgramHandle(), "LightBlock");
+	glUniformBlockBinding(m_lightingShader->GetProgramHandle(), index, 0);
+
+	// Setup the camera uniform buffer
+	glGenBuffers(1, &m_cameraUniformBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_cameraUniformBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 3, NULL, GL_STATIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_cameraUniformBuffer);
+
+	// Bind the camera uniform block to the uniform buffer for all applicable shaders
+	index = glGetUniformBlockIndex(m_aniShadowShader->GetProgramHandle(), "Camera");
+	glUniformBlockBinding(m_aniShadowShader->GetProgramHandle(), index, 1);
+
+	index = glGetUniformBlockIndex(m_shadowShader->GetProgramHandle(), "Camera");
+	glUniformBlockBinding(m_shadowShader->GetProgramHandle(), index, 1);
+
+	index = glGetUniformBlockIndex(m_geometryShader->GetProgramHandle(), "Camera");
+	glUniformBlockBinding(m_geometryShader->GetProgramHandle(), index, 1);
+
+	index = glGetUniformBlockIndex(m_aniGeometryShader->GetProgramHandle(), "Camera");
+	glUniformBlockBinding(m_aniGeometryShader->GetProgramHandle(), index, 1);
+
+	index = glGetUniformBlockIndex(m_transparencyShader->GetProgramHandle(), "Camera");
+	glUniformBlockBinding(m_transparencyShader->GetProgramHandle(), index, 1);
 
 	// Unbind for now
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -168,22 +198,7 @@ void Renderer::ShadowPass(Scene& currentScene)
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 
-	// Use shadow shader
-	m_shaderManager->UseShaderProgram(m_shadowShader->GetProgramHandle());
-
-	// Do shadow mapping if there is a directional light
-	if (!m_directionalLight.expired())
-	{
-		std::shared_ptr<DirectionalLight> dirLight = m_directionalLight.lock();
-		glm::mat4 lightSpaceMatrix = dirLight->GetLightSpaceMatrix();
-
-		// Translate by the camera's current position
-		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
-		m_shadowShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
-	}
-
 	// Draw the world
-	//currentScene.DrawWorld(*m_shadowShader);
 	for (auto& worldGameObj : currentScene.GetWorldGameObjects())
 	{
 		// Don't draw transparent objects
@@ -201,9 +216,15 @@ void Renderer::ShadowPass(Scene& currentScene)
 			std::weak_ptr<AnimatedMesh> animatedMesh = std::static_pointer_cast<AnimatedMesh>(worldGameObj->GetBehaviour(BehaviourType::AnimatedMesh).lock());
 			if (!animatedMesh.expired())
 			{
-				continue;
+				m_shaderManager->UseShaderProgram(m_aniShadowShader->GetProgramHandle());
+				worldGameObj->Draw(*m_aniShadowShader);
 			}
-			worldGameObj->Draw(*m_shadowShader);
+			else
+			{
+				m_shaderManager->UseShaderProgram(m_shadowShader->GetProgramHandle());
+				worldGameObj->Draw(*m_shadowShader);
+			}
+			
 		}
 	}
 
@@ -229,33 +250,22 @@ void Renderer::GeometryPass(Scene& currentScene)
 	if (!m_directionalLight.expired())
 	{
 		std::shared_ptr<DirectionalLight> dirLight = m_directionalLight.lock();
-		glm::mat4 lightSpaceMatrix = dirLight->GetLightSpaceMatrix();
-
-		// Translate by the camera's current position
-		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
-		m_shaderManager->UseShaderProgram(m_deferredGeometryShader->GetProgramHandle());
-		m_deferredGeometryShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
-		m_deferredGeometryShader->SetUniform3f("lightDirection", dirLight->GetDirection());
+		m_shaderManager->UseShaderProgram(m_geometryShader->GetProgramHandle());
+		m_geometryShader->SetUniform3f("lightDirection", dirLight->GetDirection());
 		
-		// TODO: Improve this
-		m_shaderManager->UseShaderProgram(m_animationShader->GetProgramHandle());
-		m_animationShader->SetUniformMatrix4fv("lightSpace", lightSpaceMatrix);
-		m_animationShader->SetUniform3f("lightDirection", dirLight->GetDirection());
+		m_shaderManager->UseShaderProgram(m_aniGeometryShader->GetProgramHandle());
+		m_aniGeometryShader->SetUniform3f("lightDirection", dirLight->GetDirection());
 	}
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, m_shadowBuffer->GetDepthTexture());
+	
+	// Set uniforms in shader
+	m_shaderManager->UseShaderProgram(m_geometryShader->GetProgramHandle());
+	m_geometryShader->SetUniform1i("uShadowMap", 1);
 
-	// Set unfiforms in shader
-	m_shaderManager->UseShaderProgram(m_deferredGeometryShader->GetProgramHandle());
-	m_deferredGeometryShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
-	m_deferredGeometryShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
-	m_deferredGeometryShader->SetUniform1i("uShadowMap", 1);
-
-	m_shaderManager->UseShaderProgram(m_animationShader->GetProgramHandle());
-	m_animationShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
-	m_animationShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
-	m_animationShader->SetUniform1i("uShadowMap", 1);
+	m_shaderManager->UseShaderProgram(m_aniGeometryShader->GetProgramHandle());
+	m_aniGeometryShader->SetUniform1i("uShadowMap", 1);
 
 	// Draw the world
 	//currentScene.DrawWorld(*m_deferredGeometryShader);
@@ -278,14 +288,14 @@ void Renderer::GeometryPass(Scene& currentScene)
 			if (!animatedMesh.expired())
 			{
 				// Use animation shader.
-				m_shaderManager->UseShaderProgram(m_animationShader->GetProgramHandle());
-				worldGameObj->Draw(*m_animationShader);
+				m_shaderManager->UseShaderProgram(m_aniGeometryShader->GetProgramHandle());
+				worldGameObj->Draw(*m_aniGeometryShader);
 			}
 			else
 			{
 				// Use geometry shader.
-				m_shaderManager->UseShaderProgram(m_deferredGeometryShader->GetProgramHandle());
-				worldGameObj->Draw(*m_deferredGeometryShader);
+				m_shaderManager->UseShaderProgram(m_geometryShader->GetProgramHandle());
+				worldGameObj->Draw(*m_geometryShader);
 			}
 		}
 	}
@@ -301,10 +311,6 @@ void Renderer::TransparencyPass(Scene& currentScene) {
 
 	// Use transparency shader
 	m_shaderManager->UseShaderProgram(m_transparencyShader->GetProgramHandle());
-
-	// Set camera matrices in shader
-	m_transparencyShader->SetUniformMatrix4fv("view", Camera::GetInstance().GetViewMatrix());
-	m_transparencyShader->SetUniformMatrix4fv("projection", Camera::GetInstance().GetProjectionMatrix());
 
 	// Draw all transparent objects
 	for (const std::unique_ptr<GameObject>& worldGameObj : currentScene.GetWorldGameObjects()) {
@@ -325,6 +331,24 @@ void Renderer::TransparencyPass(Scene& currentScene) {
 
 void Renderer::Render(Scene& currentScene)
 {
+	// Update camera matrices in the uniform buffer.
+	glBindBuffer(GL_UNIFORM_BUFFER, m_cameraUniformBuffer);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(Camera::GetInstance().GetViewMatrix()));
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(Camera::GetInstance().GetProjectionMatrix()));
+
+	// Do shadow mapping if there is a directional light
+	if (!m_directionalLight.expired())
+	{
+		std::shared_ptr<DirectionalLight> dirLight = m_directionalLight.lock();
+		glm::mat4 lightSpaceMatrix = dirLight->GetLightSpaceMatrix();
+
+		// Translate by the camera's current position
+		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), glm::value_ptr(lightSpaceMatrix));
+	}
+	
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 	ShadowPass(currentScene);
 	GeometryPass(currentScene);
 	TransparencyPass(currentScene);
@@ -350,26 +374,26 @@ void Renderer::Render(Scene& currentScene)
 	glBindTexture(GL_TEXTURE_2D, m_geometryBuffer->GetColourTexture());
 
 	// Switch to lighting shader
-	m_shaderManager->UseShaderProgram(m_deferredLightingShader->GetProgramHandle());
+	m_shaderManager->UseShaderProgram(m_lightingShader->GetProgramHandle());
 
 	// Set samplers in shader to their respective texture IDs
-	m_deferredLightingShader->SetUniform1i("gPosition", 0);
-	m_deferredLightingShader->SetUniform1i("gNormal", 1);
-	m_deferredLightingShader->SetUniform1i("gColour", 2);
+	m_lightingShader->SetUniform1i("gPosition", 0);
+	m_lightingShader->SetUniform1i("gNormal", 1);
+	m_lightingShader->SetUniform1i("gColour", 2);
 
 	// Set camera position
 	glm::vec3 position = Camera::GetInstance().GetPosition();
 	position.z = -position.z;
-	m_deferredLightingShader->SetUniform3f("cameraPosition", position);
+	m_lightingShader->SetUniform3f("cameraPosition", position);
 
 	// Render directional light if it's not null
 	if (!m_directionalLight.expired())
 	{
-		m_directionalLight.lock()->Render(*m_deferredLightingShader);
+		m_directionalLight.lock()->Render(*m_lightingShader);
 	}
 
-	// Bind the uniform buffer
-	glBindBuffer(GL_UNIFORM_BUFFER, m_uniformBufferObject);
+	// Bind the light uniform buffer
+	glBindBuffer(GL_UNIFORM_BUFFER, m_lightUniformBuffer);
 
 	int pointLightCount = 0;
 	int spotLightcount = 0;
@@ -389,7 +413,7 @@ void Renderer::Render(Scene& currentScene)
 			// Note: Does not consider light radius, but that's fine for almost all lights
 			if (Camera::GetInstance().IsWithinBoundingBox(pointLight->gameObject->position))
 			{
-				pointLight->Render(*m_deferredLightingShader,
+				pointLight->Render(*m_lightingShader,
 				sizeof(PLight) * pointLightCount++);
 			}
 		}
@@ -410,18 +434,18 @@ void Renderer::Render(Scene& currentScene)
 			// Note: Does not consider light radius, but that's fine for almost all lights
 			if (Camera::GetInstance().IsWithinBoundingBox(spotLight->gameObject->position))
 			{
-				spotLight->Render(*m_deferredLightingShader,
+				spotLight->Render(*m_lightingShader,
 					sizeof(PLight) * MAX_POINT_LIGHTS + sizeof(SLight) * spotLightcount++);
 			}
 		}
 	}
 
 	// Set light counts in shader
-	m_deferredLightingShader->SetUniform1i("totalPointLights", pointLightCount);
-	m_deferredLightingShader->SetUniform1i("totalSpotLights", spotLightcount);
+	m_lightingShader->SetUniform1i("totalPointLights", pointLightCount);
+	m_lightingShader->SetUniform1i("totalSpotLights", spotLightcount);
 
 	// Draw onto the quad
-	m_screenQuad->Draw(*m_deferredLightingShader);
+	m_screenQuad->Draw(*m_lightingShader);
 
 	// Disable depth test and unbind UBO
 	glDisable(GL_DEPTH_TEST);

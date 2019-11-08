@@ -9,10 +9,16 @@ layout (location = 2) in vec3 aNormal;
 layout (location = 3) in ivec3 aJointId;
 layout (location = 4) in vec3 aJointWeight;
 
+layout (std140) uniform Camera {
+    uniform mat4 view;
+	uniform mat4 projection;
+	uniform mat4 lightSpace;
+};
+
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-uniform mat4 lightSpace;
+//uniform mat4 view;
+//uniform mat4 projection;
+//uniform mat4 lightSpace;
 
 // Animation
 uniform mat4 jointTransforms[MAX_JOINTS];
@@ -24,13 +30,7 @@ out vec4 fragLightSpacePosition;
 
 void main()
 {
-	// Position and texture
-	fragPosition = (model * vec4(aPos, 1.0)).xyz;
 	fragTexCoord = aTexCoord;
-
-	// Normal vector
-	mat3 normalMatrix = transpose(inverse(mat3(model)));
-	fragNormal = normalMatrix * aNormal;
 
 	// Shadow mapping coordinates
     fragLightSpacePosition = lightSpace * vec4(fragPosition, 1.0);
@@ -50,8 +50,8 @@ void main()
 	}
 
 	fragPosition = totalPosition.xyz;
-	fragNormal = totalNormal.xyz;
-	
+	mat3 normalMatrix = transpose(inverse(mat3(model)));
+	fragNormal = normalMatrix * totalNormal.xyz;
 
 	gl_Position = projection * view * model * vec4(fragPosition.xyz, 1.0);
 }

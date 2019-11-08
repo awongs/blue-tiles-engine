@@ -48,13 +48,18 @@ public:
 	void Render(Scene& currentScene);
 
 private:
+
 	// Width and height of the screen.
 	int m_width, m_height;
 
-	GLuint m_uniformBufferObject;
-
 	// SDL context for the render target
 	SDL_GLContext* m_context;
+
+	// Uniform buffer object for storing camera matrices.
+	GLuint m_cameraUniformBuffer;
+
+	// Uniform buffer object for storing lights.
+	GLuint m_lightUniformBuffer;
 
 	// Pointer to a shader manager
 	ShaderManager* m_shaderManager;
@@ -65,20 +70,13 @@ private:
 	// Pointer to the geometry buffer.
 	std::unique_ptr<GeometryBuffer> m_geometryBuffer;
 
-	// Pointer to the shadow shader.
+	// Pointers to shaders.
 	std::shared_ptr<Shader> m_shadowShader;
-
-	// Pointer to the deferred geometry shader.
-	std::shared_ptr<Shader> m_deferredGeometryShader;
-
-	// Pointer to the animation shader.
-	std::shared_ptr<Shader> m_animationShader;
-
-	// Pointer to the transparency shader.
+	std::shared_ptr<Shader> m_aniShadowShader;
+	std::shared_ptr<Shader> m_geometryShader;
+	std::shared_ptr<Shader> m_aniGeometryShader;
 	std::shared_ptr<Shader> m_transparencyShader;
-
-	// Pointer to the deferred lighting shader.
-	std::shared_ptr<Shader> m_deferredLightingShader;
+	std::shared_ptr<Shader> m_lightingShader;
 
 	// Quad to render the frame onto.
 	std::unique_ptr<GameObject> m_screenQuad;
