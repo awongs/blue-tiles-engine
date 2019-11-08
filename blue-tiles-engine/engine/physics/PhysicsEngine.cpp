@@ -136,7 +136,7 @@ void PhysicsEngine::DoNarrowPhaseRanged(int startIndex, int endIndex)
 
 			if (IsBoxSphereColliding(box, sphere))
 			{
-				//m_collisionVectorMutex.lock();
+				m_collisionVectorMutex.lock();
 				m_collisions.push_back(collision);
 				m_collisionVectorMutex.unlock();
 			}
