@@ -140,6 +140,18 @@ void Renderer::SetupShaders()
 	index = glGetUniformBlockIndex(m_transparencyShader->GetProgramHandle(), "Camera");
 	glUniformBlockBinding(m_transparencyShader->GetProgramHandle(), index, 1);
 
+	// Setup the animation uniform buffer
+	glGenBuffers(1, &m_animationUniformBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_animationUniformBuffer);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 64, NULL, GL_STATIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 2, m_animationUniformBuffer);
+
+	index = glGetUniformBlockIndex(m_aniShadowShader->GetProgramHandle(), "Animation");
+	glUniformBlockBinding(m_aniShadowShader->GetProgramHandle(), index, 2);
+
+	index = glGetUniformBlockIndex(m_aniGeometryShader->GetProgramHandle(), "Animation");
+	glUniformBlockBinding(m_aniGeometryShader->GetProgramHandle(), index, 2);
+
 	// Unbind for now
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
@@ -217,6 +229,7 @@ void Renderer::ShadowPass(Scene& currentScene)
 			if (!animatedMesh.expired())
 			{
 				m_shaderManager->UseShaderProgram(m_aniShadowShader->GetProgramHandle());
+				animatedMesh.lock()->BindJointTransforms(m_animationUniformBuffer);
 				worldGameObj->Draw(*m_aniShadowShader);
 			}
 			else
@@ -289,6 +302,7 @@ void Renderer::GeometryPass(Scene& currentScene)
 			{
 				// Use animation shader.
 				m_shaderManager->UseShaderProgram(m_aniGeometryShader->GetProgramHandle());
+				animatedMesh.lock()->BindJointTransforms(m_animationUniformBuffer);
 				worldGameObj->Draw(*m_aniGeometryShader);
 			}
 			else

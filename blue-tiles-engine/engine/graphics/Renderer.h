@@ -61,6 +61,9 @@ private:
 	// Uniform buffer object for storing lights.
 	GLuint m_lightUniformBuffer;
 
+	// Uniform buffer object for animations.
+	GLuint m_animationUniformBuffer;
+
 	// Pointer to a shader manager
 	ShaderManager* m_shaderManager;
 

@@ -85,8 +85,17 @@ void AnimatedMesh::SetupBuffers()
 	glBindVertexArray(0);
 }
 
+void AnimatedMesh::BindJointTransforms(GLuint uniformBuffer)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, uniformBuffer);
+	std::vector<glm::mat4> jointTransforms = getJointTransforms();
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4) * jointTransforms.size(), &jointTransforms.front());
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 void AnimatedMesh::Update(float deltaTime)
 {
+
 }
 
 void AnimatedMesh::Draw(Shader& shader)
@@ -101,13 +110,7 @@ void AnimatedMesh::Draw(Shader& shader)
 
 	// Set model matrix in shader
 	shader.SetUniformMatrix4fv("model", gameObject->GetTransformMatrix());
-
-	int matrixIndex = 0;
-	for (glm::mat4& t : getJointTransforms())
-	{
-		shader.SetUniformMatrix4fv("jointTransforms[" + std::to_string(matrixIndex++) + "]", t);
-	}
-
+	
 	// Bind the texture
 	if (m_texture != nullptr)
 	{

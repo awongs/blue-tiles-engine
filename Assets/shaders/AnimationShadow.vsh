@@ -14,12 +14,11 @@ layout (std140) uniform Camera {
 	uniform mat4 lightSpace;
 };
 
-// Camera matrices
-uniform mat4 model;
-//uniform mat4 lightSpace;
+layout (std140) uniform Animation {
+    uniform mat4 jointTransforms[MAX_JOINTS];
+};
 
-// Animation
-uniform mat4 jointTransforms[MAX_JOINTS];
+uniform mat4 model;
 
 void main() 
 {

@@ -120,5 +120,5 @@ int Shader::getUniformLocation(const std::string& uniformName)
 		m_uniformMap[uniformName] = glGetUniformLocation(m_programHandle, uniformName.c_str());
 	}
 
-	return m_uniformMap[uniformName];
+	return m_uniformMap.at(uniformName);
 }

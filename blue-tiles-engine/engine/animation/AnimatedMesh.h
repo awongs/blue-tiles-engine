@@ -26,6 +26,9 @@ public:
 	// Sets up the vertex, index, and VAO buffers.
 	void SetupBuffers();
 
+	// Sets the joint transformation matrices in the shader.
+	void BindJointTransforms(GLuint uniformBuffer);
+
 	// Overridden functions.
 	void Update(float deltaTime) override;
 	void Draw(Shader& shader) override;

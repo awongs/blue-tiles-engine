@@ -15,13 +15,11 @@ layout (std140) uniform Camera {
 	uniform mat4 lightSpace;
 };
 
-uniform mat4 model;
-//uniform mat4 view;
-//uniform mat4 projection;
-//uniform mat4 lightSpace;
+layout (std140) uniform Animation {
+    uniform mat4 jointTransforms[MAX_JOINTS];
+};
 
-// Animation
-uniform mat4 jointTransforms[MAX_JOINTS];
+uniform mat4 model;
 
 out vec3 fragPosition;
 out vec2 fragTexCoord;
