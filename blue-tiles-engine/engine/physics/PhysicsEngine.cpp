@@ -116,9 +116,9 @@ void PhysicsEngine::DoNarrowPhaseRanged(int startIndex, int endIndex)
 			SphereCollider* sphere2{ static_cast<SphereCollider*>(col2) };
 			if (IsSphereSphereColliding(sphere1, sphere2))
 			{
-				//m_collisionVectorMutex.lock();
+				m_collisionVectorMutex.lock();
 				m_collisions.push_back(collision);
-				//m_collisionVectorMutex.unlock();
+				m_collisionVectorMutex.unlock();
 			}
 
 			break;
@@ -138,7 +138,7 @@ void PhysicsEngine::DoNarrowPhaseRanged(int startIndex, int endIndex)
 			{
 				//m_collisionVectorMutex.lock();
 				m_collisions.push_back(collision);
-				//m_collisionVectorMutex.unlock();
+				m_collisionVectorMutex.unlock();
 			}
 
 			break;
@@ -148,9 +148,9 @@ void PhysicsEngine::DoNarrowPhaseRanged(int startIndex, int endIndex)
 		case (Collider::Type::BOX):
 		{
 			// This is the same as broad phase result.
-			//m_collisionVectorMutex.lock();
+			m_collisionVectorMutex.lock();
 			m_collisions.push_back(collision);
-			//m_collisionVectorMutex.unlock();
+			m_collisionVectorMutex.unlock();
 			break;
 		}
 		}
