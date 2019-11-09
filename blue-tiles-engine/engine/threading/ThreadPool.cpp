@@ -41,11 +41,15 @@ void ThreadPool::AddTask(std::function<void(void)> taskFunc)
 
 void ThreadPool::WaitForAllTask()
 {
-	std::unique_lock<std::mutex> lk(m_queueMutex);
+	//std::unique_lock<std::mutex> lk(m_queueMutex);
 
-	m_waitCV.wait(lk, [this] {
-		return (m_killFlag || m_taskQueue.empty()) && m_workingThreads == 0;
-	});
+	//m_waitCV.wait(lk, [this] {
+	//	return (m_killFlag || m_taskQueue.empty()) && m_workingThreads == 0;
+	//});
+
+	while (!((m_killFlag || m_taskQueue.empty()) && m_workingThreads == 0))
+	{
+	}
 }
 
 void ThreadPool::ThreadFunc_Process()
