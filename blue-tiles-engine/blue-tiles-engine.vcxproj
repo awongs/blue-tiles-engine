@@ -180,6 +180,7 @@
     <ClCompile Include="engine\sound\Music.cpp" />
     <ClCompile Include="engine\sound\Sound.cpp" />
     <ClCompile Include="engine\sound\SoundManager.cpp" />
+    <ClCompile Include="engine\threading\ThreadPool.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="util\FileManager.cpp" />
     <ClCompile Include="util\MeshManager.cpp" />
@@ -215,6 +216,7 @@
     <ClInclude Include="engine\sound\Music.h" />
     <ClInclude Include="engine\sound\Sound.h" />
     <ClInclude Include="engine\sound\SoundManager.h" />
+    <ClInclude Include="engine\threading\ThreadPool.h" />
     <ClInclude Include="util\FileManager.h" />
     <ClInclude Include="util\MeshManager.h" />
   </ItemGroup>
