@@ -7,9 +7,20 @@
 #include "PhysicsObject.h"
 #include "../GameObject.h"
 #include "../MessageSystem.h"
+#include "../threading/ThreadPool.h"
 
 
 const std::string PhysicsEngine::COLLISION_MESSAGE_STR{ "HandleCollision" };
+
+PhysicsEngine::PhysicsEngine()
+	: m_threadPool(new ThreadPool(2))
+{
+}
+
+PhysicsEngine::~PhysicsEngine()
+{
+	delete m_threadPool;
+}
 
 void PhysicsEngine::Update()
 {
@@ -18,8 +29,8 @@ void PhysicsEngine::Update()
 
 	// Check for collisions more precisely, between colliders for detected
 	// overlaps.
-	DoNarrowPhase();
-	//DoNarrowPhaseThreaded(2);
+	//DoNarrowPhase();
+	DoNarrowPhaseThreaded(2);
 
 	// Do something with the detected collisions.
 	HandleCollisions();
@@ -76,22 +87,12 @@ void PhysicsEngine::DoNarrowPhaseThreaded(const unsigned int numThread)
 	int workChunks = m_broadCollisions.size() / numThread;
 	for (unsigned int i = 0; i < numThread; i++)
 	{
-		std::thread* th = new std::thread(&PhysicsEngine::DoNarrowPhaseRanged, this, workChunks * i, workChunks * (i + 1));
-		
-		m_narrowPhaseThreads.push_back(th);
+		//std::thread* th = new std::thread(&PhysicsEngine::DoNarrowPhaseRanged, this, workChunks * i, workChunks * (i + 1));
 	}
 
-	for (unsigned int i = 0; i < numThread; i++) {
-		m_narrowPhaseThreads[i]->join();
+	m_threadPool->AddTask(std::bind(&PhysicsEngine::DoNarrowPhase, this));
 
-		delete m_narrowPhaseThreads[i];
-	}
-
-	m_narrowPhaseThreads.clear();
-
-	// Done with list of broad phase collisions, so clear them for the
-	// next frame.
-	m_broadCollisions.clear();
+	m_threadPool->WaitForAllTask();
 }
 
 void PhysicsEngine::DoNarrowPhaseRanged(int startIndex, int endIndex)

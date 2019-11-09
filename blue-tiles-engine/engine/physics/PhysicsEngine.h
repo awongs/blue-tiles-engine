@@ -9,6 +9,7 @@
 #include <mutex>
 #include "PhysicsObject.h"
 
+class ThreadPool;
 class Collider;
 class SphereCollider;
 
@@ -122,6 +123,10 @@ class PhysicsEngine
 	};
 
 public:
+	PhysicsEngine();
+	
+	~PhysicsEngine();
+
 	// Check for collisions between each of the physics components.
 	void Update();
 
@@ -214,6 +219,6 @@ private:
 	// Mutex used for m_collisions
 	std::mutex m_collisionVectorMutex;
 
-	// List of threads used for threaded narrow phase
-	std::vector<std::thread*> m_narrowPhaseThreads;
+	// Thread pool for processing calculations in parallel.
+	ThreadPool* m_threadPool;
 };
