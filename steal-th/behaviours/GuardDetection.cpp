@@ -1,10 +1,15 @@
 #include "GuardDetection.h"
 #include "../scenes/LevelScene.h"
 #include "../gameobjects/Tile.h"
+#include "PlayerMovement.h"
 
 #include <engine/debugbt/DebugLog.h>
 #include <engine/behaviours/SpotLight.h>
 #include <engine/GameObject.h>
+#include <engine/sound/SoundManager.h>
+#include <engine/sound/Music.h>
+#include <engine/sound/Sound.h>
+#include <engine/behaviours/TextBehaviour.h>
 #include <vector>
 #include <cmath>
 #include <glm/gtx/rotate_vector.hpp>
@@ -115,12 +120,10 @@ void GuardDetection::Update(float deltaTime)
 		return;
 
 	// The guard's tile position is point 1 for the line algorithm.
-	// We want this to be the tile directly in front of the guard.
 	glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
-	glm::vec2 frontWorldPos{ guardWorldPos.x, guardWorldPos.y + LevelScene::TILE_SIZE };
 
 	// For rotation == 0.f, the guard is facing down.
-	glm::vec2 unrotatedMaxDistPoint{ frontWorldPos.x, frontWorldPos.y + m_maxViewDist };
+	glm::vec2 unrotatedMaxDistPoint{ guardWorldPos.x, guardWorldPos.y + m_maxViewDist };
 
 	// Check if the guard can detect the player at its maximum view distance.
 	int numEndTiles{ m_tileViewRadius * 2 };
@@ -130,6 +133,20 @@ void GuardDetection::Update(float deltaTime)
 		pos.x -= (m_tileViewRadius * LevelScene::TILE_SIZE);
 		pos.x += (i * LevelScene::TILE_SIZE);
 		m_isPlayerDetected |= tryDetectPlayer(guardWorldPos, pos);
+	}
+
+	if (m_isPlayerDetected)
+	{
+		// If the the player was detected while on the same tile as this guard,
+		// make sure they are actually colliding for the detection to count.
+		// Otherwise, just disable the detection.
+		glm::vec2 playerPos{ m_playerObj->position.x, m_playerObj->position.z };
+		glm::ivec2 playerTilePos{ m_levelScene->GetTileCoordFromPos(playerPos) };
+		glm::ivec2 guardTilePos{ m_levelScene->GetTileCoordFromPos(guardWorldPos) };
+		if (playerTilePos == guardTilePos && !m_isCollidingPlayer)
+		{
+			m_isPlayerDetected = false;
+		}
 	}
 
 	/* HARD MODE
@@ -161,7 +178,19 @@ void GuardDetection::Update(float deltaTime)
 			guardCone.lock()->SetColour(glm::vec3(10.0f, 0.0f, 0.0));
 		}
 
-		//DebugLog::Info("I GOT U IN MY SIGHTS");
+		// Stop player movement.
+		std::shared_ptr<PlayerMovement> playerMovement{ m_playerObj->GetBehaviour<PlayerMovement>().lock() };
+		playerMovement->ResetVelocity();
+
+		SoundManager::getInstance().getSound("detected")->play();
+		SoundManager::getInstance().getMusic("music")->stop();
+		SoundManager::getInstance().getSound("lose")->play();
+		m_levelScene->stopUpdates();
+		DebugLog::Info("Detected. Game over");
+		GameObject* text = new GameObject();
+		text->AddBehaviour(new TextBehaviour("Lose!", 2, glm::vec3(1, 0, 0)));
+		m_levelScene->AddScreenGameObject(text);
+		// NEED UI!!!
 	}
 	else 
 	{
@@ -170,6 +199,9 @@ void GuardDetection::Update(float deltaTime)
 			guardCone.lock()->SetColour(glm::vec3(10.0f));
 		}
 	}
+
+	// Reset the player collision flag.
+	m_isCollidingPlayer = false;
 }
 
 void GuardDetection::Draw(Shader& shader) {}
@@ -180,6 +212,11 @@ bool GuardDetection::HandleMessage(unsigned int senderID, std::string& message) 
 
 void GuardDetection::OnCollisionStay(GLuint other)
 {
+	GameObject* otherObj{ m_levelScene->GetWorldGameObjectById(other) };
+	if (otherObj == m_playerObj)
+	{
+		m_isCollidingPlayer = true;
+	}
 }
 
 bool GuardDetection::tryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistancePoint)

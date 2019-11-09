@@ -43,6 +43,9 @@
     <Filter Include="Source Files\engine\threading">
       <UniqueIdentifier>{ab960a71-5756-4a35-bdcd-718356dffd48}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\animation">
+      <UniqueIdentifier>{3a983111-9303-4d89-9b00-dcda91dcc000}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -147,6 +150,27 @@
     <ClCompile Include="engine\threading\ThreadPool.cpp">
       <Filter>Source Files\engine\threading</Filter>
     </ClCompile>
+    <ClCompile Include="engine\animation\Animator.cpp">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\animation\KeyFrame.cpp">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\animation\JointTransform.cpp">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\animation\Joint.cpp">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\animation\Animation.cpp">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\animation\AnimatedMesh.cpp">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="pugixml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -247,6 +271,24 @@
     </ClInclude>
     <ClInclude Include="engine\threading\ThreadPool.h">
       <Filter>Source Files\engine\threading</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\animation\Joint.h">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\animation\AnimatedMesh.h">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\animation\JointTransform.h">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\animation\KeyFrame.h">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\animation\Animation.h">
+      <Filter>Source Files\engine\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\animation\Animator.h">
+      <Filter>Source Files\engine\animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

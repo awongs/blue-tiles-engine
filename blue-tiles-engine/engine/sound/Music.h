@@ -14,6 +14,8 @@ public:
     // Plays the music
     void play() const;
 
+	// Stops the music
+	void stop() const;
 private:
     // Used for Music
      Mix_Music *m_music;

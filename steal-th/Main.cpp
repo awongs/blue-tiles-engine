@@ -47,7 +47,7 @@ int main()
 	PhysicsEngine *physEngine{ engine->GetPhysicsEngine() };
 
 	// Create the level
-	Level* l = new Level("level0");
+	Level* l = new Level("level1");
 	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l, physEngine);
 
 	// Setup the camera.
@@ -59,14 +59,14 @@ int main()
 
 	// Add a directional light
 	GameObject* ga = new GameObject();
-	ga->AddBehaviour(new DirectionalLight(glm::vec3(0.6f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
+	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
 	
 	level->AddWorldGameObject(ga);
 	
 	// Test text
-	GameObject* text = new GameObject();
+	/*GameObject* text = new GameObject();
 	text->AddBehaviour(new TextBehaviour("OZMA", 2, glm::vec3(1, 0, 0)));
-	level->AddScreenGameObject(text);
+	level->AddScreenGameObject(text);*/
 
 	// Add test lighting
 	for (int i = 0; i < 0; i++)

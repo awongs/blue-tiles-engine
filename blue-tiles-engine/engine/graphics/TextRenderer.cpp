@@ -120,8 +120,8 @@ void TextRenderer::SetupTextShader()
 	GLuint fragmentShader;
 
 	// file
-	std::string vertex = filemanager::LoadFile("../Assets/shaders/TextShader.vsh");
-	std::string fragment = filemanager::LoadFile("../Assets/shaders/TextShader.fsh");
+	std::string vertex = FileManager::LoadFile("../Assets/shaders/TextShader.vsh");
+	std::string fragment = FileManager::LoadFile("../Assets/shaders/TextShader.fsh");
 
 	// shader compiling
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, vertex.c_str());
