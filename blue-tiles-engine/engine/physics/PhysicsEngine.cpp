@@ -87,12 +87,16 @@ void PhysicsEngine::DoNarrowPhaseThreaded(const unsigned int numThread)
 	int workChunks = m_broadCollisions.size() / numThread;
 	for (unsigned int i = 0; i < numThread; i++)
 	{
-		//std::thread* th = new std::thread(&PhysicsEngine::DoNarrowPhaseRanged, this, workChunks * i, workChunks * (i + 1));
+		m_threadPool->AddTask(std::bind(&PhysicsEngine::DoNarrowPhaseRanged, this, workChunks * i, workChunks * (i + 1)));
 	}
 
-	m_threadPool->AddTask(std::bind(&PhysicsEngine::DoNarrowPhase, this));
+	//m_threadPool->AddTask(std::bind(&PhysicsEngine::DoNarrowPhase, this));
 
 	m_threadPool->WaitForAllTask();
+
+	// Done with list of broad phase collisions, so clear them for the
+	// next frame.
+	m_broadCollisions.clear();
 }
 
 void PhysicsEngine::DoNarrowPhaseRanged(int startIndex, int endIndex)
