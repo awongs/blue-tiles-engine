@@ -22,6 +22,8 @@ ThreadPool::ThreadPool(unsigned int threadCount)
 ThreadPool::~ThreadPool()
 {
 	m_killFlag = true;
+	
+	m_queueCV.notify_all();
 
 	for (int i = 0; i < m_threads.size(); i++)
 	{
