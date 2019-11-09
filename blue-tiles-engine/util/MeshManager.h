@@ -27,7 +27,15 @@ namespace meshmanager
 		std::vector<Vertex> vertices;
 		std::vector<GLuint> indices;
 	};
+
+	struct AnimatedMesh
+	{
+		std::vector<AnimatedVertex> vertices;
+		std::vector<GLuint> indices;
+	};
+
 	extern std::map<std::string, Mesh> cachedObjs;
+	extern std::map<std::pair<std::string, std::string>, AnimatedMesh> cachedObjsWithSkeleton;
 
 	bool LoadObj(const std::string filePath, std::vector<Vertex>& out_vertices, std::vector<GLuint>& out_indices);
 

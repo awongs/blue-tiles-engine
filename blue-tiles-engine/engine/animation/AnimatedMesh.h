@@ -18,7 +18,7 @@ using meshmanager::AnimatedVertex;
 class AnimatedMesh : public Behaviour // TODO: Maybe try to inherit from MeshRenderer instead.
 {
 public:
-	AnimatedMesh(std::string objPath, std::string skeletonPath, std::shared_ptr<Joint> rootJoint, int jointCount);
+	AnimatedMesh(std::string objPath, std::string skeletonPath);
 
 	// Loads and sets the current texture.
 	void SetTexture(std::string texturePath);
@@ -28,6 +28,9 @@ public:
 
 	// Sets the joint transformation matrices in the shader.
 	void BindJointTransforms(GLuint uniformBuffer);
+
+	// Finds and returns a joint by it's id.
+	std::shared_ptr<Joint> GetJointByName(const std::string& jointName);
 
 	// Overridden functions.
 	void Update(float deltaTime) override;
@@ -52,6 +55,9 @@ private:
 	// Recursively calls each joint in the skeleton hierarchy.
 	void addJointsToArray(Joint& headJoint, std::vector<glm::mat4>& jointMatrices);
 
+	// Vector of all joints on the skeleton.
+	std::vector<std::shared_ptr<Joint>> m_joints;
+
 	// ID to the vertex buffer object
 	GLuint m_vertexBufferObjectID;
 
@@ -69,4 +75,7 @@ private:
 
 	// This mesh's indices.
 	std::vector<GLuint> m_indices;
+
+	// Model matrix string constant to avoid unnecessary string creation.
+	static const std::string MODEL_MATRIX;
 };

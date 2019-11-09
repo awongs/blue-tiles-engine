@@ -13,6 +13,7 @@
 namespace meshmanager
 {
 	std::map<std::string, Mesh> cachedObjs;
+	std::map<std::pair<std::string, std::string>, AnimatedMesh> cachedObjsWithSkeleton;
 
 	constexpr int MAX_JOINTS_PER_VERTEX = 3;
 
@@ -23,7 +24,7 @@ namespace meshmanager
 	*/
 	bool LoadObj(const std::string filePath, std::vector<Vertex>& out_vertices, std::vector<GLuint>& out_indices)
 	{
-		std::string file = filemanager::LoadFile(filePath);
+		std::string file = FileManager::LoadFile(filePath);
 		if (file.empty()) return false;
 
 		if (cachedObjs.find(filePath) != cachedObjs.end())
@@ -108,7 +109,23 @@ namespace meshmanager
 	}
 	bool LoadObjWithSkeleton(const std::string objPath, const std::string skeletonPath, std::vector<AnimatedVertex>& out_vertices, std::vector<GLuint>& out_indices)
 	{
-		std::string objFile = filemanager::LoadFile(objPath);
+		// Check cache first.
+		std::pair<std::string, std::string> pathPair = std::make_pair(objPath, skeletonPath);
+		if (cachedObjsWithSkeleton.find(pathPair) != cachedObjsWithSkeleton.end())
+		{
+			std::ostringstream oss;
+			out_vertices = std::vector<AnimatedVertex>(cachedObjsWithSkeleton[pathPair].vertices);
+			out_indices = std::vector<GLuint>(cachedObjsWithSkeleton[pathPair].indices);
+			return true;
+		}
+		else
+		{
+			std::ostringstream oss;
+			oss << objPath << " with skeleton from " << skeletonPath << " is uncached, caching it..";
+			DebugLog::Info(oss.str());
+		}
+
+		std::string objFile = FileManager::LoadFile(objPath);
 		pugi::xml_document skeFile;
 
 		// Make sure file paths are valid
@@ -213,8 +230,6 @@ namespace meshmanager
 			std::vector<std::pair<int, float>> weightList;
 			for (size_t i = 0; i < numJointsAffecting; i++)
 			{
-				//jointIds[i] = *(it + i * 2);
-				//jointWeights[i] = weights[*(it + i * 2 + 1)];
 				weightList.push_back(std::pair<int, float>(*(it + i * 2), weights[*(it + i * 2 + 1)]));
 			}
 
@@ -225,14 +240,6 @@ namespace meshmanager
 					return a.second > b.second;
 				}
 			);
-
-			/*
-			for (std::pair<int, float>& p : weightList)
-			{
-				std::cout << std::to_string(p.second) << " ";
-			}
-			std::cout << std::endl;
-			*/
 			
 			for (size_t i = 0; i < numJointsAffecting && i < MAX_JOINTS_PER_VERTEX; i++)
 			{
@@ -280,6 +287,9 @@ namespace meshmanager
 			out_vertices.push_back(vertex);
 			out_indices.push_back(static_cast<GLuint>(out_vertices.size()) - 1);
 		}
+
+		cachedObjsWithSkeleton[pathPair].vertices = std::vector<AnimatedVertex>(out_vertices);
+		cachedObjsWithSkeleton[pathPair].indices = std::vector<GLuint>(out_indices);
 
 		return true;
 	}

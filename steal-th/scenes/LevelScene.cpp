@@ -8,6 +8,7 @@
 #include <engine/sound/Sound.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/projection.hpp>
+#include <util/FileManager.h>
 
 #include "../behaviours/SimpleGuardMovementAIBehaviour.h"
 #include "LevelScene.h"
@@ -166,7 +167,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	// Create the guards
 	for (Guard &guard : level->m_guards)
 	{
-		AnimatedMesh* animatedMesh = new AnimatedMesh("../Assets/models/robot_kyle.obj", "../Assets/animations/KyleWalking.dae", nullptr, 0);
+		AnimatedMesh* animatedMesh = new AnimatedMesh("../Assets/models/robot_kyle.obj", "../Assets/animations/robot_kyle/KyleWalking.dae");
 		animatedMesh->SetTexture("../Assets/textures/robot_kyle.png");
 
 		glm::vec3 position = glm::vec3(
@@ -179,9 +180,9 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		ga->AddBehaviour(animatedMesh);
 
 		// Animations for guards.
-		std::shared_ptr<Animation> walk = Animation::CreateAnimationFromFile("../Assets/animations/KyleWalking.dae");
-		std::shared_ptr<Animation> idle = Animation::CreateAnimationFromFile("../Assets/animations/KyleIdle.dae");
-		std::shared_ptr<Animation> look = Animation::CreateAnimationFromFile("../Assets/animations/KyleLooking.dae");
+		std::shared_ptr<Animation> walk = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleWalking.dae");
+		std::shared_ptr<Animation> idle = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleIdle.dae");
+		std::shared_ptr<Animation> look = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleLooking.dae");
 		Animator* animator = new Animator(ga->GetBehaviour<AnimatedMesh>());
 		ga->AddBehaviour(animator);
 		animator->AddAnimation(walk);
@@ -190,7 +191,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 		// Add guard detection behaviour
 		ga->AddBehaviour(new GuardDetection(this, playerObj,
-			guard.tileViewDistance* LevelScene::TILE_SIZE, guard.tileViewRadius));
+			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
 
 		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
 
@@ -216,7 +217,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		float theta = atan2f(guard.tileViewRadius * LevelScene::TILE_SIZE, guard.tileViewDistance * LevelScene::TILE_SIZE);
 		SpotLight* guardCone = new SpotLight(glm::vec3(1), ga->forward, theta, theta * 1.25f);
 		ga->AddBehaviour(guardCone);
-		
+
 		m_worldGameObjects.push_back(std::move(ga));
 	}
 }

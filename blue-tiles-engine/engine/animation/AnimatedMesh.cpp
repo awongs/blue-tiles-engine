@@ -14,8 +14,9 @@
 #include "../graphics/Texture.h"
 #include "../input/Input.h"
 
+const std::string AnimatedMesh::MODEL_MATRIX = "model";
 
-AnimatedMesh::AnimatedMesh(std::string objPath, std::string skeletonPath, std::shared_ptr<Joint> rootJoint, int jointCount)
+AnimatedMesh::AnimatedMesh(std::string objPath, std::string skeletonPath)
 	: Behaviour(BehaviourType::AnimatedMesh)
 	, rootJoint(rootJoint)
 	, jointCount(jointCount)
@@ -28,7 +29,7 @@ AnimatedMesh::AnimatedMesh(std::string objPath, std::string skeletonPath, std::s
 
 void AnimatedMesh::SetTexture(std::string texturePath)
 {
-	m_texture = filemanager::LoadTexture(texturePath);
+	m_texture = FileManager::LoadTexture(texturePath);
 }
 
 void AnimatedMesh::SetupBuffers()
@@ -93,6 +94,20 @@ void AnimatedMesh::BindJointTransforms(GLuint uniformBuffer)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+std::shared_ptr<Joint> AnimatedMesh::GetJointByName(const std::string& jointName)
+{
+	for (std::shared_ptr<Joint> joint : m_joints)
+	{
+		if (joint->name == jointName)
+		{
+			return joint;
+		}
+	}
+
+	DebugLog::Error("Couldn't find a joint named: " + jointName);
+	return nullptr;
+}
+
 void AnimatedMesh::Update(float deltaTime)
 {
 
@@ -109,7 +124,7 @@ void AnimatedMesh::Draw(Shader& shader)
 	gameObject->UpdateTransformMatrix();
 
 	// Set model matrix in shader
-	shader.SetUniformMatrix4fv("model", gameObject->GetTransformMatrix());
+	shader.SetUniformMatrix4fv(MODEL_MATRIX, gameObject->GetTransformMatrix());
 	
 	// Bind the texture
 	if (m_texture != nullptr)
@@ -257,6 +272,7 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 	}
 
 	rootJoint->CalculateInverseBindTransform(glm::mat4(1));
+	m_joints = joints;
 }
 
 std::vector<glm::mat4> AnimatedMesh::getJointTransforms()

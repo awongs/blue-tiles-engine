@@ -12,10 +12,6 @@ public:
 	// Constructor.
 	Animation(std::string name, float length, std::vector<KeyFrame>& keyFrames);
 
-	// Creates an animation from a collada file.
-	// TODO: Caching maybe useful?
-	static std::shared_ptr<Animation> CreateAnimationFromFile(std::string filePath);
-
 	// The name of the animation file.
 	std::string name;
 

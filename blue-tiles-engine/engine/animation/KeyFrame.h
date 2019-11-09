@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <string>
 
-#include "JointTransform.h"
+class JointTransform;
 
 // Code referenced from: https://www.youtube.com/watch?v=f3Cr8Yx3GGA
 class KeyFrame

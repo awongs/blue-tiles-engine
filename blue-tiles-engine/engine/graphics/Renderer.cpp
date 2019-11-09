@@ -55,6 +55,11 @@ Renderer::~Renderer()
 	// cleanup context
 	SDL_GL_DeleteContext(m_context);
 
+	// Delete uniform buffers.
+	glDeleteBuffers(1, &m_lightUniformBuffer);
+	glDeleteBuffers(1, &m_cameraUniformBuffer);
+	glDeleteBuffers(1, &m_animationUniformBuffer);
+
 	delete m_shaderManager;
 }
 
@@ -65,18 +70,18 @@ void Renderer::SetupShaders()
 	GLuint fragmentShader;
 
 	// Load shader files into strings
-	std::string shadowVertex = filemanager::LoadFile("../Assets/shaders/Shadow.vsh");
-	std::string shadowFragment = filemanager::LoadFile("../Assets/shaders/Shadow.fsh");
-	std::string animationShadowVertex = filemanager::LoadFile("../Assets/shaders/AnimationShadow.vsh");
-	std::string animationShadowFragment = filemanager::LoadFile("../Assets/shaders/AnimationShadow.fsh");
-	std::string geometryVertex = filemanager::LoadFile("../Assets/shaders/Geometry.vsh");
-	std::string geometryFragment = filemanager::LoadFile("../Assets/shaders/Geometry.fsh");
-	std::string animationGeometryVertex = filemanager::LoadFile("../Assets/shaders/AnimationGeometry.vsh");
-	std::string animationGeometryFragment = filemanager::LoadFile("../Assets/shaders/AnimationGeometry.fsh");
-	std::string transparencyVertex = filemanager::LoadFile("../Assets/shaders/Transparency.vsh");
-	std::string transparencyFragment = filemanager::LoadFile("../Assets/shaders/Transparency.fsh");
-	std::string lightingVertex = filemanager::LoadFile("../Assets/shaders/Lighting.vsh");
-	std::string lightingFragment = filemanager::LoadFile("../Assets/shaders/Lighting.fsh");
+	std::string shadowVertex = FileManager::LoadFile("../Assets/shaders/Shadow.vsh");
+	std::string shadowFragment = FileManager::LoadFile("../Assets/shaders/Shadow.fsh");
+	std::string animationShadowVertex = FileManager::LoadFile("../Assets/shaders/AnimationShadow.vsh");
+	std::string animationShadowFragment = FileManager::LoadFile("../Assets/shaders/AnimationShadow.fsh");
+	std::string geometryVertex = FileManager::LoadFile("../Assets/shaders/Geometry.vsh");
+	std::string geometryFragment = FileManager::LoadFile("../Assets/shaders/Geometry.fsh");
+	std::string animationGeometryVertex = FileManager::LoadFile("../Assets/shaders/AnimationGeometry.vsh");
+	std::string animationGeometryFragment = FileManager::LoadFile("../Assets/shaders/AnimationGeometry.fsh");
+	std::string transparencyVertex = FileManager::LoadFile("../Assets/shaders/Transparency.vsh");
+	std::string transparencyFragment = FileManager::LoadFile("../Assets/shaders/Transparency.fsh");
+	std::string lightingVertex = FileManager::LoadFile("../Assets/shaders/Lighting.vsh");
+	std::string lightingFragment = FileManager::LoadFile("../Assets/shaders/Lighting.fsh");
 
 	// Compile shadow shader
 	vertexShader = m_shaderManager->CompileShader(GL_VERTEX_SHADER, shadowVertex.c_str());
@@ -213,19 +218,19 @@ void Renderer::ShadowPass(Scene& currentScene)
 	// Draw the world
 	for (auto& worldGameObj : currentScene.GetWorldGameObjects())
 	{
-		// Don't draw transparent objects
-		std::weak_ptr<MeshRenderer> meshRenderer = std::static_pointer_cast<MeshRenderer>(worldGameObj->GetBehaviour(BehaviourType::MeshRenderer).lock());
-
-		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent())
-		{
-			continue;
-		}
-
 		// Only draw objects that are within the camera's view
 		// Note: Does not consider model size
 		if (Camera::GetInstance().IsWithinBoundingBox(worldGameObj->position))
 		{
+			std::weak_ptr<MeshRenderer> meshRenderer = std::static_pointer_cast<MeshRenderer>(worldGameObj->GetBehaviour(BehaviourType::MeshRenderer).lock());
 			std::weak_ptr<AnimatedMesh> animatedMesh = std::static_pointer_cast<AnimatedMesh>(worldGameObj->GetBehaviour(BehaviourType::AnimatedMesh).lock());
+
+			// Don't draw transparent objects
+			if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent())
+			{
+				continue;
+			}
+
 			if (!animatedMesh.expired())
 			{
 				m_shaderManager->UseShaderProgram(m_aniShadowShader->GetProgramHandle());
@@ -237,7 +242,6 @@ void Renderer::ShadowPass(Scene& currentScene)
 				m_shaderManager->UseShaderProgram(m_shadowShader->GetProgramHandle());
 				worldGameObj->Draw(*m_shadowShader);
 			}
-			
 		}
 	}
 
@@ -284,20 +288,20 @@ void Renderer::GeometryPass(Scene& currentScene)
 	//currentScene.DrawWorld(*m_deferredGeometryShader);
 	for (auto& worldGameObj : currentScene.GetWorldGameObjects())
 	{
-		// Don't draw transparent objects
-		std::weak_ptr<MeshRenderer> meshRenderer = std::static_pointer_cast<MeshRenderer>(worldGameObj->GetBehaviour(BehaviourType::MeshRenderer).lock());
-
-		if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent())
-		{
-			continue;
-		}
-
 		// Only draw objects that are within the camera's view
 		// Note: Does not consider model size
 		if (Camera::GetInstance().IsWithinBoundingBox(worldGameObj->position))
 		{
 			// TODO: Improve this
+			std::weak_ptr<MeshRenderer> meshRenderer = std::static_pointer_cast<MeshRenderer>(worldGameObj->GetBehaviour(BehaviourType::MeshRenderer).lock());
 			std::weak_ptr<AnimatedMesh> animatedMesh = std::static_pointer_cast<AnimatedMesh>(worldGameObj->GetBehaviour(BehaviourType::AnimatedMesh).lock());
+			
+			// Don't draw transparent objects
+			if (!meshRenderer.expired() && meshRenderer.lock()->IsTransparent())
+			{
+				continue;
+			}
+
 			if (!animatedMesh.expired())
 			{
 				// Use animation shader.
