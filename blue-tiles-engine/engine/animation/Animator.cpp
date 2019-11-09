@@ -113,9 +113,10 @@ void Animator::applyPoseToJoints(std::unordered_map<int, glm::mat4>& currentPose
 std::pair<KeyFrame&, KeyFrame&> Animator::getPreviousAndNextFrames()
 {
 	std::vector<KeyFrame>& allFrames = currentAnimation->keyFrames;
-	size_t frameIndex = animationTime / (currentAnimation->length / allFrames.size());
+	size_t previousFrame = animationTime / (currentAnimation->length / allFrames.size());
+	size_t nextFrame = (previousFrame + 1) % allFrames.size();
 
-	return std::pair<KeyFrame&, KeyFrame&> { allFrames[frameIndex], allFrames[frameIndex + 1] };
+	return std::pair<KeyFrame&, KeyFrame&> { allFrames[previousFrame], allFrames[nextFrame] };
 }
 
 float Animator::calculateProgression(KeyFrame& previousFrame, KeyFrame& nextFrame)
