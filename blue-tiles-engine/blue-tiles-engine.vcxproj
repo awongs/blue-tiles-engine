@@ -150,6 +150,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="engine\animation\AnimatedMesh.cpp" />
+    <ClCompile Include="engine\animation\Animation.cpp" />
+    <ClCompile Include="engine\animation\Animator.cpp" />
+    <ClCompile Include="engine\animation\Joint.cpp" />
+    <ClCompile Include="engine\animation\JointTransform.cpp" />
+    <ClCompile Include="engine\animation\KeyFrame.cpp" />
     <ClCompile Include="engine\behaviours\Behaviour.cpp" />
     <ClCompile Include="engine\behaviours\DirectionalLight.cpp" />
     <ClCompile Include="engine\behaviours\Light.cpp" />
@@ -181,10 +187,17 @@
     <ClCompile Include="engine\sound\Sound.cpp" />
     <ClCompile Include="engine\sound\SoundManager.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="util\FileManager.cpp" />
     <ClCompile Include="util\MeshManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="engine\animation\AnimatedMesh.h" />
+    <ClInclude Include="engine\animation\Animation.h" />
+    <ClInclude Include="engine\animation\Animator.h" />
+    <ClInclude Include="engine\animation\Joint.h" />
+    <ClInclude Include="engine\animation\JointTransform.h" />
+    <ClInclude Include="engine\animation\KeyFrame.h" />
     <ClInclude Include="engine\behaviours\Behaviour.h" />
     <ClInclude Include="engine\behaviours\DirectionalLight.h" />
     <ClInclude Include="engine\behaviours\PhysicsBehaviour.h" />

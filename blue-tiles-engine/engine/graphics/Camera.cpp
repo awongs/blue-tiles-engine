@@ -1,4 +1,5 @@
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/compatibility.hpp>
 
 #include "Camera.h"
 
@@ -98,19 +99,12 @@ bool Camera::IsWithinBoundingBox(const glm::vec3& point) const
 
 void Camera::CalculateViewMatrix()
 {
-	// Create an identity matrix for rotation
-	glm::mat4 rotationMatrix = glm::mat4(1);
-
 	// Calculate rotation matrix
-	rotationMatrix = glm::rotate(rotationMatrix, m_orientation.x, glm::vec3(1, 0, 0));
-	rotationMatrix = glm::rotate(rotationMatrix, m_orientation.y, glm::vec3(0, 1, 0));
-	rotationMatrix = glm::rotate(rotationMatrix, m_orientation.z, glm::vec3(0, 0, 1));
-
-	// Create an identity matrix for position
-	glm::mat4 positionMatrix = glm::mat4(1);
+	glm::quat rotationQuaternion = glm::quat(m_orientation);
+	glm::mat4 rotationMatrix = glm::mat4(rotationQuaternion);
 
 	// Using negative position here to simulate an actual camera moving instead of the world
-	positionMatrix = glm::translate(positionMatrix, -m_position);
+	glm::mat4 positionMatrix = glm::translate(glm::mat4(1), -m_position);
 
 	// View matrix is rotation multiplied by position
 	m_viewMatrix = rotationMatrix * positionMatrix;
