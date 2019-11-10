@@ -138,8 +138,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	}
 
 	// Create player
-	MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/unity_chan.obj");
-	meshRenderer->SetTexture("../Assets/textures/unity_chan.png");
+	AnimatedMesh* meshRenderer = new AnimatedMesh("../Assets/models/alex.obj", "../Assets/animations/alex/AlexRunning.dae");
+	meshRenderer->SetTexture("../Assets/textures/alex.png");
 
 	glm::vec3 position = glm::vec3(
 		(float)(level->m_playerSpawnX) * TILE_SIZE + TILE_SIZE / 2.f,
@@ -147,12 +147,21 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		(float)(level->m_playerSpawnZ) * TILE_SIZE + TILE_SIZE / 2.f
 	);
 
-	GameObject* playerObj = new GameObject("player", position, glm::vec3(0, 0, 0), glm::vec3(2, 2, 2));
+	GameObject* playerObj = new GameObject("player", position, glm::vec3(0, 0, 0), glm::vec3(4, 4, 4));
 
 	playerObj->AddBehaviour(meshRenderer);
 	playerObj->AddBehaviour(new PlayerMovement(10));
 	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
 	playerObj->AddBehaviour(new Inventory());
+
+	Animator* animator = new Animator(playerObj->GetBehaviour<AnimatedMesh>());
+	playerObj->AddBehaviour(animator);
+
+	// Animations for player.
+	std::shared_ptr<Animation> run = FileManager::LoadAnimation("../Assets/animations/alex/AlexRunning.dae");
+	std::shared_ptr<Animation> idle = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleIdle.dae");
+	animator->AddAnimation(run);
+	animator->AddAnimation(idle);
 
 	// item pickup behaviour for player
 	playerObj->AddBehaviour(new PlayerItemPickup());
@@ -186,6 +195,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		std::shared_ptr<Animation> walk = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleWalking.dae");
 		std::shared_ptr<Animation> idle = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleIdle.dae");
 		std::shared_ptr<Animation> look = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleLooking.dae");
+
 		Animator* animator = new Animator(ga->GetBehaviour<AnimatedMesh>());
 		ga->AddBehaviour(animator);
 		animator->AddAnimation(walk);

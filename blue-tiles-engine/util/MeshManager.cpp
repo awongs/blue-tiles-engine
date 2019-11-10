@@ -148,13 +148,20 @@ namespace meshmanager
 		std::vector<glm::ivec3> temp_jointIds;
 		std::vector<glm::vec3> temp_jointWeights;
 
+		// Get controller name.
+		std::string controllerName = skeFile.child("COLLADA")
+			.child("library_controllers")
+			.child("controller")
+			.attribute("id").as_string();
+		std::string controllerWeightsStr = controllerName.append("-Weights");
+
 		// Grab joint weights from file.
 		std::vector<float> weights;
 		std::string weightsStr = skeFile.child("COLLADA")
 			.child("library_controllers")
 			.child("controller")
 			.child("skin")
-			.find_child_by_attribute("id", "Body_UntitledController-Weights")
+			.find_child_by_attribute("id", controllerWeightsStr.c_str())
 			.child("float_array").text().as_string();
 
 		// Convert weights from strings to floats.

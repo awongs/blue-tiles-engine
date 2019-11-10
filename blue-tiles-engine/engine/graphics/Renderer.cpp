@@ -23,6 +23,9 @@
 constexpr unsigned int MAX_POINT_LIGHTS = 256;
 constexpr unsigned int MAX_SPOT_LIGHTS = 64;
 
+// How far out of the screen that lights are allowed to be before being culled.
+constexpr glm::vec3 MAX_LIGHT_DISTANCE = glm::vec3(10.0f);
+
 Renderer::Renderer(SDL_GLContext* targetContext, int windowWidth, int windowHeight)
 	: m_context(targetContext)
 	, m_width(windowWidth)
@@ -361,7 +364,11 @@ void Renderer::Render(Scene& currentScene)
 		glm::mat4 lightSpaceMatrix = dirLight->GetLightSpaceMatrix();
 
 		// Translate by the camera's current position
-		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition()));
+		// Offset a little bit on x and depending on camera rotation.
+		glm::vec3 cameraForward = Camera::GetInstance().GetForward();
+		glm::vec3 offset = glm::vec3(cameraForward.x, 0, cameraForward.z) * Camera::GetInstance().GetZClip().second;
+		lightSpaceMatrix *= glm::translate(glm::mat4(1), -glm::round(Camera::GetInstance().GetPosition() - offset));
+
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::mat4), glm::value_ptr(lightSpaceMatrix));
 	}
 	
@@ -429,7 +436,7 @@ void Renderer::Render(Scene& currentScene)
 			
 			// Only render lights that are within the camera's bounding box
 			// Note: Does not consider light radius, but that's fine for almost all lights
-			if (Camera::GetInstance().IsWithinBoundingBox(pointLight->gameObject->position))
+			if (Camera::GetInstance().IsWithinBoundingBox(pointLight->gameObject->position, MAX_LIGHT_DISTANCE))
 			{
 				pointLight->Render(*m_lightingShader,
 				sizeof(PLight) * pointLightCount++);
@@ -450,7 +457,7 @@ void Renderer::Render(Scene& currentScene)
 
 			// Only render lights that are within the camera's bounding box
 			// Note: Does not consider light radius, but that's fine for almost all lights
-			if (Camera::GetInstance().IsWithinBoundingBox(spotLight->gameObject->position))
+			if (Camera::GetInstance().IsWithinBoundingBox(spotLight->gameObject->position, MAX_LIGHT_DISTANCE))
 			{
 				spotLight->Render(*m_lightingShader,
 					sizeof(PLight) * MAX_POINT_LIGHTS + sizeof(SLight) * spotLightcount++);
