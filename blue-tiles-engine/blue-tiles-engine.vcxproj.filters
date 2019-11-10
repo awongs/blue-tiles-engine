@@ -40,6 +40,9 @@
     <Filter Include="Source Files\engine\behaviours\Lighting">
       <UniqueIdentifier>{baf4a58e-998c-44dd-905b-cc6c5a4fdae8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine\threading">
+      <UniqueIdentifier>{ab960a71-5756-4a35-bdcd-718356dffd48}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\engine\animation">
       <UniqueIdentifier>{3a983111-9303-4d89-9b00-dcda91dcc000}</UniqueIdentifier>
     </Filter>
@@ -143,6 +146,9 @@
     </ClCompile>
     <ClCompile Include="engine\behaviours\PhysicsBehaviour.cpp">
       <Filter>Source Files\engine\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="engine\threading\ThreadPool.cpp">
+      <Filter>Source Files\engine\threading</Filter>
     </ClCompile>
     <ClCompile Include="engine\animation\Animator.cpp">
       <Filter>Source Files\engine\animation</Filter>
@@ -262,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="engine\behaviours\PhysicsBehaviour.h">
       <Filter>Source Files\engine\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\threading\ThreadPool.h">
+      <Filter>Source Files\engine\threading</Filter>
     </ClInclude>
     <ClInclude Include="engine\animation\Joint.h">
       <Filter>Source Files\engine\animation</Filter>
