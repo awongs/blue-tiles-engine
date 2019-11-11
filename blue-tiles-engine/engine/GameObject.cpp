@@ -118,6 +118,7 @@ void GameObject::AddBehaviour(Behaviour* behaviour)
 	{
 		behaviour->gameObject = this;
 		m_behaviours[std::type_index(typeid(*behaviour))] = std::shared_ptr<Behaviour>(behaviour);
+		behaviour->OnAttach(*this);
 	}
 }
 
