@@ -171,7 +171,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	playerObj->AddBehaviour(new PlayerItemPickup());
 
 	// physics collider using player gameobject's on collision callback
-	Collider* playerCol{ new Collider(glm::vec3(2.f)) };
+	Collider* playerCol{ new Collider(glm::vec3(1.5f)) };
 	playerObj->AddBehaviour(new PhysicsBehaviour(m_physEngine, playerObj->id, playerCol));
 
 	// Add to world
@@ -315,6 +315,14 @@ unsigned int LevelScene::GetTileIndexFromXZ(glm::ivec2 tilePos) const
 glm::ivec2 LevelScene::GetLevelSize() const
 {
 	return m_levelSize;
+}
+
+void LevelScene::GetTiles(std::vector<int>& output) const
+{
+	for (const TileType& tile : m_tiles)
+	{
+		output.push_back(static_cast<int>(tile));
+	}
 }
 
 void LevelScene::AddTile(TileType type, unsigned int tileIndex)

@@ -186,6 +186,7 @@
     <ClCompile Include="engine\graphics\ShadowBuffer.cpp" />
     <ClCompile Include="engine\graphics\Texture.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
+    <ClCompile Include="engine\opencl\OpenCLManager.cpp" />
     <ClCompile Include="engine\physics\Collider.cpp" />
     <ClCompile Include="engine\physics\PhysicsEngine.cpp" />
     <ClCompile Include="engine\physics\PhysicsObject.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="engine\graphics\ShadowBuffer.h" />
     <ClInclude Include="engine\graphics\Texture.h" />
     <ClInclude Include="engine\input\Input.h" />
+    <ClInclude Include="engine\opencl\OpenCLManager.h" />
     <ClInclude Include="engine\physics\Collider.h" />
     <ClInclude Include="engine\physics\PhysicsEngine.h" />
     <ClInclude Include="engine\physics\PhysicsObject.h" />

@@ -23,6 +23,9 @@ public:
 	// Get the number of tiles in this level.
 	glm::ivec2 GetLevelSize() const;
 
+	// Get the integer representation of the level's tiles.
+	void GetTiles(std::vector<int> &output) const;
+
 	// The size of a tile in world units.
 	static const float TILE_SIZE;
 
