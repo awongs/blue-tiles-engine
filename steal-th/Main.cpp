@@ -96,26 +96,6 @@ int main()
 	quitButtonGO->SetParent(mainLayoutGO);
 	mainMenuScene->AddScreenGameObject(mainMenuGO);
 
-	// UI for level
-	GameObject* menu = new GameObject();
-	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
-	GameObject* testString = new GameObject();
-	testString->AddBehaviour(new UITextBehaviour("Inventory"));
-	testString->SetParent(menu);
-	GameObject* redKey = new GameObject("redKey");
-	redKey->isVisible = false;
-	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/red_key_block.png"));
-	redKey->SetParent(menu);
-	GameObject* greenKey = new GameObject("greenKey");
-	greenKey->isVisible = false;
-	greenKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/green_key_block.png"));
-	greenKey->SetParent(menu);
-	GameObject* blueKey = new GameObject("blueKey");
-	blueKey->isVisible = false;
-	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
-	blueKey->SetParent(menu);
-	level->AddScreenGameObject(menu);
-
 	// Add test lighting
 	for (int i = 0; i < 0; i++)
 	{
