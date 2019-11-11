@@ -10,7 +10,6 @@
 #include <engine/behaviours/PhysicsBehaviour.h>
 #include <engine/physics/Collider.h>
 #include <engine/debugbt/DebugLog.h>
-#include <engine/behaviours/TextBehaviour.h>
 #include <engine/animation/Animator.h>
 
 #include "PlayerMovement.h"
@@ -195,9 +194,6 @@ void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
 			gameObject->currentScene->stopUpdates();
 			DebugLog::Info("Player reached exit. Game over.");
-			GameObject* text = new GameObject();
-			text->AddBehaviour(new TextBehaviour("Win!", 2, glm::vec3(1, 0, 0)));
-			gameObject->currentScene->AddScreenGameObject(text);
 			// Need UI!!!!!
 		}
 		else
