@@ -1,7 +1,9 @@
 #pragma once
-
 #include <memory>
 #include <sdl2/SDL.h>
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_sdl.h>
+#include <imgui/imgui_impl_opengl3.h>
 #include "physics/PhysicsEngine.h"
 
 class TextRenderer;
@@ -22,6 +24,9 @@ public:
 
 	// Destroys and cleans up the engine.
 	~GameEngine();
+
+	// Event handler for events like window management and input
+	void HandleEvent(SDL_Event& _event);
 
 	// Main game update loop
 	void Update();
@@ -70,4 +75,7 @@ private:
 
 	// Number of frames per second
 	int m_frameRate;
+
+	// IO reference for ImGui
+	ImGuiIO m_io;
 };

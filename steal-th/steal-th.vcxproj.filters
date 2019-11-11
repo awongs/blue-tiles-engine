@@ -103,4 +103,7 @@
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
 </Project>

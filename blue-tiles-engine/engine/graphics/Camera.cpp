@@ -1,4 +1,5 @@
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/compatibility.hpp>
 
 #include "Camera.h"
 
@@ -70,6 +71,11 @@ glm::vec3 Camera::GetOrientation() const
 	return m_orientation;
 }
 
+glm::vec3 Camera::GetForward() const
+{
+	return m_forward;
+}
+
 glm::mat4 Camera::GetViewMatrix() const
 {
 	return m_viewMatrix;
@@ -85,10 +91,11 @@ std::pair<float, float> Camera::GetZClip() const
 	return m_zClip;
 }
 
-bool Camera::IsWithinBoundingBox(const glm::vec3& point) const
+bool Camera::IsWithinBoundingBox(const glm::vec3& point, const glm::vec3& additionalMargin) const
 {
-	if (point.x > m_boundingBox.maxX || point.y > m_boundingBox.maxY || point.z > m_boundingBox.maxZ
-	 || point.x < m_boundingBox.minX || point.y < m_boundingBox.minY || point.z < m_boundingBox.minZ)
+	if (point.x > m_boundingBox.maxX + additionalMargin.x || point.x < m_boundingBox.minX - additionalMargin.x ||
+		point.y > m_boundingBox.maxY + additionalMargin.y || point.y < m_boundingBox.minY - additionalMargin.y ||
+		point.z > m_boundingBox.maxZ + additionalMargin.z || point.z < m_boundingBox.minZ - additionalMargin.z)
 	{
 		return false;
 	}
@@ -98,19 +105,15 @@ bool Camera::IsWithinBoundingBox(const glm::vec3& point) const
 
 void Camera::CalculateViewMatrix()
 {
-	// Create an identity matrix for rotation
-	glm::mat4 rotationMatrix = glm::mat4(1);
-
 	// Calculate rotation matrix
-	rotationMatrix = glm::rotate(rotationMatrix, m_orientation.x, glm::vec3(1, 0, 0));
-	rotationMatrix = glm::rotate(rotationMatrix, m_orientation.y, glm::vec3(0, 1, 0));
-	rotationMatrix = glm::rotate(rotationMatrix, m_orientation.z, glm::vec3(0, 0, 1));
+	glm::quat rotationQuaternion = glm::quat(m_orientation);
+	glm::mat4 rotationMatrix = glm::mat4(rotationQuaternion);
 
-	// Create an identity matrix for position
-	glm::mat4 positionMatrix = glm::mat4(1);
+	// Forward vector is equal to the z column in the rotation matrix
+	m_forward = glm::normalize(glm::vec3(-rotationMatrix[0][2], -rotationMatrix[1][2], rotationMatrix[2][2]));
 
 	// Using negative position here to simulate an actual camera moving instead of the world
-	positionMatrix = glm::translate(positionMatrix, -m_position);
+	glm::mat4 positionMatrix = glm::translate(glm::mat4(1), -m_position);
 
 	// View matrix is rotation multiplied by position
 	m_viewMatrix = rotationMatrix * positionMatrix;

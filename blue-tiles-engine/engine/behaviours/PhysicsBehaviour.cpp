@@ -76,6 +76,16 @@ void PhysicsBehaviour::OnCollisionStay(GLuint other)
 {
 }
 
+void PhysicsBehaviour::OnAttach(GameObject& gameObject)
+{
+	// Set position of collider when attached to prevent the
+	// issue of all colliders being in the same position when the scene is first updated.
+	if (m_collider != nullptr)
+	{
+		m_collider->SetPosition(gameObject.position);
+	}
+}
+
 Collider *PhysicsBehaviour::GetCollider() const
 {
 	return m_collider;

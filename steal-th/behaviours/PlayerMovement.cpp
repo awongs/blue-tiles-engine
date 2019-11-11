@@ -1,3 +1,5 @@
+#include <glm/gtx/compatibility.hpp>
+
 #include <engine/input/Input.h>
 #include <engine/GameObject.h>
 #include <engine/MessageSystem.h>
@@ -7,10 +9,14 @@
 #include <engine/Scene.h>
 #include <engine/behaviours/PhysicsBehaviour.h>
 #include <engine/physics/Collider.h>
+#include <engine/debugbt/DebugLog.h>
+#include <engine/animation/Animator.h>
 
 #include "PlayerMovement.h"
 #include "Inventory.h"
 #include "TileBehaviour.h"
+
+constexpr float ROTATE_SPEED = 0.05f;
 
 PlayerMovement::PlayerMovement(float speed)
 	: Behaviour(BehaviourType::PlayerMovement)
@@ -24,6 +30,9 @@ void PlayerMovement::Update(float deltaTime)
 	bool isKeyDown{ Input::GetInstance().IsKeyDown(Input::INPUT_DOWN) };
 	bool isKeyLeft{ Input::GetInstance().IsKeyDown(Input::INPUT_LEFT) };
 	bool isKeyRight{ Input::GetInstance().IsKeyDown(Input::INPUT_RIGHT) };
+
+	// TODO: Make this a member variable instead.
+	std::shared_ptr<Animator> animator = std::static_pointer_cast<Animator>(gameObject->GetBehaviour(BehaviourType::Animator).lock());
 
 	// Update current velocity based on input.
 	if (isKeyUp)
@@ -53,8 +62,33 @@ void PlayerMovement::Update(float deltaTime)
 		m_currentVelocity.x = 0.f;
 	}
 
-	// Update position based on current velocity.
-	gameObject->position += (m_currentVelocity);
+	bool isMoving = glm::length(m_currentVelocity) > 0.0f;
+
+	if (animator != nullptr)
+	{
+		if (isMoving)
+		{
+			animator->PlayAnimation("AlexRunning");
+		}
+		else
+		{
+			// TODO: Using robot kyle's idle animation for now.
+			animator->PlayAnimation("KyleIdle");
+		}
+	}
+	
+	if (isMoving)
+	{
+		// Update position and rotation based on current velocity.
+		gameObject->position += (m_currentVelocity);
+
+		glm::vec3 velDirection = glm::normalize(m_currentVelocity);
+
+		glm::quat current = glm::quatLookAt(-gameObject->forward, glm::vec3(0, 1, 0));
+		glm::quat desired = glm::quatLookAt(-velDirection, glm::vec3(0, 1, 0));
+
+		gameObject->rotation = glm::eulerAngles(glm::slerp(current, desired, ROTATE_SPEED));
+	}
 }
 
 void PlayerMovement::Draw(Shader& shader)
@@ -71,7 +105,7 @@ void PlayerMovement::OnCollisionStay(GLuint other)
 {
 	GameObject* otherObj{ gameObject->currentScene->GetWorldGameObjectById(other) };
 
-	HandleInteractableConllision(otherObj);
+	HandleInteractableCollision(otherObj);
 	HandleWallCollision(otherObj);
 }
 
@@ -80,7 +114,12 @@ glm::vec3 PlayerMovement::GetCurrentVelocity() const
 	return m_currentVelocity;
 }
 
-void PlayerMovement::HandleInteractableConllision(GameObject* otherObj)
+void PlayerMovement::ResetVelocity()
+{
+	m_currentVelocity = glm::vec3(0);
+}
+
+void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 {
 	// get tile behaviour
 	std::shared_ptr<TileBehaviour> tile{ otherObj->GetBehaviour<TileBehaviour>().lock() };
@@ -149,7 +188,17 @@ void PlayerMovement::HandleInteractableConllision(GameObject* otherObj)
 	{
 		if (inventory->GetNumItem(Inventory::ItemType::OBJECTIVE_ITEM) > 0)
 		{
-			// TODO: implement win action.
+			SoundManager::getInstance().getMusic("music")->stop();
+			SoundManager::getInstance().getSound("win")->play();
+			inventory->RemoveItem(Inventory::ItemType::OBJECTIVE_ITEM);
+			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
+			gameObject->currentScene->stopUpdates();
+			DebugLog::Info("Player reached exit. Game over.");
+			// Need UI!!!!!
+		}
+		else
+		{
+			SoundManager::getInstance().getSound("door-locked")->play();
 		}
 
 		break;
@@ -175,6 +224,7 @@ void PlayerMovement::HandleWallCollision(GameObject* otherObj)
 	case TileType::RED_DOOR:
 	case TileType::BLUE_DOOR:
 	case TileType::GREEN_DOOR:
+	case TileType::EXIT:
 	{
 		std::shared_ptr<PlayerMovement> playerMovement{ gameObject->GetBehaviour<PlayerMovement>().lock() };
 		if (playerMovement == nullptr)

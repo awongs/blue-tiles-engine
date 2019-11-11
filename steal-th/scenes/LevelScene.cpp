@@ -8,6 +8,7 @@
 #include <engine/sound/Sound.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/projection.hpp>
+#include <util/FileManager.h>
 
 #include "../behaviours/SimpleGuardMovementAIBehaviour.h"
 #include "LevelScene.h"
@@ -18,6 +19,14 @@
 #include "../behaviours/ObjectBehaviour.h"
 #include "../behaviours/TileBehaviour.h"
 #include "../behaviours/PlayerItemPickup.h"
+#include <engine/behaviours/UIMenuBehaviour.h>
+#include <engine/behaviours/UIImageBehaviour.h>
+#include <engine/behaviours/UIButtonBehaviour.h>
+#include <engine/behaviours/UITextBehaviour.h>
+
+#include <engine/animation/AnimatedMesh.h>
+#include <engine/animation/Animation.h>
+#include <engine/animation/Animator.h>
 
 
 const float LevelScene::TILE_SIZE{ 9.f };
@@ -133,8 +142,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	}
 
 	// Create player
-	MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/unity_chan.obj");
-	meshRenderer->SetTexture("../Assets/textures/unity_chan.png");
+	AnimatedMesh* meshRenderer = new AnimatedMesh("../Assets/models/alex.obj", "../Assets/animations/alex/AlexRunning.dae");
+	meshRenderer->SetTexture("../Assets/textures/alex.png");
 
 	glm::vec3 position = glm::vec3(
 		(float)(level->m_playerSpawnX) * TILE_SIZE + TILE_SIZE / 2.f,
@@ -142,12 +151,21 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		(float)(level->m_playerSpawnZ) * TILE_SIZE + TILE_SIZE / 2.f
 	);
 
-	GameObject* playerObj = new GameObject("player", position, glm::vec3(0, 0, 0), glm::vec3(2, 2, 2));
+	GameObject* playerObj = new GameObject("player", position, glm::vec3(0, 0, 0), glm::vec3(4, 4, 4));
 
 	playerObj->AddBehaviour(meshRenderer);
 	playerObj->AddBehaviour(new PlayerMovement(10));
 	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
 	playerObj->AddBehaviour(new Inventory());
+
+	Animator* animator = new Animator(playerObj->GetBehaviour<AnimatedMesh>());
+	playerObj->AddBehaviour(animator);
+
+	// Animations for player.
+	std::shared_ptr<Animation> run = FileManager::LoadAnimation("../Assets/animations/alex/AlexRunning.dae");
+	std::shared_ptr<Animation> idle = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleIdle.dae");
+	animator->AddAnimation(run);
+	animator->AddAnimation(idle);
 
 	// item pickup behaviour for player
 	playerObj->AddBehaviour(new PlayerItemPickup());
@@ -159,11 +177,14 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	// Add to world
 	AddWorldGameObject(playerObj);
 
+	// Play music
+	SoundManager::getInstance().getMusic("music")->play();
+
 	// Create the guards
 	for (Guard &guard : level->m_guards)
 	{
-		MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/robot_kyle.obj");
-		meshRenderer->SetTexture("../Assets/textures/robot_kyle.png");
+		AnimatedMesh* animatedMesh = new AnimatedMesh("../Assets/models/robot_kyle.obj", "../Assets/animations/robot_kyle/KyleWalking.dae");
+		animatedMesh->SetTexture("../Assets/textures/robot_kyle.png");
 
 		glm::vec3 position = glm::vec3(
 			(float)(guard.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
@@ -172,15 +193,30 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("guard",
 			position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
 
-		ga->AddBehaviour(meshRenderer);
+		ga->AddBehaviour(animatedMesh);
+
+		// Animations for guards.
+		std::shared_ptr<Animation> walk = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleWalking.dae");
+		std::shared_ptr<Animation> idle = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleIdle.dae");
+		std::shared_ptr<Animation> look = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleLooking.dae");
+
+		Animator* animator = new Animator(ga->GetBehaviour<AnimatedMesh>());
+		ga->AddBehaviour(animator);
+		animator->AddAnimation(walk);
+		animator->AddAnimation(idle);
+		animator->AddAnimation(look);
+
+		// Add physics behaviour.
+		Collider* guardCol{ new Collider(glm::vec3(1.5f)) };
+		ga->AddBehaviour(new PhysicsBehaviour(m_physEngine, ga->id, guardCol));
 
 		// Add guard detection behaviour
 		ga->AddBehaviour(new GuardDetection(this, playerObj,
-			guard.tileViewDistance* LevelScene::TILE_SIZE, guard.tileViewRadius));
+			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
 
 		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
 
-		// move to box
+		/*// move to box
 		sgmaib->AddMoveTileAction(1, 2);
 		sgmaib->AddTurnCWAction();
 		sgmaib->AddMoveTileAction(1, 1);
@@ -194,7 +230,35 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		sgmaib->AddMoveTileAction(2, 2);
 		sgmaib->AddTurnCWAction();
 		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);
+		sgmaib->AddWaitAction(2);*/
+
+		// Setting guard movement
+		for (std::string move : guard.movement) {
+			if (move == "turncw") {
+				sgmaib->AddTurnCWAction();
+			}
+			else if (move == "turnccw") {
+				sgmaib->AddTurnCCWAction();
+			}
+			else if (move.find("move") != std::string::npos) {
+				std::string value1;
+				std::string value2;
+				bool split = false;
+				for (int i = 5; i < std::strlen(move.c_str()); i++) {
+					if (move[i] == ',') {
+						split = true;
+					}
+					if (move[i] != ',' && split == false) {
+						value1 += move[i];
+					}
+					else if(move[i] != ',' && split == true){
+						value2 += move[i];
+					}
+				}
+				//DebugLog::Info(value1 + " " + value2);
+				sgmaib->AddMoveTileAction(std::stoi(value1), std::stoi(value2));
+			}
+		}
 
 		ga->AddBehaviour(sgmaib);
 
@@ -202,9 +266,31 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		float theta = atan2f(guard.tileViewRadius * LevelScene::TILE_SIZE, guard.tileViewDistance * LevelScene::TILE_SIZE);
 		SpotLight* guardCone = new SpotLight(glm::vec3(1), ga->forward, theta, theta * 1.25f);
 		ga->AddBehaviour(guardCone);
-		
+
 		m_worldGameObjects.push_back(std::move(ga));
 	}
+
+
+
+	// UI for level
+	GameObject* menu = new GameObject();
+	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
+	GameObject* testString = new GameObject();
+	testString->AddBehaviour(new UITextBehaviour("Inventory"));
+	testString->SetParent(menu);
+	GameObject* redKey = new GameObject("redKey");
+	// redKey->isVisible = false;
+	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/red_key_block.png"));
+	redKey->SetParent(menu);
+	GameObject* greenKey = new GameObject("greenKey");
+	// greenKey->isVisible = false;
+	greenKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/green_key_block.png"));
+	greenKey->SetParent(menu);
+	GameObject* blueKey = new GameObject("blueKey");
+	// blueKey->isVisible = false;
+	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
+	blueKey->SetParent(menu);
+	AddScreenGameObject(menu);
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const
@@ -274,6 +360,7 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 		case TileType::RED_DOOR:
 		case TileType::BLUE_DOOR:
 		case TileType::GREEN_DOOR:
+		case TileType::EXIT:
 		{
 
 			glm::vec3 position = glm::vec3(
@@ -315,7 +402,7 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				}
 				case TileType::BLUE_DOOR:
 				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/door.obj");
+					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
 					meshRenderer->SetTransparent(true);
 					meshRenderer->SetTexture("../Assets/textures/blue_key_block.png");
 					ga->AddBehaviour(meshRenderer);
@@ -327,7 +414,7 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				}
 				case TileType::GREEN_DOOR:
 				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/door.obj");
+					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
 					meshRenderer->SetTransparent(true);
 					meshRenderer->SetTexture("../Assets/textures/green_key_block.png");
 					ga->AddBehaviour(meshRenderer);
@@ -335,6 +422,18 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::GREEN_DOOR) };
 					ga->AddBehaviour(tileBehaviour);
 					m_tiles[tileIndex] = TileType::GREEN_DOOR;
+					break;
+				}
+				case TileType::EXIT:
+				{
+					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
+					meshRenderer->SetTransparent(true);
+					meshRenderer->SetTexture("../Assets/textures/exit.jpg");
+					ga->AddBehaviour(meshRenderer);
+
+					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::EXIT) };
+					ga->AddBehaviour(tileBehaviour);
+					m_tiles[tileIndex] = TileType::EXIT;
 					break;
 				}
 			}
@@ -346,10 +445,11 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 			break;
 		}
 
-		case TileType::EXIT:
+		/*case TileType::EXIT:
 		{
+
 			break;
-		}
+		}*/
 
 	}
 }

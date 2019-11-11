@@ -16,7 +16,12 @@
 #include <engine/physics/PhysicsObject.h>
 #include <engine/physics/PhysicsEngine.h>
 #include <engine/graphics/Camera.h>
-#include <engine/behaviours/TextBehaviour.h>
+#include <engine/behaviours/UIMenuBehaviour.h>
+#include <engine/behaviours/UIImageBehaviour.h>
+#include <engine/behaviours/UIButtonBehaviour.h>
+#include <engine/behaviours/UITextBehaviour.h>
+#include <engine/behaviours/UILayoutBehaviour.h>
+#include <util/FileManager.h>
 
 #include "Level.h"
 #include "scenes/LevelScene.h"
@@ -33,6 +38,7 @@ constexpr glm::vec3 CAMERA_ORIENTATION = glm::vec3(glm::radians(75.0f), 0.0f, 0.
 
 int main()
 {
+	bool keepRunning = true;
 	GameWindow gameWin(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	int windowSetupStatus = gameWin.SetupSDLWindow();
@@ -46,8 +52,11 @@ int main()
 	GameEngine* engine = new GameEngine(gameWin.GetWindow());
 	PhysicsEngine *physEngine{ engine->GetPhysicsEngine() };
 
+	// Create the main menu
+	std::unique_ptr<Scene> mainMenuScene = std::make_unique<Scene>();
+
 	// Create the level
-	Level* l = new Level("level0");
+	Level* l = new Level("level1");
 	std::unique_ptr<LevelScene> level = std::make_unique<LevelScene>(l, physEngine);
 
 	// Setup the camera.
@@ -59,14 +68,33 @@ int main()
 
 	// Add a directional light
 	GameObject* ga = new GameObject();
-	ga->AddBehaviour(new DirectionalLight(glm::vec3(0.6f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
+	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
 	
 	level->AddWorldGameObject(ga);
-	
-	// Test text
-	GameObject* text = new GameObject();
-	text->AddBehaviour(new TextBehaviour("OZMA", 2, glm::vec3(1, 0, 0)));
-	level->AddScreenGameObject(text);
+
+	// UI for main menu
+	GameObject* mainMenuBackgroundGO = new GameObject();
+	mainMenuBackgroundGO->AddBehaviour(new UIMenuBehaviour("background", ImVec2(-10,-10), ImVec2(WINDOW_WIDTH + 30, WINDOW_HEIGHT + 30), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar));
+	GameObject* mainMenuBackground = new GameObject();
+	mainMenuBackground->AddBehaviour(new UIImageBehaviour("../Assets/textures/main_menu.png", ImVec2(WINDOW_WIDTH + 30, WINDOW_HEIGHT + 30)));
+	mainMenuBackground->SetParent(mainMenuBackgroundGO);
+	mainMenuScene->AddScreenGameObject(mainMenuBackgroundGO);
+	GameObject* mainMenuGO = new GameObject();
+	mainMenuGO->AddBehaviour(new UIMenuBehaviour("Steal-th", ImVec2((WINDOW_WIDTH / 2) - (WINDOW_WIDTH / 10), WINDOW_HEIGHT - 100), ImVec2((WINDOW_WIDTH / 4), 75), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
+	GameObject* mainLayoutGO = new GameObject();
+	mainLayoutGO->AddBehaviour(new UILayoutBehaviour(true));
+	mainLayoutGO->SetParent(mainMenuGO);
+	GameObject* playButtonGO = new GameObject();
+	playButtonGO->AddBehaviour(new UIButtonBehaviour("Play", [&] {
+		engine->SetScene(level.get());
+		}, ImVec2(75, 50)));
+	playButtonGO->SetParent(mainLayoutGO);
+	GameObject* quitButtonGO = new GameObject();
+	quitButtonGO->AddBehaviour(new UIButtonBehaviour("Quit", [&] {
+		keepRunning = false;
+		}, ImVec2(75, 50)));
+	quitButtonGO->SetParent(mainLayoutGO);
+	mainMenuScene->AddScreenGameObject(mainMenuGO);
 
 	// Add test lighting
 	for (int i = 0; i < 0; i++)
@@ -84,22 +112,19 @@ int main()
 	}
 
 	// Set the scene in engine
-	engine->SetScene(level.release());
+	engine->SetScene(mainMenuScene.get());
 
 	SDL_Event windowEvent;
 
 	// Empty loop to prevent the window from closing immediately.
-	while (true)
+	while (keepRunning)
 	{
-		if (SDL_PollEvent(&windowEvent))
-		{
-			Input::GetInstance().HandleInput(windowEvent);
-			if (windowEvent.type == SDL_QUIT) break;
+		engine->HandleEvent(windowEvent);
 
-			// Quit the game with cancel key.
-			if (Input::GetInstance().IsKeyDown(Input::INPUT_CANCEL))
-				break;
-		}
+		if (windowEvent.type == SDL_QUIT) break;
+
+		// Quit the game with cancel key.
+		if (Input::GetInstance().IsKeyDown(Input::INPUT_CANCEL)) break;
 
 		engine->Update();
 
@@ -107,6 +132,9 @@ int main()
 	}
 
 	std::cout << "End of engine life." << std::endl;
+
+	level.release();
+	mainMenuScene.release();
 
 	// destroy engine
 	delete engine;

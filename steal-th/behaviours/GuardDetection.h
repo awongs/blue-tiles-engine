@@ -59,4 +59,5 @@ private:
 	// Store OpenCL-related values.
 	std::unique_ptr<OpenCLManager> m_openCLManager;
 	bool* m_outputBuffer;
+	bool m_isCollidingPlayer{ false };
 };

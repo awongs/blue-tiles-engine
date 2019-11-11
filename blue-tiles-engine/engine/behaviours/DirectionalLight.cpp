@@ -42,8 +42,9 @@ DirectionalLight::DirectionalLight(glm::vec3 colour, glm::vec3 direction, float 
 	}
 
 	// Create the orthographic projection matrix for shadow mapping
+	// TODO: Hardcoded -10.0f
 	std::pair<float, float> zClip = Camera::GetInstance().GetZClip();
-	m_projectionMatrix = glm::ortho(minX, maxX, minY, maxY, zClip.first, zClip.second);
+	m_projectionMatrix = glm::ortho(minX, maxX, minY, maxY, zClip.first, zClip.second - 10.0f);
 
 	// Calculate view matrix for this light
 	m_viewMatrix = glm::lookAt(-m_direction,
