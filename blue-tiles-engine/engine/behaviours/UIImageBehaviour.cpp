@@ -1,12 +1,12 @@
 #include <imgui/imgui.h>
 #include "UIImageBehaviour.h"
-#include "../../util/FileManager.h"
+#include "../..//util/FileManager.h"
 
 UIImageBehaviour::UIImageBehaviour(std::string filePath)
 	: Behaviour(BehaviourType::UIImageBehaviour)
 	, m_size(100, 100)
 {
-	m_texture = filemanager::LoadTexture(filePath);
+	m_texture = FileManager::LoadTexture(filePath);
 }
 
 UIImageBehaviour::~UIImageBehaviour()

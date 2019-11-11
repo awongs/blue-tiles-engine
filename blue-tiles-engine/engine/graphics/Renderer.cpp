@@ -469,5 +469,5 @@ void Renderer::Render(Scene& currentScene)
 	glDisable(GL_DEPTH_TEST);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	currentScene.DrawScreen(*m_deferredGeometryShader);
+	currentScene.DrawScreen(*m_geometryShader);
 }

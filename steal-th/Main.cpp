@@ -16,7 +16,6 @@
 #include <engine/physics/PhysicsObject.h>
 #include <engine/physics/PhysicsEngine.h>
 #include <engine/graphics/Camera.h>
-#include <engine/behaviours/TextBehaviour.h>
 #include <engine/behaviours/UIMenuBehaviour.h>
 #include <engine/behaviours/UIImageBehaviour.h>
 #include <engine/behaviours/UIButtonBehaviour.h>
@@ -38,6 +37,7 @@ constexpr glm::vec3 CAMERA_ORIENTATION = glm::vec3(glm::radians(75.0f), 0.0f, 0.
 
 int main()
 {
+	bool keepRunning = true;
 	GameWindow gameWin(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	int windowSetupStatus = gameWin.SetupSDLWindow();
@@ -50,6 +50,9 @@ int main()
 	// create game engine
 	GameEngine* engine = new GameEngine(gameWin.GetWindow());
 	PhysicsEngine *physEngine{ engine->GetPhysicsEngine() };
+
+	// Create the main menu
+	std::unique_ptr<Scene> mainMenuScene = std::make_unique<Scene>();
 
 	// Create the level
 	Level* l = new Level("level1");
@@ -67,13 +70,23 @@ int main()
 	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
 	
 	level->AddWorldGameObject(ga);
-	
-	// Test text
-	/*GameObject* text = new GameObject();
-	text->AddBehaviour(new TextBehaviour("OZMA", 2, glm::vec3(1, 0, 0)));
-	level->AddScreenGameObject(text);*/
 
-	// Inventory textures
+	// UI for main menu
+	GameObject* mainMenuGO = new GameObject();
+	mainMenuGO->AddBehaviour(new UIMenuBehaviour("Steal-th", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize));
+	GameObject* playButtonGO = new GameObject();
+	playButtonGO->AddBehaviour(new UIButtonBehaviour("Play", [&] {
+		engine->SetScene(level.get());
+		}));
+	playButtonGO->SetParent(mainMenuGO);
+	GameObject* quitButtonGO = new GameObject();
+	quitButtonGO->AddBehaviour(new UIButtonBehaviour("Quit", [&] {
+		keepRunning = false;
+		}));
+	quitButtonGO->SetParent(mainMenuGO);
+	mainMenuScene->AddScreenGameObject(mainMenuGO);
+
+	// UI for level
 	GameObject* menu = new GameObject();
 	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
 	GameObject* testString = new GameObject();
@@ -92,11 +105,6 @@ int main()
 	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
 	blueKey->SetParent(menu);
 	level->AddScreenGameObject(menu);
-	GameObject* testButton = new GameObject();
-	testButton->AddBehaviour(new UIButtonBehaviour("Hello World", [] {
-		DebugLog::Info("Hello World!");
-	}));
-	testButton->SetParent(menu);
 
 	// Add test lighting
 	for (int i = 0; i < 0; i++)
@@ -114,12 +122,12 @@ int main()
 	}
 
 	// Set the scene in engine
-	engine->SetScene(level.release());
+	engine->SetScene(mainMenuScene.get());
 
 	SDL_Event windowEvent;
 
 	// Empty loop to prevent the window from closing immediately.
-	while (true)
+	while (keepRunning)
 	{
 		engine->HandleEvent(windowEvent);
 
@@ -134,6 +142,9 @@ int main()
 	}
 
 	std::cout << "End of engine life." << std::endl;
+
+	level.release();
+	mainMenuScene.release();
 
 	// destroy engine
 	delete engine;

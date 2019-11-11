@@ -2,7 +2,6 @@
 #include "graphics/Renderer.h"
 #include "debugbt/DebugLog.h"
 #include "Scene.h"
-#include "graphics/TextRenderer.h"
 #include "MessageSystem.h"
 #include "sound/SoundManager.h"
 #include "input/Input.h"
@@ -35,9 +34,6 @@ GameEngine::GameEngine(SDL_Window* targetWindow)
 	GLint vpWidth, vpHeight;
 	SDL_GL_GetDrawableSize(m_window, &vpWidth, &vpHeight);
 	glViewport(0, 0, vpWidth, vpHeight);
-
-	// text rendering (NOTE: must be created before any buffers!)
-	textRenderer = new TextRenderer(vpWidth, vpHeight);
 
 	// 3d rendering
 	renderer = new Renderer(&targetContext, vpWidth, vpHeight);
@@ -105,8 +101,6 @@ void GameEngine::Draw()
 {
 
 	renderer->Render(*m_currentScene);
-
-	textRenderer->RenderScreenText(*m_currentScene);
 
 	// ImGui Rendering
 	ImGui::Render();
