@@ -28,6 +28,8 @@ public:
 	virtual bool HandleMessage(unsigned int senderID, std::string& message);
 
 	void OnCollisionStay(GLuint other) override;
+	
+	void OnAttach(GameObject& gameObject) override;
 
 	// Get its PhysicsObject's collider.
 	Collider *GetCollider() const;

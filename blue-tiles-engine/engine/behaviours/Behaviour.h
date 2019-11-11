@@ -46,6 +46,10 @@ public:
 
 	virtual void OnCollisionStay(GLuint other) = 0;
 
+	// Implement this if you need additional setup when your behaviour is attached.
+	// By default it does nothing.
+	virtual void OnAttach(GameObject& gameObject);
+
 	// Handles messages
 	virtual bool HandleMessage(unsigned int senderID, std::string& message) = 0;
 
