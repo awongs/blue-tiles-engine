@@ -84,6 +84,8 @@ void MeshRenderer::SetTransparent(bool transparent)
 
 void MeshRenderer::Update(float deltaTime)
 {
+	// Update transform matrix
+	gameObject->UpdateTransformMatrix();
 }
 
 void MeshRenderer::Draw(Shader& shader)
@@ -92,9 +94,6 @@ void MeshRenderer::Draw(Shader& shader)
 	glBindVertexArray(m_vertexArrayObjectID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObjectID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesBufferObjectID);
-
-	// Update transform matrix
-	gameObject->UpdateTransformMatrix();
 
 	// Set model matrix in shader
 	shader.SetUniformMatrix4fv(MODEL_MATRIX, gameObject->GetTransformMatrix());

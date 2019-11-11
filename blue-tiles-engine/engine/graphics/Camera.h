@@ -47,6 +47,9 @@ public:
 	// Orientation accessor.
 	glm::vec3 GetOrientation() const;
 
+	// Forward accessor.
+	glm::vec3 GetForward() const;
+
 	// View matrix accessor.
 	glm::mat4 GetViewMatrix() const;
 
@@ -58,7 +61,8 @@ public:
 
 	// Checks if a given point is within the camera's bounding box.
 	// Returns true if it is, otherwise false.
-	bool IsWithinBoundingBox(const glm::vec3& point) const;
+	// additionalMargin - Extra leeway for the object to be considered within the bounding box.
+	bool IsWithinBoundingBox(const glm::vec3& point, const glm::vec3& additionalMargin = glm::vec3(0, 0, 0)) const;
 
 	// Calculates and sets the projection matrix to a perspective view.
 	void CalculatePerspectiveView(const float fov, const float aspect, const float nearClip, const float farClip);
@@ -79,6 +83,9 @@ private:
 
 	// Current orientation of the camera.
 	glm::vec3 m_orientation;
+
+	// The forward vector of the camera.
+	glm::vec3 m_forward;
 
 	// The camera's view matrix.
 	glm::mat4 m_viewMatrix;

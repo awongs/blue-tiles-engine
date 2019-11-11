@@ -1,3 +1,5 @@
+#include <glm/gtx/compatibility.hpp>
+
 #include <engine/input/Input.h>
 #include <engine/GameObject.h>
 #include <engine/MessageSystem.h>
@@ -8,10 +10,13 @@
 #include <engine/behaviours/PhysicsBehaviour.h>
 #include <engine/physics/Collider.h>
 #include <engine/debugbt/DebugLog.h>
+#include <engine/animation/Animator.h>
 
 #include "PlayerMovement.h"
 #include "Inventory.h"
 #include "TileBehaviour.h"
+
+constexpr float ROTATE_SPEED = 0.05f;
 
 PlayerMovement::PlayerMovement(float speed)
 	: Behaviour(BehaviourType::PlayerMovement)
@@ -25,6 +30,9 @@ void PlayerMovement::Update(float deltaTime)
 	bool isKeyDown{ Input::GetInstance().IsKeyDown(Input::INPUT_DOWN) };
 	bool isKeyLeft{ Input::GetInstance().IsKeyDown(Input::INPUT_LEFT) };
 	bool isKeyRight{ Input::GetInstance().IsKeyDown(Input::INPUT_RIGHT) };
+
+	// TODO: Make this a member variable instead.
+	std::shared_ptr<Animator> animator = std::static_pointer_cast<Animator>(gameObject->GetBehaviour(BehaviourType::Animator).lock());
 
 	// Update current velocity based on input.
 	if (isKeyUp)
@@ -54,8 +62,33 @@ void PlayerMovement::Update(float deltaTime)
 		m_currentVelocity.x = 0.f;
 	}
 
-	// Update position based on current velocity.
-	gameObject->position += (m_currentVelocity);
+	bool isMoving = glm::length(m_currentVelocity) > 0.0f;
+
+	if (animator != nullptr)
+	{
+		if (isMoving)
+		{
+			animator->PlayAnimation("AlexRunning");
+		}
+		else
+		{
+			// TODO: Using robot kyle's idle animation for now.
+			animator->PlayAnimation("KyleIdle");
+		}
+	}
+	
+	if (isMoving)
+	{
+		// Update position and rotation based on current velocity.
+		gameObject->position += (m_currentVelocity);
+
+		glm::vec3 velDirection = glm::normalize(m_currentVelocity);
+
+		glm::quat current = glm::quatLookAt(-gameObject->forward, glm::vec3(0, 1, 0));
+		glm::quat desired = glm::quatLookAt(-velDirection, glm::vec3(0, 1, 0));
+
+		gameObject->rotation = glm::eulerAngles(glm::slerp(current, desired, ROTATE_SPEED));
+	}
 }
 
 void PlayerMovement::Draw(Shader& shader)

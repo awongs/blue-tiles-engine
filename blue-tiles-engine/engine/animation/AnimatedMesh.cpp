@@ -110,7 +110,8 @@ std::shared_ptr<Joint> AnimatedMesh::GetJointByName(const std::string& jointName
 
 void AnimatedMesh::Update(float deltaTime)
 {
-
+	// Update transform matrix
+	gameObject->UpdateTransformMatrix();
 }
 
 void AnimatedMesh::Draw(Shader& shader)
@@ -119,9 +120,6 @@ void AnimatedMesh::Draw(Shader& shader)
 	glBindVertexArray(m_vertexArrayObjectID);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObjectID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indicesBufferObjectID);
-
-	// Update transform matrix
-	gameObject->UpdateTransformMatrix();
 
 	// Set model matrix in shader
 	shader.SetUniformMatrix4fv(MODEL_MATRIX, gameObject->GetTransformMatrix());
@@ -156,25 +154,56 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 		return false;
 	}
 
+	std::vector<std::shared_ptr<Joint>> joints;
+
+	// Get controller name.
+	std::string controllerName = skeFile.child("COLLADA")
+		.child("library_controllers")
+		.child("controller")
+		.attribute("id").as_string();
+	std::string controllerJointsStr = controllerName + "-Joints";
+	std::string controllerMatricesStr = controllerName + "-Matrices";
+
 	// Get total number of joints.
 	jointCount = skeFile.child("COLLADA")
 		.child("library_controllers")
 		.child("controller")
 		.child("skin")
-		.find_child_by_attribute("id", "Body_UntitledController-Joints")
+		.find_child_by_attribute("id", controllerJointsStr.c_str())
 		.child("Name_array").attribute("count").as_int();
 
-	// Parse information for all joints.
-	std::vector<std::shared_ptr<Joint>> joints;
-	std::string jointArray = skeFile.child("COLLADA")
+	// Parse information for joint names.
+	std::string jointNameArray = skeFile.child("COLLADA")
 		.child("library_controllers")
 		.child("controller")
 		.child("skin")
-		.find_child_by_attribute("id", "Body_UntitledController-Joints")
+		.find_child_by_attribute("id", controllerJointsStr.c_str())
 		.child("Name_array").text().as_string();
 
-	std::istringstream iss(jointArray);
+	// Parse information for joint matrices.
+	std::string jointMatricesArray = skeFile.child("COLLADA")
+		.child("library_controllers")
+		.child("controller")
+		.child("skin")
+		.find_child_by_attribute("id", controllerMatricesStr.c_str())
+		.child("float_array").text().as_string();
+
+	std::vector<float> jointMatrices;
+	std::istringstream iss(jointMatricesArray);
 	int jointCount = 0;
+	while (iss)
+	{
+		std::string floatStr;
+		iss >> floatStr;
+		if (floatStr.length() == 0)
+		{
+			continue;
+		}
+
+		jointMatrices.push_back(stof(floatStr));
+	}
+
+	iss = std::istringstream(jointNameArray);
 	while (iss)
 	{
 		std::string jointStr;
@@ -184,7 +213,14 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 			continue;
 		}
 
-		joints.push_back(std::make_shared<Joint>(jointCount, jointStr));
+		std::shared_ptr<Joint> joint = std::make_shared<Joint>(jointCount, jointStr);
+
+		for (int i = 0; i < 16; i++)
+		{
+			joint->inverseBindTransform[i % 4][i / 4] = jointMatrices[((size_t)jointCount * 16) + i];
+		}
+
+		joints.push_back(joint);
 		jointCount++;
 	}
 
@@ -271,7 +307,7 @@ bool AnimatedMesh::parseJointHierarchy(std::string skeletonPath)
 		}
 	}
 
-	rootJoint->CalculateInverseBindTransform(glm::mat4(1));
+	//rootJoint->CalculateInverseBindTransform(glm::mat4(1));
 	m_joints = joints;
 }
 

@@ -21,6 +21,9 @@ GameObject::GameObject(std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 	// We increment counter but don't decrement because we don't keep track of which
 	// GameObject ids are destroyed
 	id = idCounter++;
+
+	// Initial transform matrix update.
+	UpdateTransformMatrix();
 }
 
 GameObject::~GameObject()

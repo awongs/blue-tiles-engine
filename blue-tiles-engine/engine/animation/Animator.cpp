@@ -90,17 +90,19 @@ std::unordered_map<int, glm::mat4> Animator::calculateCurrentPose()
 
 void Animator::applyPoseToJoints(std::unordered_map<int, glm::mat4>& currentPose, Joint& joint, glm::mat4& parentTransform)
 {
+	glm::mat4 currentTransform;
+
 	// Check if this joint is in the animation pose.
 	if (currentPose.find(joint.index) == currentPose.end())
 	{
 		// Joint is not in animation pose, so just inherit from parent.
-		joint.animatedTransform = parentTransform * joint.localBindTransform * joint.inverseBindTransform;
-		return;
+		currentTransform = parentTransform * joint.localBindTransform;
 	}
-	
-	// Multiply current pose transform with parent and inverse to get the animated transform.
-	glm::mat4& currentLocalTransform = currentPose.at(joint.index);
-	glm::mat4 currentTransform = parentTransform * currentLocalTransform;
+	else
+	{
+		currentTransform = parentTransform * currentPose.at(joint.index);
+	}
+
 	joint.animatedTransform = currentTransform * joint.inverseBindTransform;
 
 	// Recursively call this function on all children joints.
@@ -113,8 +115,8 @@ void Animator::applyPoseToJoints(std::unordered_map<int, glm::mat4>& currentPose
 std::pair<KeyFrame&, KeyFrame&> Animator::getPreviousAndNextFrames()
 {
 	std::vector<KeyFrame>& allFrames = currentAnimation->keyFrames;
-	size_t previousFrame = animationTime / (currentAnimation->length / allFrames.size());
-	size_t nextFrame = (previousFrame + 1) % allFrames.size();
+	int previousFrame = static_cast<int>(animationTime / (currentAnimation->length / allFrames.size())) % allFrames.size();
+	int nextFrame = (previousFrame + 1) % allFrames.size();
 
 	return std::pair<KeyFrame&, KeyFrame&> { allFrames[previousFrame], allFrames[nextFrame] };
 }
