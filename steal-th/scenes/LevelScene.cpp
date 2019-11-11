@@ -171,7 +171,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	playerObj->AddBehaviour(new PlayerItemPickup());
 
 	// physics collider using player gameobject's on collision callback
-	Collider* playerCol{ new Collider(glm::vec3(2.f)) };
+	Collider* playerCol{ new Collider(glm::vec3(1.5f)) };
 	playerObj->AddBehaviour(new PhysicsBehaviour(m_physEngine, playerObj->id, playerCol));
 
 	// Add to world

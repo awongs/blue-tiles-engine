@@ -100,6 +100,9 @@ namespace {
 	 }
 
 	 const int NUM_VALUES_PER_POINT{ 2 };
+
+	 // TODO: maybe move this flag to a more appropriate location?
+	 const bool IS_OPEN_CL_ENABLED{ true };
 }
 
 GuardDetection::GuardDetection(LevelScene* levelScene, GameObject* playerObj,
@@ -109,26 +112,29 @@ GuardDetection::GuardDetection(LevelScene* levelScene, GameObject* playerObj,
 	m_maxViewDist(maxViewDist), m_tileViewRadius(tileViewRadius),
 	m_numDetectionRays(2 * tileViewRadius + 1)
 {
-	m_openCLManager = std::make_unique<OpenCLManager>("../Assets/opencl/guard_detection.cl", "guard_detection");
+	if (IS_OPEN_CL_ENABLED)
+	{
+		m_openCLManager = std::make_unique<OpenCLManager>("../Assets/opencl/guard_detection.cl", "guard_detection");
 
-	cl_mem outputBuffer{ m_openCLManager->CreateOutputBuffer(sizeof(bool) * m_numDetectionRays) };
-	m_openCLManager->SetKernelArg(2, sizeof(cl_mem), &outputBuffer);
+		cl_mem outputBuffer{ m_openCLManager->CreateOutputBuffer(sizeof(bool) * m_numDetectionRays) };
+		m_openCLManager->SetKernelArg(2, sizeof(cl_mem), &outputBuffer);
 
-	m_openCLManager->SetKernelArg(6, sizeof(float), &LevelScene::TILE_SIZE);
+		m_openCLManager->SetKernelArg(6, sizeof(float), &LevelScene::TILE_SIZE);
 
-	glm::ivec2 levelSize{ m_levelScene->GetLevelSize() };
-	m_openCLManager->SetKernelArg(7, sizeof(int), &levelSize.x);
-	m_openCLManager->SetKernelArg(8, sizeof(int), &levelSize.y);
+		glm::ivec2 levelSize{ m_levelScene->GetLevelSize() };
+		m_openCLManager->SetKernelArg(7, sizeof(int), &levelSize.x);
+		m_openCLManager->SetKernelArg(8, sizeof(int), &levelSize.y);
 
-	std::vector<int> tiles;
-	m_levelScene->GetTiles(tiles);
-	cl_mem tilesBuffer{ m_openCLManager->CreateInputBuffer(sizeof(int) * tiles.size(), &tiles[0]) };
-	m_openCLManager->SetKernelArg(9, sizeof(cl_mem), &tilesBuffer);
+		std::vector<int> tiles;
+		m_levelScene->GetTiles(tiles);
+		cl_mem tilesBuffer{ m_openCLManager->CreateInputBuffer(sizeof(int) * tiles.size(), &tiles[0]) };
+		m_openCLManager->SetKernelArg(9, sizeof(cl_mem), &tilesBuffer);
 
-	const int MAX_VIEW_DIST_TILES{ static_cast<int>(m_maxViewDist / LevelScene::TILE_SIZE) };
-	m_openCLManager->SetKernelArg(12, sizeof(int) * NUM_VALUES_PER_POINT * MAX_VIEW_DIST_TILES * 2, NULL);
+		const int MAX_VIEW_DIST_TILES{ static_cast<int>(m_maxViewDist / LevelScene::TILE_SIZE) };
+		m_openCLManager->SetKernelArg(13, sizeof(int) * NUM_VALUES_PER_POINT * MAX_VIEW_DIST_TILES * 2, NULL);
 
-	m_outputBuffer = new bool[m_numDetectionRays];
+		m_outputBuffer = new bool[m_numDetectionRays];
+	}
 }
 
 GuardDetection::~GuardDetection()
@@ -138,21 +144,6 @@ GuardDetection::~GuardDetection()
 
 void GuardDetection::Update(float deltaTime)
 {
-	// Update these kernel arguments.
-	std::vector<float> endpointsX, endpointsZ;
-	GetDetectionRayEndPoints(endpointsX, endpointsZ);
-	cl_mem endpointsXBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsX[0]) };
-	m_openCLManager->SetKernelArg(0, sizeof(cl_mem), &endpointsXBuffer);
-	cl_mem endpointsZBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsZ[0]) };
-	m_openCLManager->SetKernelArg(1, sizeof(cl_mem), &endpointsZBuffer);
-
-	m_openCLManager->SetKernelArg(3, sizeof(float), &gameObject->position.x);
-	m_openCLManager->SetKernelArg(4, sizeof(float), &gameObject->position.z);
-	m_openCLManager->SetKernelArg(5, sizeof(float), &gameObject->rotation.y);
-
-	m_openCLManager->SetKernelArg(10, sizeof(float), &m_playerObj->position.x);
-	m_openCLManager->SetKernelArg(11, sizeof(float), &m_playerObj->position.z);
-
 	// Reset the detected flag.
 	m_isPlayerDetected = false;
 
@@ -160,36 +151,14 @@ void GuardDetection::Update(float deltaTime)
 	if (m_levelScene == nullptr)
 		return;
 
-	// Run OpenCL kernel for detection.
-	size_t globalWorkSize[1]{ m_numDetectionRays };
-	size_t localWorkSize[1]{ 1 };
-	m_openCLManager->EnqueueKernel(1, globalWorkSize, localWorkSize);
-
-	// Get the results from OpenCL.
-	m_openCLManager->ReadOutput(&m_outputBuffer[0], sizeof(bool) * m_numDetectionRays);
-	for (int i = 0; i < m_numDetectionRays; ++i)
+	// Only call one of these.
+	if (IS_OPEN_CL_ENABLED)
 	{
-		m_isPlayerDetected |= m_outputBuffer[i];
-
-		if (m_isPlayerDetected)
-		{
-			break;
-		}
+		UpdateOpenCL();
 	}
-
-	if (m_isPlayerDetected)
+	else
 	{
-		// If the the player was detected while on the same tile as this guard,
-		// make sure they are actually colliding for the detection to count.
-		// Otherwise, just disable the detection.
-		glm::vec2 playerPos{ m_playerObj->position.x, m_playerObj->position.z };
-		glm::ivec2 playerTilePos{ m_levelScene->GetTileCoordFromPos(playerPos) };
-		glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
-		glm::ivec2 guardTilePos{ m_levelScene->GetTileCoordFromPos(guardWorldPos) };
-		if (playerTilePos == guardTilePos && !m_isCollidingPlayer)
-		{
-			m_isPlayerDetected = false;
-		}
+		UpdateSerial();
 	}
 
 	// Set colour of guard spot light depending on player detection.
@@ -236,6 +205,63 @@ void GuardDetection::OnCollisionStay(GLuint other)
 	if (otherObj == m_playerObj)
 	{
 		m_isCollidingPlayer = true;
+	}
+}
+
+void GuardDetection::UpdateOpenCL()
+{
+	// Update these kernel arguments.
+	std::vector<float> endpointsX, endpointsZ;
+	GetDetectionRayEndPoints(endpointsX, endpointsZ);
+	cl_mem endpointsXBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsX[0]) };
+	m_openCLManager->SetKernelArg(0, sizeof(cl_mem), &endpointsXBuffer);
+	cl_mem endpointsZBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsZ[0]) };
+	m_openCLManager->SetKernelArg(1, sizeof(cl_mem), &endpointsZBuffer);
+
+	m_openCLManager->SetKernelArg(3, sizeof(float), &gameObject->position.x);
+	m_openCLManager->SetKernelArg(4, sizeof(float), &gameObject->position.z);
+	m_openCLManager->SetKernelArg(5, sizeof(float), &gameObject->rotation.y);
+
+	m_openCLManager->SetKernelArg(10, sizeof(float), &m_playerObj->position.x);
+	m_openCLManager->SetKernelArg(11, sizeof(float), &m_playerObj->position.z);
+
+	m_openCLManager->SetKernelArg(12, sizeof(int), &m_isCollidingPlayer);
+
+	// Run OpenCL kernel for detection.
+	size_t globalWorkSize[1]{ static_cast<size_t>(m_numDetectionRays) };
+	size_t localWorkSize[1]{ 1 };
+	m_openCLManager->EnqueueKernel(1, globalWorkSize, localWorkSize);
+
+	// Get the results from OpenCL.
+	m_openCLManager->ReadOutput(&m_outputBuffer[0], sizeof(bool) * m_numDetectionRays);
+	for (int i = 0; i < m_numDetectionRays; ++i)
+	{
+		m_isPlayerDetected |= m_outputBuffer[i];
+
+		if (m_isPlayerDetected)
+		{
+			break;
+		}
+	}
+}
+
+void GuardDetection::UpdateSerial()
+{
+	// The guard's tile position is point 1 for the line algorithm.
+	// We want this to be the tile directly in front of the guard.
+	glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
+
+	// For rotation == 0.f, the guard is facing down.
+	glm::vec2 unrotatedMaxDistPoint{ guardWorldPos.x, guardWorldPos.y + m_maxViewDist };
+
+	// Check if the guard can detect the player at its maximum view distance.
+	int numEndTiles{ m_tileViewRadius * 2 };
+	for (int i = 0; i < numEndTiles + 1; ++i)
+	{
+		glm::vec2 pos{ unrotatedMaxDistPoint };
+		pos.x -= (m_tileViewRadius * LevelScene::TILE_SIZE);
+		pos.x += (i * LevelScene::TILE_SIZE);
+		m_isPlayerDetected |= TryDetectPlayer(guardWorldPos, pos);
 	}
 }
 
@@ -324,7 +350,10 @@ bool GuardDetection::TryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistance
 		// Check if the player is on this tile.
 		if (point == playerTilePos)
 		{
-			return true;
+			// If the player was detected while on the same tile as this guard,
+			// make sure they are actually colliding for the detection to count.
+			// Otherwise, just disable the detection.
+			return !(playerTilePos == guardTilePos && !m_isCollidingPlayer);
 		}
 
 		// Check adjacent walls to handle corner cases, when looking 

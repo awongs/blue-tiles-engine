@@ -25,6 +25,10 @@ public:
 	void OnCollisionStay(GLuint other) override;
 	
 private:
+	// Encapsulate update-related stuff for OpenCL and serial implementation.
+	void UpdateOpenCL();
+	void UpdateSerial();
+
 	// Output the end points of each detection ray into
 	// a single vector.
 	void GetDetectionRayEndPoints(std::vector<float> &endpointsX, 
@@ -58,6 +62,9 @@ private:
 
 	// Store OpenCL-related values.
 	std::unique_ptr<OpenCLManager> m_openCLManager;
-	bool* m_outputBuffer;
+	bool* m_outputBuffer{ nullptr };
+
+	// Check if the guard is colliding with the player.
+	// This is used for near-detection tests.
 	bool m_isCollidingPlayer{ false };
 };

@@ -114,6 +114,7 @@ __kernel void guard_detection(__global const float* endPointsX,
 	__global const int* levelTiles,
 	const float playerPosX,
 	const float playerPosZ,
+    const int isCollidingPlayer,
     __local int2* lineAlgOutput)
 {
     int gid = get_global_id(0);
@@ -145,7 +146,7 @@ __kernel void guard_detection(__global const float* endPointsX,
     // Call the line algorithm to get the points on the line.
     int outputSize = 0;
     bool isUsingLow = PlotLine(guardTilePos.x, guardTilePos.y, maxTileDistPoint.x, maxTileDistPoint.y, lineAlgOutput, &outputSize);
-	
+
     float2 playerWorldPos = (float2)(playerPosX, playerPosZ);
     int2 playerTilePos = getTileCoordFromPos(playerWorldPos, tileSize);
 
@@ -249,6 +250,15 @@ __kernel void guard_detection(__global const float* endPointsX,
     	// Otherwise, move the iterator to the next point.
     	currentIt += (isUsingLow ? -1 : 1);
     }
+
+    // If the player was detected while on the same tile as this guard,
+    // make sure they are actually colliding for the detection to count.
+    // Otherwise, just disable the detection.
+    if (result && playerTilePos.x == guardTilePos.x &
+        playerTilePos.y == guardTilePos.y && !isCollidingPlayer)
+    {
+        result = false;
+	}
 
     // Set the output.
     output[gid] = result;
