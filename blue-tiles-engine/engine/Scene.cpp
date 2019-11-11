@@ -2,7 +2,7 @@
 #include "debugbt/DebugLog.h"
 #include "behaviours/MeshRenderer.h"
 #include "behaviours/UIMenuBehaviour.h"
-#include "behaviours/UIImageBehaviour.h"
+#include "behaviours/UILayoutBehaviour.h"
 #include <algorithm>
 #include <iterator>
 #include "graphics/Camera.h"
@@ -99,6 +99,7 @@ void Scene::DrawScreen(Shader& shader)
 void Scene::DrawUIGameObject(GameObject* gameObject, Shader& shader)
 {
 	if (!gameObject->isVisible) return;
+
 	// Determine if we're in a menu
 	std::weak_ptr<UIMenuBehaviour> uiMenu = std::static_pointer_cast<UIMenuBehaviour>(gameObject->GetBehaviour(BehaviourType::UIMenuBehaviour).lock());
 
@@ -116,7 +117,26 @@ void Scene::DrawUIGameObject(GameObject* gameObject, Shader& shader)
 	}
 	else
 	{
-		gameObject->Draw(shader);
+		// Are we in a layout?
+		std::weak_ptr<UILayoutBehaviour> uiLayout = std::static_pointer_cast<UILayoutBehaviour>(gameObject->GetBehaviour(BehaviourType::UILayoutBehaviour).lock());
+		if (!uiLayout.expired())
+		{
+			// Draw the children
+			std::vector<GameObject*> children = gameObject->GetChildren();
+			for (auto gameObjChild : children)
+			{
+				DrawUIGameObject(gameObjChild, shader);
+
+				if (gameObjChild != children.back())
+				{
+					uiLayout.lock()->Draw(shader);
+				}
+			}
+		}
+		else
+		{
+			gameObject->Draw(shader);
+		}
 	}
 }
 

@@ -25,6 +25,7 @@ enum class BehaviourType
 	UIMenuBehaviour,
 	UIImageBehaviour,
 	UITextBehaviour,
+	UILayoutBehaviour,
 	UIButtonBehaviour,
 	PlayerItemPickup,
 	AnimatedMesh,

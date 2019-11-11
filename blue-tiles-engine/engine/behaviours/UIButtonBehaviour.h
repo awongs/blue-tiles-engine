@@ -11,6 +11,9 @@ class UIButtonBehaviour : public Behaviour
 public:
 	// Default constructor
 	UIButtonBehaviour(std::string text, std::function<void()> lambda);
+
+	// Default constructor
+	UIButtonBehaviour(std::string text, std::function<void()> lambda, ImVec2 size);
 	
 	// Destructor
 	virtual ~UIButtonBehaviour();
@@ -29,6 +32,9 @@ public:
 private:
 	// The string to display
 	std::string m_text;
+
+	// The size of the button
+	ImVec2 m_size;
 
 	std::function<void()> m_lambda;
 };

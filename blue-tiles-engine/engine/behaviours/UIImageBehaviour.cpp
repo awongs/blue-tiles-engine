@@ -9,6 +9,13 @@ UIImageBehaviour::UIImageBehaviour(std::string filePath)
 	m_texture = FileManager::LoadTexture(filePath);
 }
 
+UIImageBehaviour::UIImageBehaviour(std::string filePath, ImVec2 size)
+	: Behaviour(BehaviourType::UIImageBehaviour)
+	, m_size(size)
+{
+	m_texture = FileManager::LoadTexture(filePath);
+}
+
 UIImageBehaviour::~UIImageBehaviour()
 {
 

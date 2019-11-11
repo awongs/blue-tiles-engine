@@ -20,6 +20,7 @@
 #include <engine/behaviours/UIImageBehaviour.h>
 #include <engine/behaviours/UIButtonBehaviour.h>
 #include <engine/behaviours/UITextBehaviour.h>
+#include <engine/behaviours/UILayoutBehaviour.h>
 #include <util/FileManager.h>
 
 #include "Level.h"
@@ -72,18 +73,27 @@ int main()
 	level->AddWorldGameObject(ga);
 
 	// UI for main menu
+	GameObject* mainMenuBackgroundGO = new GameObject();
+	mainMenuBackgroundGO->AddBehaviour(new UIMenuBehaviour("background", ImVec2(-10,-10), ImVec2(WINDOW_WIDTH + 30, WINDOW_HEIGHT + 30), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMouseInputs | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar));
+	GameObject* mainMenuBackground = new GameObject();
+	mainMenuBackground->AddBehaviour(new UIImageBehaviour("../Assets/textures/main_menu.png", ImVec2(WINDOW_WIDTH + 30, WINDOW_HEIGHT + 30)));
+	mainMenuBackground->SetParent(mainMenuBackgroundGO);
+	mainMenuScene->AddScreenGameObject(mainMenuBackgroundGO);
 	GameObject* mainMenuGO = new GameObject();
-	mainMenuGO->AddBehaviour(new UIMenuBehaviour("Steal-th", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize));
+	mainMenuGO->AddBehaviour(new UIMenuBehaviour("Steal-th", ImVec2((WINDOW_WIDTH / 2) - (WINDOW_WIDTH / 10), WINDOW_HEIGHT - 100), ImVec2((WINDOW_WIDTH / 4), 75), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
+	GameObject* mainLayoutGO = new GameObject();
+	mainLayoutGO->AddBehaviour(new UILayoutBehaviour(true));
+	mainLayoutGO->SetParent(mainMenuGO);
 	GameObject* playButtonGO = new GameObject();
 	playButtonGO->AddBehaviour(new UIButtonBehaviour("Play", [&] {
 		engine->SetScene(level.get());
-		}));
-	playButtonGO->SetParent(mainMenuGO);
+		}, ImVec2(75, 50)));
+	playButtonGO->SetParent(mainLayoutGO);
 	GameObject* quitButtonGO = new GameObject();
 	quitButtonGO->AddBehaviour(new UIButtonBehaviour("Quit", [&] {
 		keepRunning = false;
-		}));
-	quitButtonGO->SetParent(mainMenuGO);
+		}, ImVec2(75, 50)));
+	quitButtonGO->SetParent(mainLayoutGO);
 	mainMenuScene->AddScreenGameObject(mainMenuGO);
 
 	// UI for level

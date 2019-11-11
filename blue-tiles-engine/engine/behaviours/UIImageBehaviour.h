@@ -11,6 +11,9 @@ class UIImageBehaviour : public Behaviour
 public:
 	// Default constructor
 	UIImageBehaviour(std::string filePath);
+
+	// Constructor with size
+	UIImageBehaviour(std::string filePath, ImVec2 size);
 	
 	// Destructor
 	virtual ~UIImageBehaviour();

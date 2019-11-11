@@ -195,6 +195,9 @@
     <ClCompile Include="pugixml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="engine\behaviours\UILayoutBehaviour.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\GameEngine.h">
@@ -343,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="engine\animation\Animator.h">
       <Filter>Source Files\engine\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="engine\behaviours\UILayoutBehaviour.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

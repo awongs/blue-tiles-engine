@@ -78,10 +78,8 @@ void UIMenuBehaviour::SetWindowFlags(int flags)
 
 void UIMenuBehaviour::BeginDraw()
 {
-	if (m_position.x > 0 && m_position.y > 0)
-		ImGui::SetNextWindowPos(m_position);
-	if (m_size.x > 0 && m_size.y > 0)
-		ImGui::SetNextWindowSize(m_size);
+	ImGui::SetNextWindowPos(m_position);
+	ImGui::SetNextWindowSize(m_size);
 	ImGui::Begin(m_title.c_str(), NULL, m_windowFlags);
 }
 
