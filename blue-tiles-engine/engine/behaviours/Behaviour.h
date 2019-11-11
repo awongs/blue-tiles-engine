@@ -22,12 +22,14 @@ enum class BehaviourType
 	SimpleGuardMovementBehaviour,
 	ObjectBehaviour,
 	TileBehaviour,
-	NONE,
-	PlayerItemPickup,
 	UIMenuBehaviour,
 	UIImageBehaviour,
 	UITextBehaviour,
-	UIButtonBehaviour
+	UIButtonBehaviour,
+	PlayerItemPickup,
+	AnimatedMesh,
+	Animator,
+	NONE
 };
 
 class GameObject;

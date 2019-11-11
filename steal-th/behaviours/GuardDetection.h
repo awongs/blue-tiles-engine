@@ -42,4 +42,6 @@ private:
 
 	// A spot light for the guard's detection cone.
 	std::weak_ptr<SpotLight> m_detectionCone;
+
+	bool m_isCollidingPlayer{ false };
 };

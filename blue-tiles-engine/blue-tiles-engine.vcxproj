@@ -156,6 +156,12 @@
     <ClCompile Include="..\libraries\includes\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\libraries\includes\imgui\imgui_impl_sdl.cpp" />
     <ClCompile Include="..\libraries\includes\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="engine\animation\AnimatedMesh.cpp" />
+    <ClCompile Include="engine\animation\Animation.cpp" />
+    <ClCompile Include="engine\animation\Animator.cpp" />
+    <ClCompile Include="engine\animation\Joint.cpp" />
+    <ClCompile Include="engine\animation\JointTransform.cpp" />
+    <ClCompile Include="engine\animation\KeyFrame.cpp" />
     <ClCompile Include="engine\behaviours\Behaviour.cpp" />
     <ClCompile Include="engine\behaviours\DirectionalLight.cpp" />
     <ClCompile Include="engine\behaviours\Light.cpp" />
@@ -163,7 +169,6 @@
     <ClCompile Include="engine\behaviours\PhysicsBehaviour.cpp" />
     <ClCompile Include="engine\behaviours\PointLight.cpp" />
     <ClCompile Include="engine\behaviours\SpotLight.cpp" />
-    <ClCompile Include="engine\behaviours\TextBehaviour.cpp" />
     <ClCompile Include="engine\behaviours\UIButtonBehaviour.cpp" />
     <ClCompile Include="engine\behaviours\UIImageBehaviour.cpp" />
     <ClCompile Include="engine\behaviours\UIMenuBehaviour.cpp" />
@@ -178,7 +183,6 @@
     <ClCompile Include="engine\graphics\Shader.cpp" />
     <ClCompile Include="engine\graphics\ShaderManager.cpp" />
     <ClCompile Include="engine\graphics\ShadowBuffer.cpp" />
-    <ClCompile Include="engine\graphics\TextRenderer.cpp" />
     <ClCompile Include="engine\graphics\Texture.cpp" />
     <ClCompile Include="engine\input\Input.cpp" />
     <ClCompile Include="engine\physics\Collider.cpp" />
@@ -190,7 +194,9 @@
     <ClCompile Include="engine\sound\Music.cpp" />
     <ClCompile Include="engine\sound\Sound.cpp" />
     <ClCompile Include="engine\sound\SoundManager.cpp" />
+    <ClCompile Include="engine\threading\ThreadPool.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="util\FileManager.cpp" />
     <ClCompile Include="util\MeshManager.cpp" />
   </ItemGroup>
@@ -203,6 +209,12 @@
     <ClInclude Include="..\libraries\includes\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\libraries\includes\imgui\imstb_textedit.h" />
     <ClInclude Include="..\libraries\includes\imgui\imstb_truetype.h" />
+    <ClInclude Include="engine\animation\AnimatedMesh.h" />
+    <ClInclude Include="engine\animation\Animation.h" />
+    <ClInclude Include="engine\animation\Animator.h" />
+    <ClInclude Include="engine\animation\Joint.h" />
+    <ClInclude Include="engine\animation\JointTransform.h" />
+    <ClInclude Include="engine\animation\KeyFrame.h" />
     <ClInclude Include="engine\behaviours\Behaviour.h" />
     <ClInclude Include="engine\behaviours\DirectionalLight.h" />
     <ClInclude Include="engine\behaviours\PhysicsBehaviour.h" />
@@ -210,7 +222,6 @@
     <ClInclude Include="engine\behaviours\Light.h" />
     <ClInclude Include="engine\behaviours\MeshRenderer.h" />
     <ClInclude Include="engine\behaviours\SpotLight.h" />
-    <ClInclude Include="engine\behaviours\TextBehaviour.h" />
     <ClInclude Include="engine\behaviours\UIButtonBehaviour.h" />
     <ClInclude Include="engine\behaviours\UIImageBehaviour.h" />
     <ClInclude Include="engine\behaviours\UIMenuBehaviour.h" />
@@ -225,7 +236,6 @@
     <ClInclude Include="engine\graphics\Shader.h" />
     <ClInclude Include="engine\graphics\ShaderManager.h" />
     <ClInclude Include="engine\graphics\ShadowBuffer.h" />
-    <ClInclude Include="engine\graphics\TextRenderer.h" />
     <ClInclude Include="engine\graphics\Texture.h" />
     <ClInclude Include="engine\input\Input.h" />
     <ClInclude Include="engine\physics\Collider.h" />
@@ -237,6 +247,7 @@
     <ClInclude Include="engine\sound\Music.h" />
     <ClInclude Include="engine\sound\Sound.h" />
     <ClInclude Include="engine\sound\SoundManager.h" />
+    <ClInclude Include="engine\threading\ThreadPool.h" />
     <ClInclude Include="util\FileManager.h" />
     <ClInclude Include="util\MeshManager.h" />
   </ItemGroup>

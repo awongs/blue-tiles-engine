@@ -1,4 +1,5 @@
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/compatibility.hpp>
 
 #include "GameObject.h"
 #include "graphics/Shader.h"
@@ -60,10 +61,9 @@ glm::mat4 GameObject::GetTransformMatrix() const
 
 void GameObject::UpdateTransformMatrix()
 {
-	// Rotation
-	glm::mat4 rotationMatrix = glm::rotate(glm::mat4(1), rotation.x, glm::vec3(1, 0, 0));
-	rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0, 1, 0));
-	rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0, 0, 1));
+	// Convert euler angles to quaternion, then to rotation matrix.
+	glm::quat rotationQuaternion = glm::quat(rotation);
+	glm::mat4 rotationMatrix = glm::mat4(rotationQuaternion);
 
 	// Translation
 	glm::mat4 translationMatrix = glm::translate(glm::mat4(1), position);

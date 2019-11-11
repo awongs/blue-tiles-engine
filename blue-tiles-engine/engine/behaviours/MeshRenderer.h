@@ -59,4 +59,7 @@ private:
 
 	// Flag for if this mesh is transprent.
 	bool m_isTransparent;
+
+	// Model matrix string constant to avoid unnecessary string creation.
+	static const std::string MODEL_MATRIX;
 };

@@ -5,6 +5,8 @@
 #include "../graphics/Shader.h"
 #include "../GameObject.h"
 
+const std::string MeshRenderer::MODEL_MATRIX = "model";
+
 MeshRenderer::MeshRenderer(std::string objFilePath)
 	: Behaviour(BehaviourType::MeshRenderer)
 	, m_vertexBufferObjectID(0)
@@ -23,8 +25,6 @@ void MeshRenderer::SetupBuffers()
 		DebugLog::Warn("MeshRenderer created with no vertices or indices");
 		return;
 	}
-
-	//DebugLog::Info("Generating buffers for MeshRenderer");
 
 	// Generate the buffers
 	glGenBuffers(1, &m_vertexBufferObjectID);
@@ -61,7 +61,7 @@ void MeshRenderer::SetupBuffers()
 
 void MeshRenderer::SetTexture(std::string texturePath)
 {
-	m_texture = filemanager::LoadTexture(texturePath);
+	m_texture = FileManager::LoadTexture(texturePath);
 }
 
 MeshRenderer::~MeshRenderer()
@@ -97,7 +97,7 @@ void MeshRenderer::Draw(Shader& shader)
 	gameObject->UpdateTransformMatrix();
 
 	// Set model matrix in shader
-	shader.SetUniformMatrix4fv("model", gameObject->GetTransformMatrix());
+	shader.SetUniformMatrix4fv(MODEL_MATRIX, gameObject->GetTransformMatrix());
 
 	// Bind the texture
 	if (m_texture != nullptr)
