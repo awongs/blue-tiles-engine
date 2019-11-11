@@ -19,6 +19,10 @@
 #include "../behaviours/ObjectBehaviour.h"
 #include "../behaviours/TileBehaviour.h"
 #include "../behaviours/PlayerItemPickup.h"
+#include <engine/behaviours/UIMenuBehaviour.h>
+#include <engine/behaviours/UIImageBehaviour.h>
+#include <engine/behaviours/UIButtonBehaviour.h>
+#include <engine/behaviours/UITextBehaviour.h>
 
 #include <engine/animation/AnimatedMesh.h>
 #include <engine/animation/Animation.h>
@@ -255,6 +259,28 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 		m_worldGameObjects.push_back(std::move(ga));
 	}
+
+
+
+	// UI for level
+	GameObject* menu = new GameObject();
+	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
+	GameObject* testString = new GameObject();
+	testString->AddBehaviour(new UITextBehaviour("Inventory"));
+	testString->SetParent(menu);
+	GameObject* redKey = new GameObject("redKey");
+	// redKey->isVisible = false;
+	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/red_key_block.png"));
+	redKey->SetParent(menu);
+	GameObject* greenKey = new GameObject("greenKey");
+	// greenKey->isVisible = false;
+	greenKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/green_key_block.png"));
+	greenKey->SetParent(menu);
+	GameObject* blueKey = new GameObject("blueKey");
+	// blueKey->isVisible = false;
+	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
+	blueKey->SetParent(menu);
+	AddScreenGameObject(menu);
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const

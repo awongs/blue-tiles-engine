@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "debugbt/DebugLog.h"
 #include "behaviours/MeshRenderer.h"
+#include "behaviours/UIMenuBehaviour.h"
+#include "behaviours/UILayoutBehaviour.h"
 #include <algorithm>
 #include <iterator>
 #include "graphics/Camera.h"
@@ -66,6 +68,7 @@ void Scene::DrawWorld(Shader& shader)
 {
 	for (auto& worldGameObj : m_worldGameObjects)
 	{
+		if (!worldGameObj->isVisible) continue;
 		// Don't draw transparent objects
 		std::weak_ptr<MeshRenderer> meshRenderer = std::static_pointer_cast<MeshRenderer>(worldGameObj->GetBehaviour(BehaviourType::MeshRenderer).lock());
 
@@ -86,7 +89,55 @@ void Scene::DrawWorld(Shader& shader)
 
 void Scene::DrawScreen(Shader& shader)
 {
-	for (auto& screenGameObj : m_screenGameObjects) screenGameObj->Draw(shader);
+	for (auto& screenGameObj : m_screenGameObjects)
+	{
+		if (!screenGameObj->isVisible) continue;
+		DrawUIGameObject(screenGameObj.get(), shader);
+	}
+}
+
+void Scene::DrawUIGameObject(GameObject* gameObject, Shader& shader)
+{
+	if (!gameObject->isVisible) return;
+
+	// Determine if we're in a menu
+	std::weak_ptr<UIMenuBehaviour> uiMenu = std::static_pointer_cast<UIMenuBehaviour>(gameObject->GetBehaviour(BehaviourType::UIMenuBehaviour).lock());
+
+	if (!uiMenu.expired())
+	{
+		uiMenu.lock()->BeginDraw();
+
+		// Draw the children
+		for (auto gameObjChild : gameObject->GetChildren())
+		{
+			DrawUIGameObject(gameObjChild, shader);
+		}
+
+		uiMenu.lock()->EndDraw();
+	}
+	else
+	{
+		// Are we in a layout?
+		std::weak_ptr<UILayoutBehaviour> uiLayout = std::static_pointer_cast<UILayoutBehaviour>(gameObject->GetBehaviour(BehaviourType::UILayoutBehaviour).lock());
+		if (!uiLayout.expired())
+		{
+			// Draw the children
+			std::vector<GameObject*> children = gameObject->GetChildren();
+			for (auto gameObjChild : children)
+			{
+				DrawUIGameObject(gameObjChild, shader);
+
+				if (gameObjChild != children.back())
+				{
+					uiLayout.lock()->Draw(shader);
+				}
+			}
+		}
+		else
+		{
+			gameObject->Draw(shader);
+		}
+	}
 }
 
 std::vector<std::unique_ptr<GameObject>> const& Scene::GetWorldGameObjects() const
