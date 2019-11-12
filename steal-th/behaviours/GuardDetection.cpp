@@ -234,6 +234,10 @@ void GuardDetection::UpdateOpenCL()
 
 	// Get the results from OpenCL.
 	m_openCLManager->ReadOutput(&m_outputBuffer[0], sizeof(bool) * m_numDetectionRays);
+
+	m_openCLManager->ReleaseMemoryObject(endpointsXBuffer);
+	m_openCLManager->ReleaseMemoryObject(endpointsZBuffer);
+
 	for (int i = 0; i < m_numDetectionRays; ++i)
 	{
 		m_isPlayerDetected |= m_outputBuffer[i];
