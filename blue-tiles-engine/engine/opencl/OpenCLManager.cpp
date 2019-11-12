@@ -263,6 +263,11 @@ cl_mem OpenCLManager::CreateOutputBuffer(size_t size)
 	return buffer;
 }
 
+void OpenCLManager::ReleaseMemoryObject(cl_mem memory)
+{
+	clReleaseMemObject(memory);
+}
+
 bool OpenCLManager::SetKernelArg(cl_uint argIndex, size_t size, const void* argValue)
 {
 	cl_int err{ clSetKernelArg(m_kernel, argIndex, size, argValue) };
