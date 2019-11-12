@@ -19,6 +19,7 @@ public:
 	// Return true if successful, else return false.
 	cl_mem CreateInputBuffer(size_t size, void *data);
 	cl_mem CreateOutputBuffer(size_t size);
+	void ReleaseMemoryObject(cl_mem memory);
 	bool SetKernelArg(cl_uint argIndex, size_t size, const void *argValue);
 	bool EnqueueKernel(cl_uint dim, const size_t *globalWorkSize, const size_t *localWorkSize);
 	bool ReadOutput(void *output, size_t outputSize);
