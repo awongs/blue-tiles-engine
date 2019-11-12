@@ -1,8 +1,5 @@
 #define SDL_MAIN_HANDLED
 
-#include <ctime>
-#include <glm/gtc/random.hpp>
-#include <glm/ext/matrix_transform.hpp>
 #include <memory>
 
 #include <engine/GameWindow.h>
@@ -62,14 +59,10 @@ int main()
 	// Setup the camera.
 	Camera::GetInstance().SetOrientation(CAMERA_ORIENTATION);
 	Camera::GetInstance().CalculatePerspectiveView(CAMERA_FOV, (float)WINDOW_WIDTH / WINDOW_HEIGHT, CAMERA_NEAR_CLIP, CAMERA_FAR_CLIP);
-	
-	// -- Testing --
-	srand(time(0));
 
 	// Add a directional light
 	GameObject* ga = new GameObject();
 	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
-	
 	level->AddWorldGameObject(ga);
 
 	// UI for main menu
@@ -95,21 +88,6 @@ int main()
 		}, ImVec2(75, 50)));
 	quitButtonGO->SetParent(mainLayoutGO);
 	mainMenuScene->AddScreenGameObject(mainMenuGO);
-
-	// Add test lighting
-	for (int i = 0; i < 0; i++)
-	{
-		GameObject* ga = new GameObject();
-		ga->position = level->GetWorldGameObjectByIndex(i)->position;
-
-		glm::vec3 randomColour = glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f));
-		//glm::vec3 randomDirection = glm::vec3(glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f));
-
-		ga->AddBehaviour(new PointLight(randomColour, 1.0f, 1.0f, 1.0f, 0.2f, 0.3f, 0.5f));
-		//ga->AddBehaviour(new SpotLight(randomColour, randomDirection, 1.0, 2.0, 1.0f, 1.0f, 1.0f, 0.2f, 0.3f, 0.5f));
-		
-		level->AddWorldGameObject(ga);
-	}
 
 	// Set the scene in engine
 	engine->SetScene(mainMenuScene.get());

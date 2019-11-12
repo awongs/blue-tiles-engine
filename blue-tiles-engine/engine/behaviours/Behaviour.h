@@ -30,6 +30,7 @@ enum class BehaviourType
 	PlayerItemPickup,
 	AnimatedMesh,
 	Animator,
+	Rotate,
 	NONE
 };
 

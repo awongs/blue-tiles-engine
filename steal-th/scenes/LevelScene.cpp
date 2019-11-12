@@ -2,6 +2,8 @@
 #include <engine/behaviours/MeshRenderer.h>
 #include <engine/behaviours/PhysicsBehaviour.h>
 #include <engine/behaviours/SpotLight.h>
+#include <engine/behaviours/PointLight.h>
+#include <engine/behaviours/DirectionalLight.h>
 #include <engine/physics/Collider.h>
 #include <engine/sound/SoundManager.h>
 #include <engine/sound/Music.h>
@@ -19,6 +21,7 @@
 #include "../behaviours/ObjectBehaviour.h"
 #include "../behaviours/TileBehaviour.h"
 #include "../behaviours/PlayerItemPickup.h"
+#include "../behaviours/Rotate.h"
 #include <engine/behaviours/UIMenuBehaviour.h>
 #include <engine/behaviours/UIImageBehaviour.h>
 #include <engine/behaviours/UIButtonBehaviour.h>
@@ -28,6 +31,11 @@
 #include <engine/animation/Animation.h>
 #include <engine/animation/Animator.h>
 
+constexpr glm::vec3 RED = glm::vec3(1, 0, 0);
+constexpr glm::vec3 GREEN = glm::vec3(0, 1, 0);
+constexpr glm::vec3 BLUE = glm::vec3(0, 0, 1);
+constexpr glm::vec3 YELLOW = glm::vec3(1, 1, 0);
+constexpr glm::vec3 WHITE = glm::vec3(1, 1, 1);
 
 const float LevelScene::TILE_SIZE{ 9.f };
 
@@ -78,7 +86,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	{
 		glm::vec3 position = glm::vec3(
 			(float)(obj.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
-			0, 
+			0.5, 
 			(float)(obj.tileZ) * TILE_SIZE + TILE_SIZE / 2.f
 		);
 		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("object", position, glm::vec3(0, glm::radians(obj.rotation), 0));
@@ -87,6 +95,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		MeshRenderer *meshRenderer{ nullptr };
 		PhysicsBehaviour *physBehaviour{ nullptr };
 		ObjectBehaviour *objBehaviour{ nullptr };
+		PointLight* objLight { nullptr };
+
 		switch (obj.type)
 		{
 			case ObjectType::RED_KEY:
@@ -110,6 +120,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 				Collider *col{ new Collider(glm::vec3(2.f)) };
 				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, col, [this](GLuint other) {});
 				objBehaviour = new ObjectBehaviour(ObjectType::OBJECTIVE_ITEM);
+
+				objLight = new PointLight(YELLOW);
 				break;
 			}
 		}
@@ -119,16 +131,22 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			case ObjectType::RED_KEY:
 				objBehaviour = new ObjectBehaviour(ObjectType::RED_KEY);
 				meshRenderer->SetTexture("../Assets/textures/red_key.png");
+
+				objLight = new PointLight(RED);
 				break;
 
 			case ObjectType::BLUE_KEY:
 				objBehaviour = new ObjectBehaviour(ObjectType::BLUE_KEY);
 				meshRenderer->SetTexture("../Assets/textures/blue_key.png");
+
+				objLight = new PointLight(BLUE);
 				break;
 
 			case ObjectType::GREEN_KEY:
 				objBehaviour = new ObjectBehaviour(ObjectType::GREEN_KEY);
 				meshRenderer->SetTexture("../Assets/textures/green_key.png");
+
+				objLight = new PointLight(GREEN);
 				break;
 		}
 
@@ -136,6 +154,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		ga->AddBehaviour(meshRenderer);
 		ga->AddBehaviour(physBehaviour);
 		ga->AddBehaviour(objBehaviour);
+		ga->AddBehaviour(objLight);
+		ga->AddBehaviour(new Rotate(glm::vec3(0, glm::half_pi<float>(), 0)));
 
 		ga->currentScene = this;
 		m_worldGameObjects.push_back(std::move(ga));
@@ -157,6 +177,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	playerObj->AddBehaviour(new PlayerMovement(10));
 	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
 	playerObj->AddBehaviour(new Inventory());
+	playerObj->AddBehaviour(new PointLight(WHITE));
 
 	Animator* animator = new Animator(playerObj->GetBehaviour<AnimatedMesh>());
 	playerObj->AddBehaviour(animator);
@@ -270,8 +291,6 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		m_worldGameObjects.push_back(std::move(ga));
 	}
 
-
-
 	// UI for level
 	GameObject* menu = new GameObject();
 	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
@@ -373,6 +392,8 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 			PhysicsBehaviour* physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, collider, [](GLuint) {}) };
 			ga->AddBehaviour(physBehaviour);
 
+			PointLight* doorLight {nullptr};
+
 			switch (type)
 			{
 
@@ -398,6 +419,10 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::RED_DOOR) };
 					ga->AddBehaviour(tileBehaviour);
 					m_tiles[tileIndex] = TileType::RED_DOOR;
+
+					doorLight = new PointLight(RED);
+					ga->AddBehaviour(doorLight);
+
 					break;
 				}
 				case TileType::BLUE_DOOR:
@@ -410,6 +435,10 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::BLUE_DOOR) };
 					ga->AddBehaviour(tileBehaviour);
 					m_tiles[tileIndex] = TileType::BLUE_DOOR;
+
+					doorLight = new PointLight(BLUE);
+					ga->AddBehaviour(doorLight);
+
 					break;
 				}
 				case TileType::GREEN_DOOR:
@@ -422,6 +451,10 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::GREEN_DOOR) };
 					ga->AddBehaviour(tileBehaviour);
 					m_tiles[tileIndex] = TileType::GREEN_DOOR;
+
+					doorLight = new PointLight(GREEN);
+					ga->AddBehaviour(doorLight);
+
 					break;
 				}
 				case TileType::EXIT:
