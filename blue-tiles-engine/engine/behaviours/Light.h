@@ -15,7 +15,16 @@ public:
 
 	// Note: Does not render the light, only use this for drawing a debug cube
 	virtual void Draw(Shader& shader) override; 
-	virtual bool HandleMessage(unsigned int senderID, std::string message) override;
+	virtual bool HandleMessage(unsigned int senderID, std::string& message) override;
+	void OnCollisionStay(GLuint other) override;
+
+	// Setter for the light's colour
+	void SetColour(const glm::vec3& colour);
+
+	// Setter for the light's intensities.
+	void SetAmbientIntensity(const float ambient);
+	void SetDiffuseIntensity(const float diffuse);
+	void SetSpecularIntensity(const float specular);
 
 protected:
 	// Constuctor.

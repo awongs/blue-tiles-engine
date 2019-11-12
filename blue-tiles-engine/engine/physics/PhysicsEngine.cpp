@@ -1,15 +1,26 @@
+#include <glm/glm.hpp>
+#include <thread>
+
 #include "PhysicsEngine.h"
 #include "../debugbt/DebugLog.h"
 #include "SphereCollider.h"
 #include "PhysicsObject.h"
 #include "../GameObject.h"
 #include "../MessageSystem.h"
+#include "../threading/ThreadPool.h"
 
-#include <glm/glm.hpp>
-
-#include <iostream>
 
 const std::string PhysicsEngine::COLLISION_MESSAGE_STR{ "HandleCollision" };
+
+PhysicsEngine::PhysicsEngine()
+	: m_threadPool(new ThreadPool(2))
+{
+}
+
+PhysicsEngine::~PhysicsEngine()
+{
+	delete m_threadPool;
+}
 
 void PhysicsEngine::Update()
 {
@@ -18,7 +29,8 @@ void PhysicsEngine::Update()
 
 	// Check for collisions more precisely, between colliders for detected
 	// overlaps.
-	DoNarrowPhase();
+	//DoNarrowPhase();
+	DoNarrowPhaseThreaded(2);
 
 	// Do something with the detected collisions.
 	HandleCollisions();
@@ -63,10 +75,46 @@ void PhysicsEngine::DoBroadPhase()
 
 void PhysicsEngine::DoNarrowPhase()
 {
-	for (auto &collision : m_broadCollisions)
+	DoNarrowPhaseRanged(0, m_broadCollisions.size());
+
+	// Done with list of broad phase collisions, so clear them for the
+	// next frame.
+	m_broadCollisions.clear();
+}
+
+void PhysicsEngine::DoNarrowPhaseThreaded(const unsigned int numThread)
+{
+	int workChunks = m_broadCollisions.size() / numThread;
+	for (unsigned int i = 0; i < numThread; i++)
 	{
-		Collider *col1{ collision.first->GetCollider() };
-		Collider *col2{ collision.second->GetCollider() };
+		// handles odd number of collisions
+		if (i == numThread - 1)
+		{
+			m_threadPool->AddTask(std::bind(&PhysicsEngine::DoNarrowPhaseRanged, this, workChunks * i, m_broadCollisions.size()));
+		}
+		else
+		{
+			m_threadPool->AddTask(std::bind(&PhysicsEngine::DoNarrowPhaseRanged, this, workChunks * i, workChunks * (i + 1)));
+		}
+	}
+
+	//m_threadPool->AddTask(std::bind(&PhysicsEngine::DoNarrowPhase, this));
+
+	m_threadPool->WaitForAllTask();
+
+	// Done with list of broad phase collisions, so clear them for the
+	// next frame.
+	m_broadCollisions.clear();
+}
+
+void PhysicsEngine::DoNarrowPhaseRanged(int startIndex, int endIndex)
+{
+	for (int i = startIndex; i < endIndex; i++)
+	{
+		auto& collision = m_broadCollisions[i];
+
+		Collider* col1{ collision.first->GetCollider() };
+		Collider* col2{ collision.second->GetCollider() };
 
 		Collider::Type type1{ col1->GetType() };
 		Collider::Type type2{ col2->GetType() };
@@ -75,49 +123,51 @@ void PhysicsEngine::DoNarrowPhase()
 		switch (collisionType)
 		{
 			// Sphere-sphere collision.
-			case Collider::Type::SPHERE:
+		case Collider::Type::SPHERE:
+		{
+			SphereCollider* sphere1{ static_cast<SphereCollider*>(col1) };
+			SphereCollider* sphere2{ static_cast<SphereCollider*>(col2) };
+			if (IsSphereSphereColliding(sphere1, sphere2))
 			{
-				SphereCollider *sphere1{ static_cast<SphereCollider *>(col1) };
-				SphereCollider *sphere2{ static_cast<SphereCollider *>(col2) };
-				if (IsSphereSphereColliding(sphere1, sphere2))
-				{
-					m_collisions.push_back(collision);
-				}
-
-				break;
-			}
-
-			// Box-sphere/sphere-box collision.
-			case (Collider::Type::BOX | Collider::Type::SPHERE):
-			{
-				// Check which collider is the sphere.
-				bool isCol1Sphere{ type1 == Collider::Type::SPHERE };
-				Collider *box{ isCol1Sphere ? col2 : col1 };
-				SphereCollider *sphere{ isCol1Sphere ? 
-					static_cast<SphereCollider *>(col1) : 
-					static_cast<SphereCollider *>(col2) };
-				
-				if (IsBoxSphereColliding(box, sphere))
-				{
-					m_collisions.push_back(collision);
-				}
-
-				break;
-			}
-
-			// Box-box collision.
-			case (Collider::Type::BOX):
-			{
-				// This is the same as broad phase result.
+				m_collisionVectorMutex.lock();
 				m_collisions.push_back(collision);
-				break;
+				m_collisionVectorMutex.unlock();
 			}
+
+			break;
+		}
+
+		// Box-sphere/sphere-box collision.
+		case (Collider::Type::BOX | Collider::Type::SPHERE):
+		{
+			// Check which collider is the sphere.
+			bool isCol1Sphere{ type1 == Collider::Type::SPHERE };
+			Collider* box{ isCol1Sphere ? col2 : col1 };
+			SphereCollider* sphere{ isCol1Sphere ?
+				static_cast<SphereCollider*>(col1) :
+				static_cast<SphereCollider*>(col2) };
+
+			if (IsBoxSphereColliding(box, sphere))
+			{
+				m_collisionVectorMutex.lock();
+				m_collisions.push_back(collision);
+				m_collisionVectorMutex.unlock();
+			}
+
+			break;
+		}
+
+		// Box-box collision.
+		case (Collider::Type::BOX):
+		{
+			// This is the same as broad phase result.
+			m_collisionVectorMutex.lock();
+			m_collisions.push_back(collision);
+			m_collisionVectorMutex.unlock();
+			break;
+		}
 		}
 	}
-
-	// Done with list of broad phase collisions, so clear them for the
-	// next frame.
-	m_broadCollisions.clear();
 }
 
 void PhysicsEngine::HandleCollisions()

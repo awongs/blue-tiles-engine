@@ -18,7 +18,20 @@ enum class BehaviourType
 	PlayerMovement, 
 	FollowGameObject,
 	Inventory,
-  SimpleGuardMovementBehaviour
+	GuardDetection,
+	SimpleGuardMovementBehaviour,
+	ObjectBehaviour,
+	TileBehaviour,
+	UIMenuBehaviour,
+	UIImageBehaviour,
+	UITextBehaviour,
+	UILayoutBehaviour,
+	UIButtonBehaviour,
+	PlayerItemPickup,
+	AnimatedMesh,
+	Animator,
+	Rotate,
+	NONE
 };
 
 class GameObject;
@@ -37,8 +50,14 @@ public:
 	// Draw
 	virtual void Draw(Shader& shader) = 0;
 
+	virtual void OnCollisionStay(GLuint other) = 0;
+
+	// Implement this if you need additional setup when your behaviour is attached.
+	// By default it does nothing.
+	virtual void OnAttach(GameObject& gameObject);
+
 	// Handles messages
-	virtual bool HandleMessage(unsigned int senderID, std::string message) = 0;
+	virtual bool HandleMessage(unsigned int senderID, std::string& message) = 0;
 
 	// Get this behaviour's type.
 	BehaviourType GetType() const;

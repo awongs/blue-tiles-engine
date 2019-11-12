@@ -1,4 +1,5 @@
 #include "Music.h"
+#include "../debugbt/DebugLog.h"
 
 /*
 * Function that Attempts to load a music file.
@@ -31,6 +32,17 @@ void Music::play() const {
         return;
     }
     if((Mix_PlayMusic(m_music, -1))!=0) {
+		DebugLog::Error("Failed");
+	}
+}
+
+// Stop music
+void Music::stop() const {
+	if (!m_music) {
+		DebugLog::Error(Mix_GetError());
+		return;
+	}
+	if ((Mix_HaltMusic()) != 0) {
 		DebugLog::Error("Failed");
 	}
 }

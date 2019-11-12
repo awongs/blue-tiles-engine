@@ -10,8 +10,6 @@
 
 #include "gameobjects/Object.h"
 #include "gameobjects/Guard.h"
-#include "gameobjects/Room.h"
-
 
 using json = nlohmann::json;
 
@@ -21,31 +19,25 @@ class Level
 		Level(std::string jsonFile);
 		~Level();
 
-		int levelNum;
+		unsigned int m_levelNum{ 0 };
 
-		// Width of level ^ v
-		int width;
+		// The number of tiles in the level for each axis.
+		unsigned int m_sizeX{ 0 }, m_sizeZ{ 0 };
 
-		// Length of level <------>
-		int length;
+		// The tile position that the player starts on.
+		unsigned int m_playerSpawnX{ 0 }, m_playerSpawnZ{ 0 };
 
-		// Starting position of the player
-		int startPos;
-
-		// Number of grids in the level (width * length)
-		int numGrids;
-
-		// Game objects
+		// Hold all level objects.
 		std::vector<Object> m_objects;
 
-		// Rooms
-		std::vector<Room> m_rooms;
+		// Hold the types of each tile on this level.
+		std::vector<int> m_layout;
 
-		// Guards (Should be std::vector<Guard> probably)
+		// Hold all guards on this level.
 		std::vector<Guard> m_guards;
 
-
 		void LoadLevel(std::string jsonFile);
+
 	private:
 		json _levelJSON;
 };

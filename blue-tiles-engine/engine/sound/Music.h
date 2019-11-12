@@ -1,9 +1,7 @@
 #pragma once
 
 #include <sdl2/SDL_mixer.h>
-#include <vector>
-#include <iostream>
-#include "../debugbt/DebugLog.h"
+#include <string>
 
 class Music {
 public:
@@ -16,6 +14,8 @@ public:
     // Plays the music
     void play() const;
 
+	// Stops the music
+	void stop() const;
 private:
     // Used for Music
      Mix_Music *m_music;

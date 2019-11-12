@@ -26,10 +26,17 @@ public:
 	// Destructor.
 	virtual ~MeshRenderer();
 
+	// Accessor for transparency.
+	bool IsTransparent();
+
+	// Setter for transparency.
+	void SetTransparent(bool transparent);
+
 	// Overridden functions.
 	void Update(float deltaTime) override;
 	void Draw(Shader& shader) override;
-	bool HandleMessage(unsigned int senderID, std::string message) override;
+	bool HandleMessage(unsigned int senderID, std::string& message) override;
+	void OnCollisionStay(GLuint other) override;
 
 private:
 	// ID to the vertex buffer object
@@ -49,4 +56,10 @@ private:
 
 	// This mesh's indices.
 	std::vector<GLuint> m_indices;
+
+	// Flag for if this mesh is transprent.
+	bool m_isTransparent;
+
+	// Model matrix string constant to avoid unnecessary string creation.
+	static const std::string MODEL_MATRIX;
 };

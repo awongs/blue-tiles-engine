@@ -1,0 +1,99 @@
+{
+    "info":
+    {
+        "level": 0,
+        "size": { "x": 12, "z": 12 },
+        "playerSpawn": { "x": 1, "z": 1 }
+    },
+
+    "layout":
+    [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1,
+        1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 0, 1,
+        1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1,
+        1, 1, 2, 1, 1, 0, 0, 1, 1, 1, 1, 1,
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+        1, 1, 3, 1, 1, 0, 0, 1, 1, 4, 1, 1,
+        1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1,
+        1, 0, 0, 0, 3, 0, 0, 1, 0, 0, 0, 1,
+        1, 0, 1, 0, 1, 0, 0, 4, 0, 0, 0, 1,
+        1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1,
+        1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1
+    ],
+
+    "objects" : [
+        { "type" : "red_key", "position": { "x": 3, "z": 1 }, "rotation": 0.0 },
+		{ "type" : "red_key", "position": { "x": 10, "z": 5 }, "rotation": 0.0 },
+        { "type" : "blue_key", "position": { "x": 10, "z": 10 }, "rotation": 0.0 },
+        { "type" : "green_key", "position": { "x": 10, "z": 2 }, "rotation": 0.0 },
+        { "type" : "objective_item", "position": { "x": 1, "z": 7 }, "rotation": 0.0 }
+    ],
+
+    "guards": [
+        { "guardId" : 0, "position": { "x": 3, "z": 3 }, "tileViewDistance": 0, "tileViewRadius": 0,
+		"angle": -90.0,
+        "movement": [
+			"move:2,3",
+			"turncw",
+			"move:2,2",
+			"turncw",
+			"move:3,2",
+			"turncw",
+			"move:3,3",
+			"turncw"
+		] },
+		{ "guardId" : 1, "position": { "x": 6, "z": 1 }, "tileViewDistance": 1, "tileViewRadius": 1,
+		"angle": 0.0,
+        "movement": [
+			"move:6,10",
+			"turncw",
+			"move:5,10",
+			"turncw",
+			"move:5,1",
+			"turncw",
+			"move:6,1",
+			"turncw"
+		] },
+		{ "guardId" : 2, "position": { "x": 8, "z": 1 }, "tileViewDistance": 1, "tileViewRadius": 1,
+		"angle": 90.0,
+        "movement": [
+			"move:9,1",
+			"turncw",
+			"move:9,3",
+			"turncw",
+			"move:8,3",
+			"turncw",
+			"move:8,1",
+			"turncw"
+		] },
+		{ "guardId" : 3, "position": { "x": 1, "z": 10 }, "tileViewDistance": 1, "tileViewRadius": 1,
+		"angle": 90.0,
+        "movement": [
+			"move:3,10",
+			"turnccw",
+			"move:3,7",
+			"turnccw",
+			"move:2,7",
+			"turnccw",
+			"move:2,8",
+			"turncw",
+			"move:1,8",
+			"turnccw",
+			"move:1,10",
+			"turnccw"
+		] },
+		{ "guardId" : 4, "position": { "x": 10, "z": 7 }, "tileViewDistance": 1, "tileViewRadius": 1,
+		"angle": 0.0,
+        "movement": [
+			"move:10,9",
+			"turncw",
+			"move:8,9",
+			"turncw",
+			"move:8,7",
+			"turncw",
+			"move:10,7",
+			"turncw"
+		] }
+    ]
+}

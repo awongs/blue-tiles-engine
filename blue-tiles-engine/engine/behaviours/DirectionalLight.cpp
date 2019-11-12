@@ -1,4 +1,5 @@
 #include <glm/gtc/matrix_transform.hpp>
+#include <utility>
 
 #include "DirectionalLight.h"
 #include "../graphics/Shader.h"
@@ -24,7 +25,7 @@ DirectionalLight::DirectionalLight(glm::vec3 colour, glm::vec3 direction, float 
 
 	// Find the minimum and maximum values for the three coordinate axes
 	float minX = corners[0].x, minY = corners[0].y, minZ = corners[0].z, maxX = corners[0].x, maxY = corners[0].y, maxZ = corners[0].z;
-	for (int i = 0; i < 8; i++)
+	for (int i = 1; i < 8; i++)
 	{
 		if (corners[i].x < minX)
 			minX = corners[i].x;
@@ -41,12 +42,17 @@ DirectionalLight::DirectionalLight(glm::vec3 colour, glm::vec3 direction, float 
 	}
 
 	// Create the orthographic projection matrix for shadow mapping
-	m_projectionMatrix = glm::ortho(minX, maxX, minY, maxY, 1.0f, 150.0f);
+	// TODO: Hardcoded -10.0f
+	std::pair<float, float> zClip = Camera::GetInstance().GetZClip();
+	m_projectionMatrix = glm::ortho(minX, maxX, minY, maxY, zClip.first, zClip.second - 10.0f);
 
 	// Calculate view matrix for this light
 	m_viewMatrix = glm::lookAt(-m_direction,
 		glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// Calculate light space matrix.
+	m_lightSpaceMatrix = m_projectionMatrix * m_viewMatrix;
 }
 
 void DirectionalLight::Render(Shader& shader, int bufferOffset)
@@ -58,12 +64,12 @@ void DirectionalLight::Render(Shader& shader, int bufferOffset)
 	shader.SetUniform3f("dirLight.direction", m_direction);
 }
 
-glm::mat4 DirectionalLight::GetViewMatrix() const
+glm::vec3 DirectionalLight::GetDirection() const
 {
-	return m_viewMatrix;
+	return m_direction;
 }
 
-glm::mat4 DirectionalLight::GetProjectionMatrix() const
+glm::mat4 DirectionalLight::GetLightSpaceMatrix() const
 {
-	return m_projectionMatrix;
+	return m_lightSpaceMatrix;
 }

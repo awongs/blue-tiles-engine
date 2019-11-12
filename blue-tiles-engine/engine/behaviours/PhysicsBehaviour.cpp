@@ -21,6 +21,29 @@ PhysicsBehaviour::PhysicsBehaviour(PhysicsEngine *physEngine,
 	}
 }
 
+PhysicsBehaviour::PhysicsBehaviour(PhysicsEngine* physEngine, GLuint gameObjectId, Collider* collider)
+	: Behaviour(BehaviourType::Physics)
+	, m_physEngine(physEngine)
+	, m_collider(collider)
+{
+	m_onCollision = [this](GLuint other) {
+
+		gameObject->OnCollisionStay(other);
+
+	};
+
+	// Register a PhysicsObject to the PhysicsEngine.
+	if (m_physEngine != nullptr)
+	{
+		// Get a new, empty PhysicsObject.
+		PhysicsObject* physObj{ m_physEngine->AddPhysicsObject() };
+
+		// Set the collider for the PhysicsObject.
+		physObj->SetCollider(collider);
+		physObj->SetGameObjectId(gameObjectId);
+	}
+}
+
 PhysicsBehaviour::~PhysicsBehaviour()
 {
 	// Unregister its corresponding PhysicsObject from the PhysicsEngine.
@@ -38,7 +61,7 @@ void PhysicsBehaviour::Draw(Shader &shader)
 {
 }
 
-bool PhysicsBehaviour::HandleMessage(unsigned int senderID, std::string message)
+bool PhysicsBehaviour::HandleMessage(unsigned int senderID, std::string& message)
 {
 	if (message == PhysicsEngine::COLLISION_MESSAGE_STR)
 	{
@@ -47,6 +70,20 @@ bool PhysicsBehaviour::HandleMessage(unsigned int senderID, std::string message)
 	}
 
 	return false;
+}
+
+void PhysicsBehaviour::OnCollisionStay(GLuint other)
+{
+}
+
+void PhysicsBehaviour::OnAttach(GameObject& gameObject)
+{
+	// Set position of collider when attached to prevent the
+	// issue of all colliders being in the same position when the scene is first updated.
+	if (m_collider != nullptr)
+	{
+		m_collider->SetPosition(gameObject.position);
+	}
 }
 
 Collider *PhysicsBehaviour::GetCollider() const

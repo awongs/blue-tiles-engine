@@ -14,6 +14,8 @@ public:
 		GLuint gameObjectId, Collider *collider,
 		std::function<void(GLuint)> onCollision);
 
+	PhysicsBehaviour(PhysicsEngine* physEngine, GLuint gameObjectId, Collider* collider);
+
 	~PhysicsBehaviour();
 
 	// Update
@@ -23,7 +25,11 @@ public:
 	virtual void Draw(Shader &shader);
 
 	// Handles messages
-	virtual bool HandleMessage(unsigned int senderID, std::string message);
+	virtual bool HandleMessage(unsigned int senderID, std::string& message);
+
+	void OnCollisionStay(GLuint other) override;
+	
+	void OnAttach(GameObject& gameObject) override;
 
 	// Get its PhysicsObject's collider.
 	Collider *GetCollider() const;

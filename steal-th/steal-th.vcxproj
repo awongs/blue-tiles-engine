@@ -83,7 +83,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>blue-tiles-engine.lib;SDL2.lib;SDL2_mixer.lib;SDL2_image.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>blue-tiles-engine.lib;SDL2.lib;SDL2_mixer.lib;SDL2_image.lib;freetype.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d "..\libraries\libs\*.dll" "$(OutDir)"
@@ -132,10 +132,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="behaviours\ObjectBehaviour.cpp" />
+    <ClCompile Include="behaviours\PlayerItemPickup.cpp" />
+    <ClCompile Include="behaviours\Rotate.cpp" />
     <ClCompile Include="behaviours\SimpleGuardMovementAIBehaviour.cpp" />
     <ClCompile Include="behaviours\FollowGameObject.cpp" />
+    <ClCompile Include="behaviours\GuardDetection.cpp" />
     <ClCompile Include="behaviours\Inventory.cpp" />
     <ClCompile Include="behaviours\PlayerMovement.cpp" />
+    <ClCompile Include="behaviours\TileBehaviour.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="scenes\LevelScene.cpp" />
@@ -146,18 +151,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="behaviours\ObjectBehaviour.h" />
+    <ClInclude Include="behaviours\PlayerItemPickup.h" />
+    <ClInclude Include="behaviours\Rotate.h" />
     <ClInclude Include="behaviours\SimpleGuardMovementAIBehaviour.h" />
     <ClInclude Include="behaviours\FollowGameObject.h" />
+    <ClInclude Include="behaviours\GuardDetection.h" />
     <ClInclude Include="behaviours\Inventory.h" />
     <ClInclude Include="behaviours\PlayerMovement.h" />
-    <ClInclude Include="gameobjects\Door.h" />
+    <ClInclude Include="behaviours\TileBehaviour.h" />
     <ClInclude Include="gameobjects\Guard.h" />
     <ClInclude Include="gameobjects\Object.h" />
-    <ClInclude Include="gameobjects\Room.h" />
     <ClInclude Include="gameobjects\Tile.h" />
-    <ClInclude Include="gameobjects\Wall.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="scenes\LevelScene.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

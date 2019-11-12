@@ -1,3 +1,5 @@
+#include <engine/animation/Animator.h>
+
 #include "SimpleGuardMovementAIBehaviour.h"
 #include "../../blue-tiles-engine/engine/GameObject.h"
 #include <glm/glm.hpp>
@@ -122,6 +124,21 @@ void SimpleGuardMovementAIBehaviour::Update(float deltaTime)
 
 	if (deltaTime > 0.1f) return; // Skip update when delta is too big. (First frame delta fix)
 
+	// Test code
+	std::shared_ptr<Animator> animator = std::static_pointer_cast<Animator>(gameObject->GetBehaviour(BehaviourType::Animator).lock());
+	if (animator != nullptr)
+	{
+		if (m_actions[m_actionIndex].actionType == SGMAType::Move)
+		{
+			animator->PlayAnimation("KyleWalking");
+		}
+		else
+		{
+			animator->PlayAnimation("KyleLooking");
+		}
+	}
+	
+
 	bool isDone = ProcessAction(deltaTime, m_actions[m_actionIndex]);
 
 	// Action is done, go to the next one.
@@ -141,7 +158,7 @@ void SimpleGuardMovementAIBehaviour::Draw(Shader& shader)
 {
 }
 
-bool SimpleGuardMovementAIBehaviour::HandleMessage(unsigned int senderID, std::string message)
+bool SimpleGuardMovementAIBehaviour::HandleMessage(unsigned int senderID, std::string& message)
 {
 	// Pause the action processing.
 	if (message == "Pause SGMAI") m_isPaused = true;
@@ -152,8 +169,14 @@ bool SimpleGuardMovementAIBehaviour::HandleMessage(unsigned int senderID, std::s
 	return false;
 }
 
+void SimpleGuardMovementAIBehaviour::OnCollisionStay(GLuint other)
+{
+}
+
 bool SimpleGuardMovementAIBehaviour::ProcessAction(float deltaTime, SimpleGuardMovementAction& action)
 {
+	
+
 	switch (action.actionType)
 	{
 	case SGMAType::Wait:

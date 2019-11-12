@@ -1,4 +1,5 @@
 #include "Sound.h"
+#include "../debugbt/DebugLog.h"
 
 /*
 * Function that Attempts to load a sound file.
@@ -31,7 +32,6 @@ void Sound::play() const {
         DebugLog::Error(Mix_GetError());
         return;
     }
-    if((Mix_PlayChannel(-1,m_sound, 0))!=0) {
-		DebugLog::Error("Failed");
-	}
+	
+	Mix_PlayChannel(-1, m_sound, 0);
 }

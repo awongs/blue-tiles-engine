@@ -6,8 +6,6 @@
 
 #include "Shader.h"
 
-class Shader;
-
 class ShaderManager
 {
 
