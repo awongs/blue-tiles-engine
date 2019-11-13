@@ -67,6 +67,9 @@
     <ClCompile Include="prefabs\ObjectItemPrefab.cpp">
       <Filter>Source Files\prefabs</Filter>
     </ClCompile>
+    <ClCompile Include="prefabs\PlayerPrefab.cpp">
+      <Filter>Source Files\prefabs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Guard.h">
@@ -115,6 +118,9 @@
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
     <ClInclude Include="prefabs\ObjectItemPrefab.h">
+      <Filter>Source Files\prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefabs\PlayerPrefab.h">
       <Filter>Source Files\prefabs</Filter>
     </ClInclude>
   </ItemGroup>
