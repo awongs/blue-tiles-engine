@@ -214,11 +214,11 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				x * TILE_SIZE + TILE_SIZE / 2.f,
 				-0.5,
 				z * TILE_SIZE + TILE_SIZE / 2.f);
-			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("floor", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(TILE_SIZE / 2.f));
+			GameObject* floorGO = new GameObject("floor", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(TILE_SIZE / 2.f));
 
-			ga->AddBehaviour(meshRenderer);
+			floorGO->AddBehaviour(meshRenderer);
 
-			m_worldGameObjects.push_back(std::move(ga));
+			AddWorldGameObject(floorGO);
 			break;
 		}
 			
@@ -232,7 +232,7 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 			GameObject* wallGO = Prefab::CreateWallGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE);
 			m_tiles[tileIndex] = TileType::WALL;
 			AddWorldGameObject(wallGO);
-			return;
+			break;;
 		}
 
 		case TileType::RED_DOOR:
@@ -240,108 +240,16 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 		case TileType::GREEN_DOOR:
 		case TileType::EXIT:
 		{
-
 			glm::vec3 position = glm::vec3(
 				x * TILE_SIZE + TILE_SIZE / 2.f,
 				0.f,
 				z * TILE_SIZE + TILE_SIZE / 2.f);
-			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("wall", position, glm::vec3(0.f), WALL_SCALE);
 
-			Collider* collider{ new Collider(glm::vec3(TILE_SIZE / 2.f)) };
-			PhysicsBehaviour* physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, collider, [](GLuint) {}) };
-			ga->AddBehaviour(physBehaviour);
-
-			PointLight* doorLight {nullptr};
-
-			switch (type)
-			{
-
-				case TileType::WALL:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTexture("../Assets/textures/wall.jpg");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::WALL) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::WALL;
-
-					break;
-				}
-				case TileType::RED_DOOR:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/red_key_block.png");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::RED_DOOR) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::RED_DOOR;
-
-					doorLight = new PointLight(RED);
-					ga->AddBehaviour(doorLight);
-
-					break;
-				}
-				case TileType::BLUE_DOOR:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/blue_key_block.png");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::BLUE_DOOR) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::BLUE_DOOR;
-
-					doorLight = new PointLight(BLUE);
-					ga->AddBehaviour(doorLight);
-
-					break;
-				}
-				case TileType::GREEN_DOOR:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/green_key_block.png");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::GREEN_DOOR) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::GREEN_DOOR;
-
-					doorLight = new PointLight(GREEN);
-					ga->AddBehaviour(doorLight);
-
-					break;
-				}
-				case TileType::EXIT:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/exit.jpg");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::EXIT) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::EXIT;
-					break;
-				}
-			}
-
-			ga->currentScene = this;
-
-			m_worldGameObjects.push_back(std::move(ga));
-
-			break;
+			GameObject* doorGO = Prefab::CreateDoorGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE, type);
+			m_tiles[tileIndex] = type;
+			AddWorldGameObject(doorGO);
+			break;;
 		}
-
-		/*case TileType::EXIT:
-		{
-
-			break;
-		}*/
 
 	}
 }
