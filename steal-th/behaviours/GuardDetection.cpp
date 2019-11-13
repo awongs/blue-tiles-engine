@@ -102,7 +102,7 @@ namespace {
 	 const int NUM_VALUES_PER_POINT{ 2 };
 
 	 // TODO: maybe move this flag to a more appropriate location?
-	 const bool IS_OPEN_CL_ENABLED{ true };
+	 const bool IS_OPEN_CL_ENABLED{ false };
 }
 
 GuardDetection::GuardDetection(LevelScene* levelScene, GameObject* playerObj,

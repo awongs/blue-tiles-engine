@@ -31,6 +31,8 @@
 #include <engine/animation/Animation.h>
 #include <engine/animation/Animator.h>
 
+#include "../prefabs/ObjectItemPrefab.h"
+
 constexpr glm::vec3 RED = glm::vec3(1, 0, 0);
 constexpr glm::vec3 GREEN = glm::vec3(0, 1, 0);
 constexpr glm::vec3 BLUE = glm::vec3(0, 0, 1);
@@ -89,76 +91,25 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			0.5, 
 			(float)(obj.tileZ) * TILE_SIZE + TILE_SIZE / 2.f
 		);
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("object", position, glm::vec3(0, glm::radians(obj.rotation), 0));
 
-		glm::vec3 scale;
-		MeshRenderer *meshRenderer{ nullptr };
-		PhysicsBehaviour *physBehaviour{ nullptr };
-		ObjectBehaviour *objBehaviour{ nullptr };
-		PointLight* objLight { nullptr };
+		glm::vec3 rotation = glm::vec3(0, glm::radians(obj.rotation), 0);
+		
+		GameObject* go { nullptr };
 
 		switch (obj.type)
 		{
 			case ObjectType::RED_KEY:
 			case ObjectType::BLUE_KEY:
 			case ObjectType::GREEN_KEY:
-			{
-				meshRenderer = new MeshRenderer("../Assets/models/key.obj");
-				scale = glm::vec3(0.5, 0.5, 0.5);
-
-				Collider *col{ new Collider(glm::vec3(2.f)) };
-				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, col, [this](GLuint other) {});
+				go = CreateKeyGameObject(m_physEngine, position, rotation, obj.type);
 				break;
-			}
 
 			case ObjectType::OBJECTIVE_ITEM:
-			{
-				meshRenderer = new MeshRenderer("../Assets/models/golden_goose.obj");
-				meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
-				scale = glm::vec3(0.5, 0.5, 0.5);
-
-				Collider *col{ new Collider(glm::vec3(2.f)) };
-				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, col, [this](GLuint other) {});
-				objBehaviour = new ObjectBehaviour(ObjectType::OBJECTIVE_ITEM);
-
-				objLight = new PointLight(YELLOW);
-				break;
-			}
-		}
-
-		switch (obj.type)
-		{
-			case ObjectType::RED_KEY:
-				objBehaviour = new ObjectBehaviour(ObjectType::RED_KEY);
-				meshRenderer->SetTexture("../Assets/textures/red_key.png");
-
-				objLight = new PointLight(RED);
-				break;
-
-			case ObjectType::BLUE_KEY:
-				objBehaviour = new ObjectBehaviour(ObjectType::BLUE_KEY);
-				meshRenderer->SetTexture("../Assets/textures/blue_key.png");
-
-				objLight = new PointLight(BLUE);
-				break;
-
-			case ObjectType::GREEN_KEY:
-				objBehaviour = new ObjectBehaviour(ObjectType::GREEN_KEY);
-				meshRenderer->SetTexture("../Assets/textures/green_key.png");
-
-				objLight = new PointLight(GREEN);
+				go = CreateObjectiveGooseGameObject(m_physEngine, position, rotation);
 				break;
 		}
 
-		ga->scale = scale;
-		ga->AddBehaviour(meshRenderer);
-		ga->AddBehaviour(physBehaviour);
-		ga->AddBehaviour(objBehaviour);
-		ga->AddBehaviour(objLight);
-		ga->AddBehaviour(new Rotate(glm::vec3(0, glm::half_pi<float>(), 0)));
-
-		ga->currentScene = this;
-		m_worldGameObjects.push_back(std::move(ga));
+		AddWorldGameObject(go);
 	}
 
 	// Create player

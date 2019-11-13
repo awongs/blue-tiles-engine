@@ -23,6 +23,9 @@
       <UniqueIdentifier>{e83bc0a9-4132-4b8e-94dc-b8bc6e6c2755}</UniqueIdentifier>
       <UniqueIdentifier>{3ea05163-1a9f-4be5-a819-10546405d977}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\prefabs">
+      <UniqueIdentifier>{159d9719-057c-443a-9a11-72f64dc9ad17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -60,6 +63,9 @@
     </ClCompile>
     <ClCompile Include="behaviours\Rotate.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prefabs\ObjectItemPrefab.cpp">
+      <Filter>Source Files\prefabs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="behaviours\Rotate.h">
       <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="prefabs\ObjectItemPrefab.h">
+      <Filter>Source Files\prefabs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
