@@ -96,23 +96,19 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		);
 
 		glm::vec3 rotation = glm::vec3(0, glm::radians(obj.rotation), 0);
-		
-		GameObject* go { nullptr };
 
 		switch (obj.type)
 		{
 			case ObjectType::RED_KEY:
 			case ObjectType::BLUE_KEY:
 			case ObjectType::GREEN_KEY:
-				go = Prefab::CreateKeyGameObject(m_physEngine, position, rotation, obj.type);
+				AddWorldGameObject(Prefab::CreateKeyGameObject(m_physEngine, position, rotation, obj.type));
 				break;
 
 			case ObjectType::OBJECTIVE_ITEM:
-				go = Prefab::CreateObjectiveGooseGameObject(m_physEngine, position, rotation);
+				AddWorldGameObject(Prefab::CreateObjectiveGooseGameObject(m_physEngine, position, rotation));
 				break;
 		}
-
-		AddWorldGameObject(go);
 	}
 
 	// Create player
@@ -123,16 +119,12 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	);
 
 	GameObject* playerObj = Prefab::CreatePlayerGameObject(m_physEngine, position);
-
-	// Add to world
 	AddWorldGameObject(playerObj);
 
 	// Create the guards
 	for (Guard &guard : level->m_guards)
 	{
-		GameObject* guardGO = Prefab::CreateGuardGameObject(m_physEngine, this, playerObj, &guard);
-
-		AddWorldGameObject(guardGO);
+		AddWorldGameObject(Prefab::CreateGuardGameObject(m_physEngine, this, playerObj, &guard));
 	}
 
 	// Play music
