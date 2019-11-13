@@ -73,6 +73,9 @@
     <ClCompile Include="prefabs\GuardPrefab.cpp">
       <Filter>Source Files\prefabs</Filter>
     </ClCompile>
+    <ClCompile Include="prefabs\WallPrefab.cpp">
+      <Filter>Source Files\prefabs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Guard.h">
@@ -127,6 +130,9 @@
       <Filter>Source Files\prefabs</Filter>
     </ClInclude>
     <ClInclude Include="prefabs\GuardPrefab.h">
+      <Filter>Source Files\prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="prefabs\WallPrefab.h">
       <Filter>Source Files\prefabs</Filter>
     </ClInclude>
   </ItemGroup>

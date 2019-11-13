@@ -34,6 +34,7 @@
 #include "../prefabs/ObjectItemPrefab.h"
 #include "../prefabs/PlayerPrefab.h"
 #include "../prefabs/GuardPrefab.h"
+#include "../prefabs/WallPrefab.h"
 
 constexpr glm::vec3 RED = glm::vec3(1, 0, 0);
 constexpr glm::vec3 GREEN = glm::vec3(0, 1, 0);
@@ -222,6 +223,18 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 		}
 			
 		case TileType::WALL:
+		{
+			glm::vec3 position = glm::vec3(
+				x * TILE_SIZE + TILE_SIZE / 2.f,
+				0.f,
+				z * TILE_SIZE + TILE_SIZE / 2.f);
+
+			GameObject* wallGO = Prefab::CreateWallGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE);
+			m_tiles[tileIndex] = TileType::WALL;
+			AddWorldGameObject(wallGO);
+			return;
+		}
+
 		case TileType::RED_DOOR:
 		case TileType::BLUE_DOOR:
 		case TileType::GREEN_DOOR:
