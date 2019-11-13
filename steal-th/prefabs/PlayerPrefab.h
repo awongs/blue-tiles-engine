@@ -7,5 +7,5 @@ class PhysicsEngine;
 
 namespace Prefab
 {
-	GameObject* CreatePlayerGameObject(PhysicsEngine* phyEngine, glm::vec3& position);
+	GameObject* CreatePlayerGameObject(PhysicsEngine* phyEngine, glm::vec3 position);
 }

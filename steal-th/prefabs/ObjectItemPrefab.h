@@ -8,7 +8,7 @@ class PhysicsEngine;
 
 namespace Prefab
 {
-	GameObject* CreateKeyGameObject(PhysicsEngine* phyEngine, glm::vec3& position, glm::vec3& rotation, ObjectType& type);
+	GameObject* CreateKeyGameObject(PhysicsEngine* phyEngine, glm::vec3 position, glm::vec3 rotation, ObjectType& type);
 
-	GameObject* CreateObjectiveGooseGameObject(PhysicsEngine* phyEngine, glm::vec3& position, glm::vec3& rotation);
+	GameObject* CreateObjectiveGooseGameObject(PhysicsEngine* phyEngine, glm::vec3 position, glm::vec3 rotation);
 }

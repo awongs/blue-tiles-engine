@@ -18,7 +18,7 @@
 
 constexpr glm::vec3 WHITE = glm::vec3(1, 1, 1);
 
-GameObject* Prefab::CreatePlayerGameObject(PhysicsEngine* phyEngine, glm::vec3& position)
+GameObject* Prefab::CreatePlayerGameObject(PhysicsEngine* phyEngine, glm::vec3 position)
 {
 	// Create player
 	AnimatedMesh* meshRenderer = new AnimatedMesh("../Assets/models/alex.obj", "../Assets/animations/alex/AlexRunning.dae");
