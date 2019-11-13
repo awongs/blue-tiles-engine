@@ -18,7 +18,7 @@ constexpr glm::vec3 GREEN = glm::vec3(0, 1, 0);
 constexpr glm::vec3 BLUE = glm::vec3(0, 0, 1);
 constexpr glm::vec3 YELLOW = glm::vec3(1, 1, 0);
 
-GameObject* CreateKeyGameObject(PhysicsEngine* phyEngine, glm::vec3& position, glm::vec3& rotation, ObjectType& type)
+GameObject* Prefab::CreateKeyGameObject(PhysicsEngine* phyEngine, glm::vec3& position, glm::vec3& rotation, ObjectType& type)
 {
 	// Create base gameobject
 	GameObject* go = new GameObject("Key", position, rotation, glm::vec3(0.5, 0.5, 0.5));
@@ -59,7 +59,7 @@ GameObject* CreateKeyGameObject(PhysicsEngine* phyEngine, glm::vec3& position, g
 	return go;
 }
 
-GameObject* CreateObjectiveGooseGameObject(PhysicsEngine* phyEngine, glm::vec3& position, glm::vec3& rotation)
+GameObject* Prefab::CreateObjectiveGooseGameObject(PhysicsEngine* phyEngine, glm::vec3& position, glm::vec3& rotation)
 {
 	// Create base gameobject
 	GameObject* go = new GameObject("Key", position, rotation, glm::vec3(0.5, 0.5, 0.5));

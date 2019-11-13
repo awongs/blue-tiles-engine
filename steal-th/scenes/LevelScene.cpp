@@ -101,11 +101,11 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			case ObjectType::RED_KEY:
 			case ObjectType::BLUE_KEY:
 			case ObjectType::GREEN_KEY:
-				go = CreateKeyGameObject(m_physEngine, position, rotation, obj.type);
+				go = Prefab::CreateKeyGameObject(m_physEngine, position, rotation, obj.type);
 				break;
 
 			case ObjectType::OBJECTIVE_ITEM:
-				go = CreateObjectiveGooseGameObject(m_physEngine, position, rotation);
+				go = Prefab::CreateObjectiveGooseGameObject(m_physEngine, position, rotation);
 				break;
 		}
 
