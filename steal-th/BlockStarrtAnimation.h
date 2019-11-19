@@ -2,10 +2,10 @@
 #include <glm/vec3.hpp>
 #include <engine/behaviours/Behaviour.h>
 
-class BlockStartAnimation : Behaviour
+class BlockStartAnimation : public Behaviour
 {
 public:
-
+	BlockStartAnimation();
 
 	// Overridden functions.
 	void Update(float deltaTime) override;

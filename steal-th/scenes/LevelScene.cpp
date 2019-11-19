@@ -22,10 +22,13 @@
 #include "../behaviours/TileBehaviour.h"
 #include "../behaviours/PlayerItemPickup.h"
 #include "../behaviours/Rotate.h"
+#include "../BlockStarrtAnimation.h"
 #include <engine/behaviours/UIMenuBehaviour.h>
 #include <engine/behaviours/UIImageBehaviour.h>
 #include <engine/behaviours/UIButtonBehaviour.h>
 #include <engine/behaviours/UITextBehaviour.h>
+
+#include <engine/MessageSystem.h>
 
 #include <engine/animation/AnimatedMesh.h>
 #include <engine/animation/Animation.h>
@@ -175,7 +178,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 	playerObj->AddBehaviour(meshRenderer);
 	playerObj->AddBehaviour(new PlayerMovement(10));
-	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
+	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 45.0f, 10.0f)));
 	playerObj->AddBehaviour(new Inventory());
 	playerObj->AddBehaviour(new PointLight(WHITE));
 
@@ -310,6 +313,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
 	blueKey->SetParent(menu);
 	AddScreenGameObject(menu);
+
+	MessageSystem::BroadcastMessage(0, BehaviourType::BlockStartAnimation, "StartBlockAnimation");
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const
@@ -472,6 +477,8 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 			}
 
 			ga->currentScene = this;
+
+			ga->AddBehaviour(new BlockStartAnimation());
 
 			m_worldGameObjects.push_back(std::move(ga));
 
