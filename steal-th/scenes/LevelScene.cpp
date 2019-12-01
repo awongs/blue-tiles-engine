@@ -272,7 +272,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 		// Add a spot light in front of the guard
 		float theta = atan2f(guard.tileViewRadius * LevelScene::TILE_SIZE, guard.tileViewDistance * LevelScene::TILE_SIZE);
-		SpotLight* guardCone = new SpotLight(glm::vec3(1), ga->forward, theta, theta * 1.25f);
+		SpotLight* guardCone = new SpotLight(glm::vec3(1), ga->forward, theta, theta * 1.1f);
 		ga->AddBehaviour(guardCone);
 
 		m_worldGameObjects.push_back(std::move(ga));

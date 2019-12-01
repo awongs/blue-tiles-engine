@@ -102,7 +102,7 @@ namespace {
 	 const int NUM_VALUES_PER_POINT{ 2 };
 
 	 // TODO: maybe move this flag to a more appropriate location?
-	 const bool IS_OPEN_CL_ENABLED{ true };
+	 const bool IS_OPEN_CL_ENABLED{ false };
 }
 
 std::unique_ptr<OpenCLManager> GuardDetection::m_openCLManager;
@@ -305,14 +305,14 @@ bool GuardDetection::TryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistance
 {
 	// Rotate the vector (start point to max distance point) by
 	// the guard's rotation.
-	glm::vec2 viewVector{ maxDistancePoint - startPoint };
-	viewVector = glm::rotate(viewVector, -gameObject->rotation.y);
+	glm::vec2 unrotatedViewVector{ maxDistancePoint - startPoint };
+	glm::vec2 viewVector{ glm::rotate(unrotatedViewVector, -gameObject->rotation.y) };
 
 	// Rotate the vector (guard's position to start point) by
 	// the guard's rotation.
 	glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
-	glm::vec2 startVector{ startPoint - guardWorldPos };
-	startVector = glm::rotate(startVector, -gameObject->rotation.y);
+	glm::vec2 unrotatedStartVector{ startPoint - guardWorldPos };
+	glm::vec2 startVector{ glm::rotate(unrotatedStartVector, -gameObject->rotation.y) };
 
 	// Get the new rotated start point and use it as point 1 for the 
 	// line algorithm.
@@ -368,7 +368,33 @@ bool GuardDetection::TryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistance
 			// If the player was detected while on the same tile as this guard,
 			// make sure they are actually colliding for the detection to count.
 			// Otherwise, just disable the detection.
-			return !(playerTilePos == guardTilePos && !m_isCollidingPlayer);
+			bool isDetected = !(playerTilePos == guardTilePos && !m_isCollidingPlayer);
+
+			// More precise checks for boundary rays.
+			// The player's position must lie on the side of the line facing inside
+			// the vision cone.
+			glm::ivec2 maxDistTilePos{ m_levelScene->GetTileCoordFromPos(maxDistancePoint) };
+			bool isMinRay = (guardTilePos.x - maxDistTilePos.x) == m_tileViewRadius;
+			bool isMaxRay = (guardTilePos.x - maxDistTilePos.x) == -m_tileViewRadius;
+			if (isDetected && (isMinRay || isMaxRay))
+			{
+				auto calculateDeterminant{ [](glm::vec2 a, glm::vec2 b, glm::vec2 p)
+				{
+					return (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x);
+				} };
+
+				// Undo the rotation for easier comparisons with determinant.
+				glm::vec2 thisToPlayer{ playerWorldPos - guardWorldPos };
+				thisToPlayer = glm::rotate(thisToPlayer, gameObject->rotation.y);
+				glm::vec2 playerPos{ guardWorldPos + thisToPlayer };
+				glm::vec2 startPoint{ guardWorldPos + unrotatedStartVector };
+				glm::vec2 maxDist{ startPoint + unrotatedViewVector };
+				float det{ calculateDeterminant(guardWorldPos, maxDist, playerPos) };
+				
+				isDetected = (isMinRay && det > 0) || (isMaxRay && det < 0);
+			}
+
+			return isDetected;
 		}
 
 		// Check adjacent walls to handle corner cases, when looking 
