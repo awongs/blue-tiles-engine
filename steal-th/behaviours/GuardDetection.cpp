@@ -105,8 +105,10 @@ namespace {
 	 const bool IS_OPEN_CL_ENABLED{ true };
 }
 
-GuardDetection::GuardDetection(LevelScene* levelScene, GameObject* playerObj,
-	float maxViewDist, int tileViewRadius) :
+std::unique_ptr<OpenCLManager> GuardDetection::m_openCLManager;
+
+GuardDetection::GuardDetection(int guardIndex, LevelScene* levelScene, 
+	GameObject* playerObj, float maxViewDist, int tileViewRadius) :
 	Behaviour(BehaviourType::GuardDetection),
 	m_levelScene(levelScene), m_playerObj(playerObj),
 	m_maxViewDist(maxViewDist), m_tileViewRadius(tileViewRadius),
@@ -114,24 +116,22 @@ GuardDetection::GuardDetection(LevelScene* levelScene, GameObject* playerObj,
 {
 	if (IS_OPEN_CL_ENABLED)
 	{
-		m_openCLManager = std::make_unique<OpenCLManager>("../Assets/opencl/guard_detection.cl", "guard_detection");
-
 		cl_mem outputBuffer{ m_openCLManager->CreateOutputBuffer(sizeof(bool) * m_numDetectionRays) };
-		m_openCLManager->SetKernelArg(2, sizeof(cl_mem), &outputBuffer);
+		m_openCLManager->SetKernelArg(m_guardIndex, 2, sizeof(cl_mem), &outputBuffer);
 
-		m_openCLManager->SetKernelArg(6, sizeof(float), &LevelScene::TILE_SIZE);
+		m_openCLManager->SetKernelArg(m_guardIndex, 6, sizeof(float), &LevelScene::TILE_SIZE);
 
 		glm::ivec2 levelSize{ m_levelScene->GetLevelSize() };
-		m_openCLManager->SetKernelArg(7, sizeof(int), &levelSize.x);
-		m_openCLManager->SetKernelArg(8, sizeof(int), &levelSize.y);
+		m_openCLManager->SetKernelArg(m_guardIndex, 7, sizeof(int), &levelSize.x);
+		m_openCLManager->SetKernelArg(m_guardIndex, 8, sizeof(int), &levelSize.y);
 
 		std::vector<int> tiles;
 		m_levelScene->GetTiles(tiles);
 		cl_mem tilesBuffer{ m_openCLManager->CreateInputBuffer(sizeof(int) * tiles.size(), &tiles[0]) };
-		m_openCLManager->SetKernelArg(9, sizeof(cl_mem), &tilesBuffer);
+		m_openCLManager->SetKernelArg(m_guardIndex, 9, sizeof(cl_mem), &tilesBuffer);
 
 		const int MAX_VIEW_DIST_TILES{ static_cast<int>(m_maxViewDist / LevelScene::TILE_SIZE) };
-		m_openCLManager->SetKernelArg(13, sizeof(int) * NUM_VALUES_PER_POINT * MAX_VIEW_DIST_TILES * 2, NULL);
+		m_openCLManager->SetKernelArg(m_guardIndex, 13, sizeof(int) * NUM_VALUES_PER_POINT * MAX_VIEW_DIST_TILES * 2, NULL);
 
 		m_outputBuffer = new bool[m_numDetectionRays];
 	}
@@ -208,29 +208,40 @@ void GuardDetection::OnCollisionStay(GLuint other)
 	}
 }
 
+void GuardDetection::InitOpenCL()
+{
+	if (IS_OPEN_CL_ENABLED)
+	{
+		if (m_openCLManager == nullptr)
+			m_openCLManager = std::make_unique<OpenCLManager>("../Assets/opencl/guard_detection.cl", "guard_detection");
+		else
+			m_openCLManager->ReleasePrograms();
+	}
+}
+
 void GuardDetection::UpdateOpenCL()
 {
 	// Update these kernel arguments.
 	std::vector<float> endpointsX, endpointsZ;
 	GetDetectionRayEndPoints(endpointsX, endpointsZ);
 	cl_mem endpointsXBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsX[0]) };
-	m_openCLManager->SetKernelArg(0, sizeof(cl_mem), &endpointsXBuffer);
+	m_openCLManager->SetKernelArg(m_guardIndex, 0, sizeof(cl_mem), &endpointsXBuffer);
 	cl_mem endpointsZBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsZ[0]) };
-	m_openCLManager->SetKernelArg(1, sizeof(cl_mem), &endpointsZBuffer);
+	m_openCLManager->SetKernelArg(m_guardIndex, 1, sizeof(cl_mem), &endpointsZBuffer);
 
-	m_openCLManager->SetKernelArg(3, sizeof(float), &gameObject->position.x);
-	m_openCLManager->SetKernelArg(4, sizeof(float), &gameObject->position.z);
-	m_openCLManager->SetKernelArg(5, sizeof(float), &gameObject->rotation.y);
+	m_openCLManager->SetKernelArg(m_guardIndex, 3, sizeof(float), &gameObject->position.x);
+	m_openCLManager->SetKernelArg(m_guardIndex, 4, sizeof(float), &gameObject->position.z);
+	m_openCLManager->SetKernelArg(m_guardIndex, 5, sizeof(float), &gameObject->rotation.y);
 
-	m_openCLManager->SetKernelArg(10, sizeof(float), &m_playerObj->position.x);
-	m_openCLManager->SetKernelArg(11, sizeof(float), &m_playerObj->position.z);
+	m_openCLManager->SetKernelArg(m_guardIndex, 10, sizeof(float), &m_playerObj->position.x);
+	m_openCLManager->SetKernelArg(m_guardIndex, 11, sizeof(float), &m_playerObj->position.z);
 
-	m_openCLManager->SetKernelArg(12, sizeof(int), &m_isCollidingPlayer);
+	m_openCLManager->SetKernelArg(m_guardIndex, 12, sizeof(int), &m_isCollidingPlayer);
 
 	// Run OpenCL kernel for detection.
 	size_t globalWorkSize[1]{ static_cast<size_t>(m_numDetectionRays) };
 	size_t localWorkSize[1]{ 1 };
-	m_openCLManager->EnqueueKernel(1, globalWorkSize, localWorkSize);
+	m_openCLManager->EnqueueKernel(m_guardIndex, 1, globalWorkSize, localWorkSize);
 
 	// Get the results from OpenCL.
 	m_openCLManager->ReadOutput(&m_outputBuffer[0], sizeof(bool) * m_numDetectionRays);

@@ -202,6 +202,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	SoundManager::getInstance().getMusic("music")->play();
 
 	// Create the guards
+	int guardIndex{ 0 };
+	GuardDetection::InitOpenCL();
 	for (Guard &guard : level->m_guards)
 	{
 		AnimatedMesh* animatedMesh = new AnimatedMesh("../Assets/models/robot_kyle.obj", "../Assets/animations/robot_kyle/KyleWalking.dae");
@@ -232,26 +234,11 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		ga->AddBehaviour(new PhysicsBehaviour(m_physEngine, ga->id, guardCol));
 
 		// Add guard detection behaviour
-		ga->AddBehaviour(new GuardDetection(this, playerObj,
+		ga->AddBehaviour(new GuardDetection(guardIndex, this, playerObj,
 			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
+		++guardIndex;
 
 		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
-
-		/*// move to box
-		sgmaib->AddMoveTileAction(1, 2);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddMoveTileAction(1, 1);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);
-
-		// move back
-		sgmaib->AddMoveTileAction(1, 2);
-		sgmaib->AddTurnCCWAction();
-		sgmaib->AddMoveTileAction(2, 2);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);*/
 
 		// Setting guard movement
 		for (std::string move : guard.movement) {

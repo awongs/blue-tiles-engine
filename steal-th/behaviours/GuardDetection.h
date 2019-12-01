@@ -12,7 +12,7 @@ class GuardDetection : public Behaviour
 
 public:
 	// Constructor.
-	GuardDetection(LevelScene *levelScene, GameObject *playerObj, 
+	GuardDetection(int guardIndex, LevelScene *levelScene, GameObject *playerObj, 
 		float maxViewDist, int tileViewRadius);
 
 	// Destructor.
@@ -23,6 +23,8 @@ public:
 	void Draw(Shader &shader) override;
 	bool HandleMessage(unsigned int senderID, std::string& message) override;
 	void OnCollisionStay(GLuint other) override;
+
+	static void InitOpenCL();
 	
 private:
 	// Encapsulate update-related stuff for OpenCL and serial implementation.
@@ -61,10 +63,14 @@ private:
 	int m_numDetectionRays{ 0 };
 
 	// Store OpenCL-related values.
-	std::unique_ptr<OpenCLManager> m_openCLManager;
+	static std::unique_ptr<OpenCLManager> m_openCLManager;
 	bool* m_outputBuffer{ nullptr };
 
 	// Check if the guard is colliding with the player.
 	// This is used for near-detection tests.
 	bool m_isCollidingPlayer{ false };
+
+	// A unique identifier for this guard on this level.
+	// This is used for indexing its OpenCL program.
+	int m_guardIndex{ 0 };
 };

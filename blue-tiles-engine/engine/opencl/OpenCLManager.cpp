@@ -182,7 +182,7 @@ bool OpenCLManager::CreateCommandQueue() {
 	return true;
 }
 
-bool OpenCLManager::CreateProgram(const std::string &fileName, 
+int OpenCLManager::CreateProgram(const std::string &fileName, 
 	const std::string &kernelName) {
 	cl_int errNum;
 	cl_program program;
@@ -191,7 +191,7 @@ bool OpenCLManager::CreateProgram(const std::string &fileName,
 
 	if (!kernelFile.is_open()) {
 		DebugLog::Error("Failed to open file for reading: " + fileName);
-		return false;
+		return -1;
 	}
 
 	std::ostringstream oss;
@@ -208,7 +208,7 @@ bool OpenCLManager::CreateProgram(const std::string &fileName,
 
 	if (program == NULL) {
 		DebugLog::Error("Failed to create CL program from source");
-		return false;
+		return -1;
 	}
 
 	errNum = clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
@@ -226,13 +226,23 @@ bool OpenCLManager::CreateProgram(const std::string &fileName,
 		DebugLog::Error(std::string(buildLog));
 		delete[] buildLog;
 		clReleaseProgram(program);
-		return false;
+		return -1;
 	}
 
 	// Create the kernel.
-	m_kernel = clCreateKernel(program, kernelName.c_str(), NULL);
+	m_kernels.push_back(clCreateKernel(program, kernelName.c_str(), NULL));
+	m_programs.push_back(program);
 
-	return true;
+	return m_programs.size() - 1;
+}
+
+void OpenCLManager::ReleasePrograms()
+{
+	for (int i = 0; i < m_programs.size(); ++i)
+	{
+		clReleaseProgram(m_programs[i]);
+		clReleaseKernel(m_kernels[i]);
+	}
 }
 
 cl_mem OpenCLManager::CreateInputBuffer(size_t size, void *data)
@@ -268,9 +278,9 @@ void OpenCLManager::ReleaseMemoryObject(cl_mem memory)
 	clReleaseMemObject(memory);
 }
 
-bool OpenCLManager::SetKernelArg(cl_uint argIndex, size_t size, const void* argValue)
+bool OpenCLManager::SetKernelArg(int kernelIndex, cl_uint argIndex, size_t size, const void* argValue)
 {
-	cl_int err{ clSetKernelArg(m_kernel, argIndex, size, argValue) };
+	cl_int err{ clSetKernelArg(m_kernels[kernelIndex], argIndex, size, argValue) };
 
 	if (err != CL_SUCCESS)
 	{
@@ -280,10 +290,10 @@ bool OpenCLManager::SetKernelArg(cl_uint argIndex, size_t size, const void* argV
 	return true;
 }
 
-bool OpenCLManager::EnqueueKernel(cl_uint dim, const size_t *globalWorkSize, 
+bool OpenCLManager::EnqueueKernel(int kernelIndex, cl_uint dim, const size_t *globalWorkSize,
 	const size_t *localWorkSize)
 {
-	cl_int err{ clEnqueueNDRangeKernel(m_commandQueue, m_kernel, dim, NULL,
+	cl_int err{ clEnqueueNDRangeKernel(m_commandQueue, m_kernels[kernelIndex], dim, NULL,
 		globalWorkSize, localWorkSize, 0, NULL, NULL) };
 
 	if (err != CL_SUCCESS)
