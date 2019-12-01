@@ -10,19 +10,20 @@
 class OpenCLManager {
 public:
 	// Default Constructor
-	OpenCLManager(const std::string& fileName, const std::string& kernelName);
+	OpenCLManager();
 
 	// Deconstructor
 	virtual ~OpenCLManager();
 
 	// OpenCL wrapper functions.
 	// Return true if successful, else return false.
-	cl_mem CreateInputBuffer(size_t size, void *data);
-	cl_mem CreateOutputBuffer(size_t size);
+	cl_mem CreateReadOnlyBuffer(size_t size, void *data);
+	cl_mem CreateReadWriteBuffer(size_t size);
 	void ReleaseMemoryObject(cl_mem memory);
 	bool SetKernelArg(int kernelIndex, cl_uint argIndex, size_t size, const void *argValue);
 	bool EnqueueKernel(int kernelIndex, cl_uint dim, const size_t *globalWorkSize, const size_t *localWorkSize);
-	bool ReadOutput(void *output, size_t outputSize);
+	bool WriteBuffer(cl_mem buffer, void* data, size_t size);
+	bool ReadBuffer(cl_mem buffer, void *output, size_t outputSize);
 	bool CheckOpenCLError(cl_int errNum, const char* errMsg);
 
 	// Create a new program for the context and return its index to the
@@ -43,7 +44,4 @@ private:
 	std::vector<cl_program> m_programs;
 	cl_device_id *m_deviceList{ nullptr };
 	std::vector<cl_kernel> m_kernels;
-
-	std::vector<cl_mem> m_deviceInputBuffers;
-	cl_mem m_deviceOutputBuffer;
 };

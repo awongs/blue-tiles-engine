@@ -26,6 +26,9 @@ public:
 	// Get the integer representation of the level's tiles.
 	void GetTiles(std::vector<int> &output) const;
 
+	// Set the tile type at the given x, z-tile coordinates.
+	void SetTile(TileType type, unsigned int x, unsigned int z);
+
 	// The size of a tile in world units.
 	static const float TILE_SIZE;
 

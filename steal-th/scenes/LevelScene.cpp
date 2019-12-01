@@ -44,6 +44,7 @@ namespace
 	// TODO: Need a more accurate way to determine this.
 	// Just eye-balling it for now...
 	const glm::vec2 WALL_HALF_SIZES{ 3.5f, 0.5f };
+	const glm::vec3 GUARD_HALF_SIZES{ 1.f };
 
 	const glm::vec3 WALL_SCALE{ LevelScene::TILE_SIZE / 1.2f, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 5 };
 	const glm::vec3 DOOR_SCALE{ LevelScene::TILE_SIZE, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 20 };
@@ -174,7 +175,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	GameObject* playerObj = new GameObject("player", position, glm::vec3(0, 0, 0), glm::vec3(4, 4, 4));
 
 	playerObj->AddBehaviour(meshRenderer);
-	playerObj->AddBehaviour(new PlayerMovement(10));
+	playerObj->AddBehaviour(new PlayerMovement(10, this));
 	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
 	playerObj->AddBehaviour(new Inventory());
 	playerObj->AddBehaviour(new PointLight(WHITE));
@@ -202,7 +203,6 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	SoundManager::getInstance().getMusic("music")->play();
 
 	// Create the guards
-	int guardIndex{ 0 };
 	GuardDetection::InitOpenCL();
 	for (Guard &guard : level->m_guards)
 	{
@@ -230,13 +230,12 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		animator->AddAnimation(look);
 
 		// Add physics behaviour.
-		Collider* guardCol{ new Collider(glm::vec3(1.5f)) };
+		Collider* guardCol{ new Collider(GUARD_HALF_SIZES) };
 		ga->AddBehaviour(new PhysicsBehaviour(m_physEngine, ga->id, guardCol));
 
 		// Add guard detection behaviour
-		ga->AddBehaviour(new GuardDetection(guardIndex, this, playerObj,
+		ga->AddBehaviour(new GuardDetection(this, playerObj,
 			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
-		++guardIndex;
 
 		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
 
@@ -329,6 +328,12 @@ void LevelScene::GetTiles(std::vector<int>& output) const
 	{
 		output.push_back(static_cast<int>(tile));
 	}
+}
+
+void LevelScene::SetTile(TileType type, unsigned int x, unsigned int z)
+{
+	unsigned int tileIndex{ GetTileIndexFromXZ(glm::ivec2(x, z)) };
+	m_tiles[tileIndex] = type;
 }
 
 void LevelScene::AddTile(TileType type, unsigned int tileIndex)

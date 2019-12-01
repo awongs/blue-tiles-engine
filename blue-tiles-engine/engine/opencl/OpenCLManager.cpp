@@ -6,11 +6,10 @@ namespace
 	const int PLATFORM_NAME_SIZE = 1024;
 }
 
-OpenCLManager::OpenCLManager(const std::string& fileName,
-	const std::string& kernelName) {
+OpenCLManager::OpenCLManager()
+{
 	CreateContext();
 	CreateCommandQueue();
-	CreateProgram(fileName, kernelName);
 }
 
 OpenCLManager::~OpenCLManager() {
@@ -245,30 +244,20 @@ void OpenCLManager::ReleasePrograms()
 	}
 }
 
-cl_mem OpenCLManager::CreateInputBuffer(size_t size, void *data)
+cl_mem OpenCLManager::CreateReadOnlyBuffer(size_t size, void *data)
 {
 	cl_mem buffer{ clCreateBuffer(m_context,
 		CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
 		size, data, NULL) };
 
-	if (buffer != nullptr)
-	{
-		m_deviceInputBuffers.push_back(buffer);
-	}
-
 	return buffer;
 }
 
-cl_mem OpenCLManager::CreateOutputBuffer(size_t size)
+cl_mem OpenCLManager::CreateReadWriteBuffer(size_t size)
 {
 	cl_mem buffer{ clCreateBuffer(m_context,
 		CL_MEM_READ_WRITE,
 		size, NULL, NULL) };
-
-	if (buffer != nullptr)
-	{
-		m_deviceOutputBuffer = buffer;
-	}
 
 	return buffer;
 }
@@ -304,15 +293,29 @@ bool OpenCLManager::EnqueueKernel(int kernelIndex, cl_uint dim, const size_t *gl
 	return true;
 }
 
-bool OpenCLManager::ReadOutput(void *output, size_t size)
+bool OpenCLManager::WriteBuffer(cl_mem buffer, void* data, size_t size)
 {
-	cl_int err{ clEnqueueReadBuffer(m_commandQueue, m_deviceOutputBuffer, CL_TRUE, 0,
+	cl_int err{ clEnqueueWriteBuffer(m_commandQueue, buffer, CL_TRUE, 0,
+		size, data, 0, NULL, NULL) };
+
+	if (err != CL_SUCCESS)
+	{
+		std::cout << err << std::endl;
+		DebugLog::Error("Failed to write buffer.");
+		return false;
+	}
+	return true;
+}
+
+bool OpenCLManager::ReadBuffer(cl_mem buffer, void *output, size_t size)
+{
+	cl_int err{ clEnqueueReadBuffer(m_commandQueue, buffer, CL_TRUE, 0,
 		size, output, 0, NULL, NULL) };
 
 	if (err != CL_SUCCESS)
 	{
 		std::cout << err << std::endl;
-		DebugLog::Error("Failed to read output.");
+		DebugLog::Error("Failed to read buffer.");
 		return false;
 	}
 	return true;

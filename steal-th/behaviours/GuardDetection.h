@@ -12,7 +12,7 @@ class GuardDetection : public Behaviour
 
 public:
 	// Constructor.
-	GuardDetection(int guardIndex, LevelScene *levelScene, GameObject *playerObj, 
+	GuardDetection(LevelScene *levelScene, GameObject *playerObj, 
 		float maxViewDist, int tileViewRadius);
 
 	// Destructor.
@@ -51,6 +51,7 @@ private:
 	// Hold a raw pointer to the level scene.
 	// We need this to get tile data.
 	LevelScene *m_levelScene{ nullptr };
+	std::vector<int> m_levelTiles;
 
 	// Hold a raw pointer to the player GameObject.
 	GameObject *m_playerObj{ nullptr };
@@ -65,6 +66,10 @@ private:
 	// Store OpenCL-related values.
 	static std::unique_ptr<OpenCLManager> m_openCLManager;
 	bool* m_outputBuffer{ nullptr };
+	cl_mem m_clOutputBuffer{ nullptr };
+	cl_mem m_clEndpointsXBuffer{ nullptr };
+	cl_mem m_clEndpointsZBuffer{ nullptr };
+	cl_mem m_clTilesBuffer{ nullptr };
 
 	// Check if the guard is colliding with the player.
 	// This is used for near-detection tests.
