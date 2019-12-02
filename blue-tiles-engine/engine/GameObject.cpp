@@ -7,6 +7,7 @@
 #include "Scene.h"
 
 #include "debugbt/DebugLog.h"
+#include <sstream>
 
 int GameObject::idCounter = 0;
 
@@ -17,10 +18,32 @@ GameObject::GameObject(std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sc
 	, scale(sca)
 	, m_transformMatrix(glm::mat4(1))
 	, isVisible(true)
+	, m_parent(nullptr)
 {
 	// We increment counter but don't decrement because we don't keep track of which
 	// GameObject ids are destroyed
 	id = idCounter++;
+
+	// Initial transform matrix update.
+	UpdateTransformMatrix();
+}
+
+GameObject::GameObject(GameObject* parent, std::string n, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
+	: name(n)
+	, position(pos)
+	, rotation(rot)
+	, scale(sca)
+	, m_transformMatrix(glm::mat4(1))
+	, isVisible(true)
+	, m_parent(parent)
+{
+	// We increment counter but don't decrement because we don't keep track of which
+	// GameObject ids are destroyed
+	id = idCounter++;
+
+	std::ostringstream oss;
+	oss << "Parent id " << parent->id;
+	DebugLog::Info(oss.str());
 
 	// Initial transform matrix update.
 	UpdateTransformMatrix();
@@ -105,6 +128,16 @@ bool GameObject::HandleMessage(unsigned int senderID, std::string& message, Beha
 
 		if (isScreenObject) currentScene->RemoveScreenGameObject(id);
 		else currentScene->RemoveWorldGameObject(id);
+	}
+	else if (message == "hide")
+	{
+		DebugLog::Info(name + " got hide message!");
+		isVisible = false;
+	}
+	else if (message == "show")
+	{
+		DebugLog::Info(name + " got show message!");
+		isVisible = true;
 	}
 
 	std::weak_ptr<Behaviour> behav = GetBehaviour(type);

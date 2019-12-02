@@ -7,14 +7,18 @@
 #include <iterator>
 #include "graphics/Camera.h"
 
+int Scene::idCounter = 0;
+
 Scene::Scene()
 {
 	isGameOver = false;
+	m_id = idCounter++;
 }
 
 Scene::Scene(std::vector<std::unique_ptr<GameObject>>& worldGameObjects, std::vector<std::unique_ptr<GameObject>>& screenGameObjects)
 {
 	isGameOver = false;
+	m_id = idCounter++;
 	for (int i = 0; i < static_cast<int>(worldGameObjects.size()) - 2; ++i)
 	{
 		for (int j = i + 1; j < worldGameObjects.size(); ++j)
@@ -92,6 +96,7 @@ void Scene::DrawScreen(Shader& shader)
 	for (auto& screenGameObj : m_screenGameObjects)
 	{
 		if (!screenGameObj->isVisible) continue;
+		if (screenGameObj->GetParent() != nullptr) continue;
 		DrawUIGameObject(screenGameObj.get(), shader);
 	}
 }
@@ -99,7 +104,6 @@ void Scene::DrawScreen(Shader& shader)
 void Scene::DrawUIGameObject(GameObject* gameObject, Shader& shader)
 {
 	if (!gameObject->isVisible) return;
-
 	// Determine if we're in a menu
 	std::weak_ptr<UIMenuBehaviour> uiMenu = std::static_pointer_cast<UIMenuBehaviour>(gameObject->GetBehaviour(BehaviourType::UIMenuBehaviour).lock());
 
@@ -127,6 +131,7 @@ void Scene::DrawUIGameObject(GameObject* gameObject, Shader& shader)
 			{
 				DrawUIGameObject(gameObjChild, shader);
 
+				// If we're not the last child, then keep rendering on the same line
 				if (gameObjChild != children.back())
 				{
 					uiLayout.lock()->Draw(shader);
@@ -154,16 +159,30 @@ GameObject* Scene::GetWorldGameObjectByIndex(const size_t index)
 GameObject* Scene::GetWorldGameObjectById(const GLuint id)
 {
 	for (auto& worldGameObject : m_worldGameObjects)
+	{
 		if (worldGameObject->id == id)
 			return worldGameObject.get();
+		for (auto& child : worldGameObject->GetChildren())
+		{
+			if (child->id == id)
+				return child;
+		}
+	}
 	return nullptr;
 }
 
 GameObject* Scene::GetWorldGameObjectByName(const std::string name)
 {
 	for (auto& worldGameObject : m_worldGameObjects)
+	{
 		if (worldGameObject->name == name)
 			return worldGameObject.get();
+		for (auto& child : worldGameObject->GetChildren())
+		{
+			if (child->name == name)
+				return child;
+		}
+	}
 	return nullptr;
 }
 
@@ -204,16 +223,30 @@ GameObject* Scene::GetScreenGameObjectByIndex(const size_t index)
 GameObject* Scene::GetScreenGameObjectById(const GLuint id)
 {
 	for (auto& screenGameObject : m_screenGameObjects)
+	{
 		if (screenGameObject->id == id)
 			return screenGameObject.get();
+		for (auto& child : screenGameObject->GetChildren())
+		{
+			if (child->id == id)
+				return child;
+		}
+	}
 	return nullptr;
 }
 
 GameObject* Scene::GetScreenGameObjectByName(const std::string name)
 {
 	for (auto& screenGameObject : m_screenGameObjects)
+	{
 		if (screenGameObject->name == name)
 			return screenGameObject.get();
+		for (auto& child : screenGameObject->GetChildren())
+		{
+			if (child->name == name)
+				return child;
+		}
+	}
 	return nullptr;
 }
 

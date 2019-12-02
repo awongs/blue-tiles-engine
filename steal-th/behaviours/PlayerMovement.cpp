@@ -144,6 +144,7 @@ void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 			SoundManager::getInstance().getSound("door-unlocked")->play();
 			inventory->RemoveItem(Inventory::ItemType::RED_KEY);
 			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
+			MessageSystem::SendMessageToObject(gameObject->id, "redKey", BehaviourType::NONE, "hide");
 		}
 		else
 		{
@@ -160,6 +161,7 @@ void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 			SoundManager::getInstance().getSound("door-unlocked")->play();
 			inventory->RemoveItem(Inventory::ItemType::BLUE_KEY);
 			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
+			MessageSystem::SendMessageToObject(gameObject->id, "blueKey", BehaviourType::NONE, "hide");
 		}
 		else
 		{
@@ -175,6 +177,7 @@ void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 			SoundManager::getInstance().getSound("door-unlocked")->play();
 			inventory->RemoveItem(Inventory::ItemType::GREEN_KEY);
 			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
+			MessageSystem::SendMessageToObject(gameObject->id, "greenKey", BehaviourType::NONE, "hide");
 		}
 		else
 		{
@@ -192,6 +195,7 @@ void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 			SoundManager::getInstance().getSound("win")->play();
 			inventory->RemoveItem(Inventory::ItemType::OBJECTIVE_ITEM);
 			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
+			MessageSystem::SendMessageToObject(gameObject->id, "objective", BehaviourType::NONE, "hide");
 			gameObject->currentScene->stopUpdates();
 			DebugLog::Info("Player reached exit. Game over.");
 			// Need UI!!!!!

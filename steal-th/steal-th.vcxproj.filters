@@ -58,6 +58,9 @@
     <ClCompile Include="behaviours\PlayerItemPickup.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
+    <ClCompile Include="scenes\MainMenuScene.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Guard.h">
@@ -101,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="behaviours\PlayerItemPickup.h">
       <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="scenes\MainMenuScene.h">
+      <Filter>Source Files\scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

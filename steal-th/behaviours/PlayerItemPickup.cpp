@@ -59,6 +59,7 @@ void PlayerItemPickup::OnCollisionStay(GLuint other)
 				DebugLog::Info(gameObject->name + " picked up a RED_KEY");
 				otherObjBehaviour->pickedUp = true;
 				MessageSystem::SendMessageToObject(gameObject->id, other, BehaviourType::NONE, "die");
+				MessageSystem::SendMessageToObject(gameObject->id, "redKey", BehaviourType::NONE, "show");
 				break;
 			}
 
@@ -69,6 +70,7 @@ void PlayerItemPickup::OnCollisionStay(GLuint other)
 				DebugLog::Info(gameObject->name + " picked up a BLUE_KEY");
 				otherObjBehaviour->pickedUp = true;
 				MessageSystem::SendMessageToObject(gameObject->id, other, BehaviourType::NONE, "die");
+				MessageSystem::SendMessageToObject(gameObject->id, "blueKey", BehaviourType::NONE, "show");
 				break;
 			}
 
@@ -79,6 +81,7 @@ void PlayerItemPickup::OnCollisionStay(GLuint other)
 				DebugLog::Info(gameObject->name + " picked up a GREEN_KEY");
 				otherObjBehaviour->pickedUp = true;
 				MessageSystem::SendMessageToObject(gameObject->id, other, BehaviourType::NONE, "die");
+				MessageSystem::SendMessageToObject(gameObject->id, "greenKey", BehaviourType::NONE, "show");
 				break;
 			}
 
@@ -90,6 +93,7 @@ void PlayerItemPickup::OnCollisionStay(GLuint other)
 				DebugLog::Info(gameObject->name + " picked up a OBJECTIVE_ITEM");
 				otherObjBehaviour->pickedUp = true;
 				MessageSystem::SendMessageToObject(gameObject->id, other, BehaviourType::NONE, "die");
+				MessageSystem::SendMessageToObject(gameObject->id, "objectiveItem", BehaviourType::NONE, "show");
 				break;
 			}
 			}

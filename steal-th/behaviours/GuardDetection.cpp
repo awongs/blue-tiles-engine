@@ -12,6 +12,7 @@
 #include <vector>
 #include <cmath>
 #include <glm/gtx/rotate_vector.hpp>
+#include <engine/MessageSystem.h>
 
 #include <iostream>
 
@@ -174,6 +175,7 @@ void GuardDetection::Update(float deltaTime)
 		std::shared_ptr<PlayerMovement> playerMovement{ m_playerObj->GetBehaviour<PlayerMovement>().lock() };
 		playerMovement->ResetVelocity();
 
+		MessageSystem::SendMessageToObject(gameObject->id, "retryMenu", BehaviourType::NONE, "show");
 		SoundManager::getInstance().getSound("detected")->play();
 		SoundManager::getInstance().getMusic("music")->stop();
 		SoundManager::getInstance().getSound("lose")->play();

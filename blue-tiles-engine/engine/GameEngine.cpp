@@ -111,10 +111,10 @@ void GameEngine::Draw()
 	SDL_GL_SwapWindow(m_window);
 }
 
-void GameEngine::SetScene(Scene* scene)
+void GameEngine::SetScene(std::shared_ptr<Scene> scene)
 {
-	renderer->SetupLighting(*scene);
-	m_currentScene = std::unique_ptr<Scene>(scene);
+	m_currentScene = scene;
+	renderer->SetupLighting(*m_currentScene);
 }
 
 PhysicsEngine *GameEngine::GetPhysicsEngine() const

@@ -38,7 +38,7 @@ public:
 	Renderer* renderer;
 
 	// Setter for the current scene.
-	void SetScene(Scene* scene);
+	void SetScene(std::shared_ptr<Scene> scene);
 
 	// Text Renderering thing
 	TextRenderer* textRenderer;
@@ -53,7 +53,7 @@ private:
 	std::unique_ptr<PhysicsEngine> m_physEngine{ nullptr };
 
 	// The current scene.
-	std::unique_ptr<Scene> m_currentScene;
+	std::shared_ptr<Scene> m_currentScene;
 
 	// Updates the FPS counter
 	void UpdateFPSCounter();

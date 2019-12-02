@@ -33,6 +33,9 @@ const float LevelScene::TILE_SIZE{ 9.f };
 
 namespace
 {
+	// Window size settings.
+	constexpr int WINDOW_WIDTH = 800;
+	constexpr int WINDOW_HEIGHT = 600;
 	// TODO: Need a more accurate way to determine this.
 	// Just eye-balling it for now...
 	const glm::vec2 WALL_HALF_SIZES{ 3.5f, 0.5f };
@@ -275,22 +278,47 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	// UI for level
 	GameObject* menu = new GameObject();
 	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
+	AddScreenGameObject(menu); 
+	
 	GameObject* testString = new GameObject();
 	testString->AddBehaviour(new UITextBehaviour("Inventory"));
 	testString->SetParent(menu);
+	AddScreenGameObject(testString);
+
 	GameObject* redKey = new GameObject("redKey");
-	// redKey->isVisible = false;
+	redKey->isVisible = false;
 	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/red_key_block.png"));
 	redKey->SetParent(menu);
+	AddScreenGameObject(redKey);
+
 	GameObject* greenKey = new GameObject("greenKey");
-	// greenKey->isVisible = false;
+	greenKey->isVisible = false;
 	greenKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/green_key_block.png"));
 	greenKey->SetParent(menu);
+	AddScreenGameObject(greenKey);
+
 	GameObject* blueKey = new GameObject("blueKey");
-	// blueKey->isVisible = false;
+	blueKey->isVisible = false;
 	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
 	blueKey->SetParent(menu);
-	AddScreenGameObject(menu);
+	AddScreenGameObject(blueKey);
+
+	GameObject* objectiveItem = new GameObject("objective");
+	objectiveItem->isVisible = false;
+	objectiveItem->AddBehaviour(new UIImageBehaviour("../Assets/textures/golden_goose.png"));
+	objectiveItem->SetParent(menu);
+	AddScreenGameObject(objectiveItem);
+
+	GameObject* retryMenu = new GameObject("retryMenu");
+	retryMenu->AddBehaviour(new UIMenuBehaviour("Game Over", ImVec2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), ImVec2(75, 55), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse ));
+	retryMenu->isVisible = false;
+	AddScreenGameObject(retryMenu);
+
+	GameObject* retryButton = new GameObject();
+	retryButton->AddBehaviour(new UIButtonBehaviour("Retry", [&] {
+		}));
+	retryButton->SetParent(retryMenu);
+	AddScreenGameObject(retryButton);
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const
