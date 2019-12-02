@@ -1,6 +1,7 @@
 #include <glm/gtc/random.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include <engine/GameEngine.h>
 #include <engine/behaviours/MeshRenderer.h>
 #include <engine/behaviours/PhysicsBehaviour.h>
 #include <engine/behaviours/SpotLight.h>
@@ -55,8 +56,8 @@ namespace
 	constexpr glm::vec3 CAMERA_ORIENTATION = glm::vec3(glm::radians(75.0f), 0.0f, 0.0f);
 }
 
-LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
-	: Scene(), m_physEngine(physEngine)
+LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<GameEngine> gameEngine)
+	: Scene(), m_physEngine(physEngine), m_gameEngine(gameEngine)
 {
 	m_levelSize = glm::ivec2(level->m_sizeX, level->m_sizeZ);
 
@@ -327,6 +328,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 	GameObject* retryButton = new GameObject();
 	retryButton->AddBehaviour(new UIButtonBehaviour("Retry", [&] {
+		m_gameEngine->SetScene("mainMenu");
 		}));
 	retryButton->SetParent(retryMenu);
 	AddScreenGameObject(retryButton);

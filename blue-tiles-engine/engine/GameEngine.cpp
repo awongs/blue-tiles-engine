@@ -111,10 +111,36 @@ void GameEngine::Draw()
 	SDL_GL_SwapWindow(m_window);
 }
 
-void GameEngine::SetScene(std::shared_ptr<Scene> scene)
+void GameEngine::AddScene(std::string sceneName, std::shared_ptr<Scene> scene, std::function<void()> lambda)
 {
-	m_currentScene = scene;
-	renderer->SetupLighting(*m_currentScene);
+	if (m_cachedScenes.find(sceneName) != m_cachedScenes.end())
+	{
+		DebugLog::Error("A scene with that name already exists.");
+	}
+	else
+	{
+		m_cachedScenes[sceneName] = scene;
+		m_cachedScenesLoading[sceneName] = lambda;
+	}
+}
+
+void GameEngine::SetScene(std::string sceneName, bool reload)
+{
+	if (m_cachedScenes.find(sceneName) != m_cachedScenes.end())
+	{
+		/*
+		if (reload)
+		{
+			m_cachedScenesLoading[sceneName]();
+		}
+		*/
+		m_currentScene = m_cachedScenes.at(sceneName);
+		renderer->SetupLighting(*m_currentScene);
+	}
+	else
+	{
+		DebugLog::Error("No scene with that name found.");
+	}
 }
 
 PhysicsEngine *GameEngine::GetPhysicsEngine() const

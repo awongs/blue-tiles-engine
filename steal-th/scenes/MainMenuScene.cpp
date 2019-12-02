@@ -1,5 +1,6 @@
 #include "MainMenuScene.h"
 
+#include <engine/GameEngine.h>
 #include <engine/behaviours/UIMenuBehaviour.h>
 #include <engine/behaviours/UIImageBehaviour.h>
 #include <engine/behaviours/UILayoutBehaviour.h>
@@ -13,9 +14,10 @@ namespace
 	const std::string levelName = "level1";
 }
 
-MainMenuScene::MainMenuScene(std::shared_ptr<bool> keepRunning)
+MainMenuScene::MainMenuScene(std::shared_ptr<bool> keepRunning, std::shared_ptr<GameEngine> gameEngine)
 	: Scene()
 	, m_keepRunning(keepRunning)
+	, m_gameEngine(gameEngine)
 {
 	// UI for main menu
 	GameObject* mainMenuBackgroundGO = new GameObject();
@@ -38,7 +40,7 @@ MainMenuScene::MainMenuScene(std::shared_ptr<bool> keepRunning)
 
 	GameObject* playButtonGO = new GameObject();
 	playButtonGO->AddBehaviour(new UIButtonBehaviour("Play", [&] {
-			
+		m_gameEngine->SetScene("level1");
 		}, ImVec2(75, 50)));
 	playButtonGO->SetParent(mainLayoutGO);
 	AddScreenGameObject(playButtonGO);

@@ -34,7 +34,8 @@ constexpr int WINDOW_HEIGHT = 600;
 
 int main()
 {
-	std::shared_ptr<bool> keepRunning = std::make_shared<bool>(true);
+	std::shared_ptr<bool> keepRunning = std::make_shared<bool>();
+	(*keepRunning) = true;
 	GameWindow gameWin(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	int windowSetupStatus = gameWin.SetupSDLWindow();
@@ -49,15 +50,20 @@ int main()
 	PhysicsEngine *physEngine{ engine->GetPhysicsEngine() };
 
 	// Create the main menu
-	std::shared_ptr<MainMenuScene> mainMenuScene = std::make_shared<MainMenuScene>(keepRunning);
+	std::shared_ptr<MainMenuScene> mainMenuScene = std::make_shared<MainMenuScene>(keepRunning, engine);
+	engine->AddScene("mainMenu", mainMenuScene, [&] {
+		mainMenuScene = std::make_shared<MainMenuScene>(keepRunning, engine);
+		});
 
 	// Create the level
 	Level* l = new Level("level1");
-	std::shared_ptr<LevelScene> level = std::make_shared<LevelScene>(l, physEngine);
+	std::shared_ptr<LevelScene> level = std::make_shared<LevelScene>(l, physEngine, engine);
+	engine->AddScene("level1", level, [&] {
+		level = std::make_shared<LevelScene>(l, physEngine, engine);
+		});
 
 	// Set the scene in engine
-	// engine->SetScene(mainMenuScene.get());
-	engine->SetScene(level);
+	engine->SetScene("mainMenu");
 
 	SDL_Event windowEvent;
 
