@@ -12,101 +12,104 @@
 #include <vector>
 #include <cmath>
 #include <glm/gtx/rotate_vector.hpp>
+#include <engine/MessageSystem.h>
 
 #include <iostream>
 
 
 namespace {
-    /* 
-    * Implementation of Bresenham's line algorithm
-    * Arguments: int x0, int y0, int x1, int y1
-    * x0 = The guard's position x.
-    * y0 = The guard's position y.
-    * x1 = The guard's max view position x.
-    * y1 = The guard's max view position y.
-    * Function returns a list of tiles.
-    */
+	/*
+	* Implementation of Bresenham's line algorithm
+	* Arguments: int x0, int y0, int x1, int y1
+	* x0 = The guard's position x.
+	* y0 = The guard's position y.
+	* x1 = The guard's max view position x.
+	* y1 = The guard's max view position y.
+	* Function returns a list of tiles.
+	*/
 
-    void PlotLineLow(int x0, int y0, int x1, int y1, std::vector<glm::ivec2> &output) {
-        int dx = x1 - x0;
-        int dy = y1 - y0;
-        int yi = 1;
+	void PlotLineLow(int x0, int y0, int x1, int y1, std::vector<glm::ivec2>& output) {
+		int dx = x1 - x0;
+		int dy = y1 - y0;
+		int yi = 1;
 
-        if(dy < 0) {
-            yi = -1;
-            dy = -dy;
-        }
-        int D = 2 * dy - dx;
-        int y = y0;
+		if (dy < 0) {
+			yi = -1;
+			dy = -dy;
+		}
+		int D = 2 * dy - dx;
+		int y = y0;
 
-        for(int x = x0; x <= x1; x++) {
-            output.push_back(glm::ivec2(x,y));
-            
-            if(D > 0 ) {
-                y = y + yi;
-                D = D - 2 * dx;
-            }
-            
-            D = D + 2 * dy;
-        }
-    }
+		for (int x = x0; x <= x1; x++) {
+			output.push_back(glm::ivec2(x, y));
 
-     void PlotLineHigh(int x0, int y0, int x1, int y1, std::vector<glm::ivec2> &output) {
-        int dx = x1 - x0;
-        int dy = y1 - y0;
-        int xi = 1;
+			if (D > 0) {
+				y = y + yi;
+				D = D - 2 * dx;
+			}
 
-        if(dx < 0) {
-            xi = -1;
-            dx = -dx;
-        }
-        int D = 2 * dx - dy;
-        int x = x0;
+			D = D + 2 * dy;
+		}
+	}
 
-        for(int y = y0; y <= y1; y++) {
-            output.push_back(glm::ivec2(x,y));
-            
-            if(D > 0) {
-                x = x + xi;
-                D = D - 2 * dy;
-            }
-            
-            D = D + 2 * dx;
-        }
-	 }
+	void PlotLineHigh(int x0, int y0, int x1, int y1, std::vector<glm::ivec2>& output) {
+		int dx = x1 - x0;
+		int dy = y1 - y0;
+		int xi = 1;
 
-	 // Returns true if input coordinates were reversed, otherwise returns false.
-	 bool PlotLine(int x0, int y0, int x1, int y1, std::vector<glm::ivec2> &output) {
-		 if (std::abs(y1 - y0) < std::abs(x1 - x0)) {
-			 if (x0 > x1) {
-				 PlotLineLow(x1, y1, x0, y0, output);
-				 return true;
-			 }
-			 else {
-				 PlotLineLow(x0, y0, x1, y1, output);
-				 return false;
-			 }
-		 }
-		 else {
-			 if (y0 > y1) {
-				 PlotLineHigh(x1, y1, x0, y0, output);
-				 return true;
-			 }
-			 else {
-				 PlotLineHigh(x0, y0, x1, y1, output);
-				 return false;
-			 }
-		 }
-	 }
+		if (dx < 0) {
+			xi = -1;
+			dx = -dx;
+		}
+		int D = 2 * dx - dy;
+		int x = x0;
 
-	 const int NUM_VALUES_PER_POINT{ 2 };
+		for (int y = y0; y <= y1; y++) {
+			output.push_back(glm::ivec2(x, y));
 
-	 // TODO: maybe move this flag to a more appropriate location?
-	 const bool IS_OPEN_CL_ENABLED{ true };
+			if (D > 0) {
+				x = x + xi;
+				D = D - 2 * dy;
+			}
+
+			D = D + 2 * dx;
+		}
+	}
+
+	// Returns true if input coordinates were reversed, otherwise returns false.
+	bool PlotLine(int x0, int y0, int x1, int y1, std::vector<glm::ivec2>& output) {
+		if (std::abs(y1 - y0) < std::abs(x1 - x0)) {
+			if (x0 > x1) {
+				PlotLineLow(x1, y1, x0, y0, output);
+				return true;
+			}
+			else {
+				PlotLineLow(x0, y0, x1, y1, output);
+				return false;
+			}
+		}
+		else {
+			if (y0 > y1) {
+				PlotLineHigh(x1, y1, x0, y0, output);
+				return true;
+			}
+			else {
+				PlotLineHigh(x0, y0, x1, y1, output);
+				return false;
+			}
+		}
+	}
+
+	const int NUM_VALUES_PER_POINT{ 2 };
+
+	// TODO: maybe move this flag to a more appropriate location?
+	const bool IS_OPEN_CL_ENABLED{ true };
 }
 
-GuardDetection::GuardDetection(LevelScene* levelScene, GameObject* playerObj,
-	float maxViewDist, int tileViewRadius) :
+std::unique_ptr<OpenCLManager> GuardDetection::m_openCLManager;
+
+GuardDetection::GuardDetection(LevelScene* levelScene,
+	GameObject* playerObj, float maxViewDist, int tileViewRadius) :
 	Behaviour(BehaviourType::GuardDetection),
 	m_levelScene(levelScene), m_playerObj(playerObj),
 	m_maxViewDist(maxViewDist), m_tileViewRadius(tileViewRadius),
@@ -114,31 +117,36 @@ GuardDetection::GuardDetection(LevelScene* levelScene, GameObject* playerObj,
 {
 	if (IS_OPEN_CL_ENABLED)
 	{
-		m_openCLManager = std::make_unique<OpenCLManager>("../Assets/opencl/guard_detection.cl", "guard_detection");
+		m_guardIndex = m_openCLManager->CreateProgram("../Assets/opencl/guard_detection.cl", "guard_detection");
 
-		cl_mem outputBuffer{ m_openCLManager->CreateOutputBuffer(sizeof(bool) * m_numDetectionRays) };
-		m_openCLManager->SetKernelArg(2, sizeof(cl_mem), &outputBuffer);
+		m_clOutputBuffer = m_openCLManager->CreateReadWriteBuffer(sizeof(bool) * m_numDetectionRays);
+		m_openCLManager->SetKernelArg(m_guardIndex, 2, sizeof(cl_mem), &m_clOutputBuffer);
 
-		m_openCLManager->SetKernelArg(6, sizeof(float), &LevelScene::TILE_SIZE);
+		m_openCLManager->SetKernelArg(m_guardIndex, 6, sizeof(float), &LevelScene::TILE_SIZE);
 
 		glm::ivec2 levelSize{ m_levelScene->GetLevelSize() };
-		m_openCLManager->SetKernelArg(7, sizeof(int), &levelSize.x);
-		m_openCLManager->SetKernelArg(8, sizeof(int), &levelSize.y);
+		m_openCLManager->SetKernelArg(m_guardIndex, 7, sizeof(int), &levelSize.x);
+		m_openCLManager->SetKernelArg(m_guardIndex, 8, sizeof(int), &levelSize.y);
 
-		std::vector<int> tiles;
-		m_levelScene->GetTiles(tiles);
-		cl_mem tilesBuffer{ m_openCLManager->CreateInputBuffer(sizeof(int) * tiles.size(), &tiles[0]) };
-		m_openCLManager->SetKernelArg(9, sizeof(cl_mem), &tilesBuffer);
+		m_openCLManager->SetKernelArg(m_guardIndex, 13, sizeof(int), &tileViewRadius);
 
 		const int MAX_VIEW_DIST_TILES{ static_cast<int>(m_maxViewDist / LevelScene::TILE_SIZE) };
-		m_openCLManager->SetKernelArg(13, sizeof(int) * NUM_VALUES_PER_POINT * MAX_VIEW_DIST_TILES * 2, NULL);
+		m_openCLManager->SetKernelArg(m_guardIndex, 14, sizeof(int) * NUM_VALUES_PER_POINT * MAX_VIEW_DIST_TILES * 2, NULL);
 
 		m_outputBuffer = new bool[m_numDetectionRays];
+
+		m_clEndpointsXBuffer = m_openCLManager->CreateReadWriteBuffer(sizeof(float) * m_numDetectionRays);
+		m_clEndpointsZBuffer = m_openCLManager->CreateReadWriteBuffer(sizeof(float) * m_numDetectionRays);
+		m_clTilesBuffer = m_openCLManager->CreateReadWriteBuffer(sizeof(int) * levelSize.x * levelSize.y);
 	}
 }
 
 GuardDetection::~GuardDetection()
 {
+	m_openCLManager->ReleaseMemoryObject(m_clEndpointsXBuffer);
+	m_openCLManager->ReleaseMemoryObject(m_clEndpointsZBuffer);
+	m_openCLManager->ReleaseMemoryObject(m_clTilesBuffer);
+	m_openCLManager->ReleaseMemoryObject(m_clOutputBuffer);
 	delete[] m_outputBuffer;
 }
 
@@ -165,7 +173,7 @@ void GuardDetection::Update(float deltaTime)
 	std::weak_ptr<SpotLight> guardCone = std::static_pointer_cast<SpotLight>(gameObject->GetBehaviour(BehaviourType::SpotLight).lock());
 	if (m_isPlayerDetected)
 	{
-		if (!guardCone.expired()) 
+		if (!guardCone.expired())
 		{
 			guardCone.lock()->SetColour(glm::vec3(10.0f, 0.0f, 0.0));
 		}
@@ -174,6 +182,7 @@ void GuardDetection::Update(float deltaTime)
 		std::shared_ptr<PlayerMovement> playerMovement{ m_playerObj->GetBehaviour<PlayerMovement>().lock() };
 		playerMovement->ResetVelocity();
 
+		MessageSystem::SendMessageToObject(gameObject->id, "retryMenu", BehaviourType::NONE, "show");
 		SoundManager::getInstance().getSound("detected")->play();
 		SoundManager::getInstance().getMusic("music")->stop();
 		SoundManager::getInstance().getSound("lose")->play();
@@ -181,9 +190,9 @@ void GuardDetection::Update(float deltaTime)
 		DebugLog::Info("Detected. Game over");
 		// NEED UI!!!
 	}
-	else 
+	else
 	{
-		if (!guardCone.expired()) 
+		if (!guardCone.expired())
 		{
 			guardCone.lock()->SetColour(glm::vec3(10.0f));
 		}
@@ -196,7 +205,7 @@ void GuardDetection::Update(float deltaTime)
 void GuardDetection::Draw(Shader& shader) {}
 
 bool GuardDetection::HandleMessage(unsigned int senderID, std::string& message) {
-    return false;
+	return false;
 }
 
 void GuardDetection::OnCollisionStay(GLuint other)
@@ -208,35 +217,54 @@ void GuardDetection::OnCollisionStay(GLuint other)
 	}
 }
 
+void GuardDetection::InitOpenCL()
+{
+	if (IS_OPEN_CL_ENABLED)
+	{
+		if (m_openCLManager == nullptr)
+			m_openCLManager = std::make_unique<OpenCLManager>();
+		else
+			m_openCLManager->ReleasePrograms();
+	}
+}
+
 void GuardDetection::UpdateOpenCL()
 {
 	// Update these kernel arguments.
 	std::vector<float> endpointsX, endpointsZ;
 	GetDetectionRayEndPoints(endpointsX, endpointsZ);
-	cl_mem endpointsXBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsX[0]) };
-	m_openCLManager->SetKernelArg(0, sizeof(cl_mem), &endpointsXBuffer);
-	cl_mem endpointsZBuffer{ m_openCLManager->CreateInputBuffer(sizeof(float) * m_numDetectionRays, &endpointsZ[0]) };
-	m_openCLManager->SetKernelArg(1, sizeof(cl_mem), &endpointsZBuffer);
+	m_openCLManager->WriteBuffer(m_clEndpointsXBuffer, &endpointsX[0], sizeof(float) * m_numDetectionRays);
+	m_openCLManager->SetKernelArg(m_guardIndex, 0, sizeof(cl_mem), &m_clEndpointsXBuffer);
 
-	m_openCLManager->SetKernelArg(3, sizeof(float), &gameObject->position.x);
-	m_openCLManager->SetKernelArg(4, sizeof(float), &gameObject->position.z);
-	m_openCLManager->SetKernelArg(5, sizeof(float), &gameObject->rotation.y);
+	m_openCLManager->WriteBuffer(m_clEndpointsZBuffer, &endpointsZ[0], sizeof(float) * m_numDetectionRays);
+	m_openCLManager->SetKernelArg(m_guardIndex, 1, sizeof(cl_mem), &m_clEndpointsZBuffer);
 
-	m_openCLManager->SetKernelArg(10, sizeof(float), &m_playerObj->position.x);
-	m_openCLManager->SetKernelArg(11, sizeof(float), &m_playerObj->position.z);
+	m_openCLManager->SetKernelArg(m_guardIndex, 3, sizeof(float), &gameObject->position.x);
+	m_openCLManager->SetKernelArg(m_guardIndex, 4, sizeof(float), &gameObject->position.z);
+	m_openCLManager->SetKernelArg(m_guardIndex, 5, sizeof(float), &gameObject->rotation.y);
 
-	m_openCLManager->SetKernelArg(12, sizeof(int), &m_isCollidingPlayer);
+	// Only write to tiles buffer if there was a change.
+	std::vector<int> tiles;
+	m_levelScene->GetTiles(tiles);
+	if (m_levelTiles != tiles)
+	{
+		m_levelTiles = tiles;
+		m_openCLManager->WriteBuffer(m_clTilesBuffer, &tiles[0], sizeof(int) * tiles.size());
+		m_openCLManager->SetKernelArg(m_guardIndex, 9, sizeof(cl_mem), &m_clTilesBuffer);
+	}
+
+	m_openCLManager->SetKernelArg(m_guardIndex, 10, sizeof(float), &m_playerObj->position.x);
+	m_openCLManager->SetKernelArg(m_guardIndex, 11, sizeof(float), &m_playerObj->position.z);
+
+	m_openCLManager->SetKernelArg(m_guardIndex, 12, sizeof(int), &m_isCollidingPlayer);
 
 	// Run OpenCL kernel for detection.
 	size_t globalWorkSize[1]{ static_cast<size_t>(m_numDetectionRays) };
 	size_t localWorkSize[1]{ 1 };
-	m_openCLManager->EnqueueKernel(1, globalWorkSize, localWorkSize);
+	m_openCLManager->EnqueueKernel(m_guardIndex, 1, globalWorkSize, localWorkSize);
 
 	// Get the results from OpenCL.
-	m_openCLManager->ReadOutput(&m_outputBuffer[0], sizeof(bool) * m_numDetectionRays);
-
-	m_openCLManager->ReleaseMemoryObject(endpointsXBuffer);
-	m_openCLManager->ReleaseMemoryObject(endpointsZBuffer);
+	m_openCLManager->ReadBuffer(m_clOutputBuffer, &m_outputBuffer[0], sizeof(bool)* m_numDetectionRays);
 
 	for (int i = 0; i < m_numDetectionRays; ++i)
 	{
@@ -294,21 +322,11 @@ bool GuardDetection::TryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistance
 {
 	// Rotate the vector (start point to max distance point) by
 	// the guard's rotation.
-	glm::vec2 viewVector{ maxDistancePoint - startPoint };
-	viewVector = glm::rotate(viewVector, -gameObject->rotation.y);
-
-	// Rotate the vector (guard's position to start point) by
-	// the guard's rotation.
-	glm::vec2 guardWorldPos{ gameObject->position.x, gameObject->position.z };
-	glm::vec2 startVector{ startPoint - guardWorldPos };
-	startVector = glm::rotate(startVector, -gameObject->rotation.y);
-
-	// Get the new rotated start point and use it as point 1 for the 
-	// line algorithm.
-	glm::vec2 newStartPoint{ guardWorldPos + startVector };
+	glm::vec2 unrotatedViewVector{ maxDistancePoint - startPoint };
+	glm::vec2 viewVector{ glm::rotate(unrotatedViewVector, -gameObject->rotation.y) };
 
 	// The max tile distance point is point 2 for the line algorithm.
-	glm::vec2 maxWorldDistPoint{ newStartPoint + viewVector };
+	glm::vec2 maxWorldDistPoint{ startPoint + viewVector };
 	glm::ivec2 maxTileDistPoint{ m_levelScene->GetTileCoordFromPos(maxWorldDistPoint) };
 	glm::ivec2 levelSize{ m_levelScene->GetLevelSize() };
 	maxTileDistPoint.x = glm::clamp(maxTileDistPoint.x, 0, levelSize.x - 1);
@@ -316,7 +334,7 @@ bool GuardDetection::TryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistance
 
 	// If the starting point is outside of the level, then just cancel this 
 	// detection check.
-	glm::ivec2 guardTilePos{ m_levelScene->GetTileCoordFromPos(newStartPoint) };
+	glm::ivec2 guardTilePos{ m_levelScene->GetTileCoordFromPos(startPoint) };
 	if (guardTilePos.x < 0 || guardTilePos.x > levelSize.x - 1 ||
 		guardTilePos.y < 0 || guardTilePos.y > levelSize.y - 1)
 	{
@@ -357,7 +375,32 @@ bool GuardDetection::TryDetectPlayer(glm::vec2 startPoint, glm::vec2 maxDistance
 			// If the player was detected while on the same tile as this guard,
 			// make sure they are actually colliding for the detection to count.
 			// Otherwise, just disable the detection.
-			return !(playerTilePos == guardTilePos && !m_isCollidingPlayer);
+			bool isDetected{ !(playerTilePos == guardTilePos && !m_isCollidingPlayer) };
+
+			// More precise checks for boundary rays.
+			// The player's position must lie on the side of the line facing inside
+			// the vision cone.
+			glm::ivec2 maxDistTilePos{ m_levelScene->GetTileCoordFromPos(maxDistancePoint) };
+			bool isMinRay{ (guardTilePos.x - maxDistTilePos.x) == m_tileViewRadius };
+			bool isMaxRay{ (guardTilePos.x - maxDistTilePos.x) == -m_tileViewRadius };
+			if (isDetected && (isMinRay || isMaxRay))
+			{
+				auto calculateDeterminant{ [](glm::vec2 a, glm::vec2 b, glm::vec2 p)
+				{
+					return (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x);
+				} };
+
+				// Undo the rotation for easier comparisons with determinant.
+				glm::vec2 thisToPlayer{ playerWorldPos - startPoint };
+				thisToPlayer = glm::rotate(thisToPlayer, gameObject->rotation.y);
+				glm::vec2 playerPos{ startPoint + thisToPlayer };
+				glm::vec2 maxDist{ startPoint + unrotatedViewVector };
+				float det{ calculateDeterminant(startPoint, maxDist, playerPos) };
+
+				isDetected = (isMinRay && det > 0) || (isMaxRay && det < 0);
+			}
+
+			return isDetected;
 		}
 
 		// Check adjacent walls to handle corner cases, when looking 

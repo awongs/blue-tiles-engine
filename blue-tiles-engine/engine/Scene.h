@@ -68,6 +68,9 @@ public:
 	void stopUpdates();
   
 protected:
+	// A unique id for each Scene
+	int m_id;
+
 	std::vector<std::unique_ptr<GameObject>> m_worldGameObjects;
 	std::vector<std::unique_ptr<GameObject>> m_screenGameObjects;
 
@@ -78,4 +81,7 @@ protected:
 
 	// Hold the ids of all world GameObjects to remove in the next update.
 	std::vector<GLuint> m_worldGameObjectsToRemove;
+private:
+	// An id counter for each Scene
+	static int idCounter;
 };

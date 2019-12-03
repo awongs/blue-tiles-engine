@@ -1,13 +1,16 @@
 #pragma once
 #include <engine/behaviours/Behaviour.h>
 
+#include "Inventory.h"
+
 class GameObject;
+class LevelScene;
 
 class PlayerMovement : public Behaviour
 {
 public:
 	// Constructor.
-	PlayerMovement(float speed);
+	PlayerMovement(float speed, LevelScene *level);
 
 	// Overridden functions.
 	void Update(float deltaTime) override;
@@ -24,10 +27,16 @@ private:
 
 	void HandleWallCollision(GameObject* otherObj);
 
-	// Movement speed in OpengL units per second.
+	void UnlockDoor(std::shared_ptr<Inventory> inventory, 
+		Inventory::ItemType keyType, GameObject* otherObj);
+
+	// Movement speed in OpenGL units per second.
 	float m_speed;
 
 	// The player's velocity for this current frame.
 	// This will be influenced by m_speed.
 	glm::vec3 m_currentVelocity = glm::vec3(0);
+
+	// Pointer to the current level scene.
+	LevelScene *m_level;
 };

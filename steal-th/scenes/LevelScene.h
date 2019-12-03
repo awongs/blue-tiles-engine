@@ -5,11 +5,12 @@
 #include "../gameobjects/Tile.h"
 
 class PhysicsEngine;
+class GameEngine;
 
 class LevelScene : public Scene
 {
 public:
-	LevelScene(Level* level, PhysicsEngine *physEngine);
+	LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<GameEngine> gameEngine);
 	
 	// Get the tile at the given x, z-coordinate.
 	TileType GetTile(unsigned int x, unsigned int z) const;
@@ -25,6 +26,9 @@ public:
 
 	// Get the integer representation of the level's tiles.
 	void GetTiles(std::vector<int> &output) const;
+
+	// Set the tile type at the given x, z-tile coordinates.
+	void SetTile(TileType type, unsigned int x, unsigned int z);
 
 	// The size of a tile in world units.
 	static const float TILE_SIZE;
@@ -46,4 +50,6 @@ private:
 
 	// The size of the level in tiles.
 	glm::ivec2 m_levelSize;
+
+	std::shared_ptr<GameEngine> m_gameEngine;
 };

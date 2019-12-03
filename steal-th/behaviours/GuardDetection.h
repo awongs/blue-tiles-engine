@@ -23,6 +23,8 @@ public:
 	void Draw(Shader &shader) override;
 	bool HandleMessage(unsigned int senderID, std::string& message) override;
 	void OnCollisionStay(GLuint other) override;
+
+	static void InitOpenCL();
 	
 private:
 	// Encapsulate update-related stuff for OpenCL and serial implementation.
@@ -49,6 +51,7 @@ private:
 	// Hold a raw pointer to the level scene.
 	// We need this to get tile data.
 	LevelScene *m_levelScene{ nullptr };
+	std::vector<int> m_levelTiles;
 
 	// Hold a raw pointer to the player GameObject.
 	GameObject *m_playerObj{ nullptr };
@@ -61,10 +64,18 @@ private:
 	int m_numDetectionRays{ 0 };
 
 	// Store OpenCL-related values.
-	std::unique_ptr<OpenCLManager> m_openCLManager;
+	static std::unique_ptr<OpenCLManager> m_openCLManager;
 	bool* m_outputBuffer{ nullptr };
+	cl_mem m_clOutputBuffer{ nullptr };
+	cl_mem m_clEndpointsXBuffer{ nullptr };
+	cl_mem m_clEndpointsZBuffer{ nullptr };
+	cl_mem m_clTilesBuffer{ nullptr };
 
 	// Check if the guard is colliding with the player.
 	// This is used for near-detection tests.
 	bool m_isCollidingPlayer{ false };
+
+	// A unique identifier for this guard on this level.
+	// This is used for indexing its OpenCL program.
+	int m_guardIndex{ 0 };
 };
