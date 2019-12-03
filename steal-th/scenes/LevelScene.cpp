@@ -49,6 +49,7 @@ namespace
 	// TODO: Need a more accurate way to determine this.
 	// Just eye-balling it for now...
 	const glm::vec2 WALL_HALF_SIZES{ 3.5f, 0.5f };
+	const glm::vec3 GUARD_HALF_SIZES{ 1.f };
 
 	const glm::vec3 WALL_SCALE{ LevelScene::TILE_SIZE / 1.2f, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 5 };
 	const glm::vec3 DOOR_SCALE{ LevelScene::TILE_SIZE, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 20 };
@@ -122,6 +123,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	AddWorldGameObject(playerObj);
 
 	// Create the guards
+	GuardDetection::InitOpenCL();
 	for (Guard &guard : level->m_guards)
 	{
 		AddWorldGameObject(Prefab::CreateGuardGameObject(m_physEngine, this, playerObj, &guard));
@@ -181,6 +183,12 @@ void LevelScene::GetTiles(std::vector<int>& output) const
 	{
 		output.push_back(static_cast<int>(tile));
 	}
+}
+
+void LevelScene::SetTile(TileType type, unsigned int x, unsigned int z)
+{
+	unsigned int tileIndex{ GetTileIndexFromXZ(glm::ivec2(x, z)) };
+	m_tiles[tileIndex] = type;
 }
 
 void LevelScene::AddTile(TileType type, unsigned int tileIndex)
