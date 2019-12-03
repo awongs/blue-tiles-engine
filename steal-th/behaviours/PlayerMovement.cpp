@@ -197,6 +197,7 @@ void PlayerMovement::HandleWallCollision(GameObject* otherObj)
 	case TileType::BLUE_DOOR:
 	case TileType::GREEN_DOOR:
 	case TileType::EXIT:
+	case TileType::ELECTRIC_FLOOR:
 	{
 		std::shared_ptr<PlayerMovement> playerMovement{ gameObject->GetBehaviour<PlayerMovement>().lock() };
 		if (playerMovement == nullptr)

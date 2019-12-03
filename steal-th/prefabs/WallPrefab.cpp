@@ -8,6 +8,7 @@
 #include <engine/behaviours/MeshRenderer.h>
 #include <engine/behaviours/PointLight.h>
 #include "../behaviours/TileBehaviour.h"
+#include "../behaviours/ElectricFloor.h"
 
 constexpr glm::vec3 RED = glm::vec3(1, 0, 0);
 constexpr glm::vec3 GREEN = glm::vec3(0, 1, 0);
@@ -55,6 +56,28 @@ GameObject* Prefab::CreateDoorGameObject(PhysicsEngine* phyEngine, glm::vec3 pos
 	if		(tileType == TileType::RED_DOOR)	ga->AddBehaviour(new PointLight(RED));
 	else if (tileType == TileType::GREEN_DOOR)	ga->AddBehaviour(new PointLight(GREEN));
 	else if (tileType == TileType::BLUE_DOOR)	ga->AddBehaviour(new PointLight(BLUE));
+
+	return ga;
+}
+
+GameObject* Prefab::CreateElectricFloorGameObject(PhysicsEngine* phyEngine, glm::vec3 position, float tileSize, bool isActive)
+{
+	GameObject* ga = new GameObject("electric floor", position, glm::vec3(0.f), glm::vec3(tileSize, 0.1f, tileSize));
+
+	Collider* collider{ new Collider(glm::vec3(tileSize / 2.f)) };
+	PhysicsBehaviour* physBehaviour{ new PhysicsBehaviour(phyEngine, ga->id, collider, [](GLuint) {}) };
+	ga->AddBehaviour(physBehaviour);
+
+	MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/cube.obj");
+	meshRenderer->SetTexture("../Assets/textures/electric_floor.png");
+	ga->AddBehaviour(meshRenderer);
+
+	ElectricFloor* efBehav = new ElectricFloor(ga->position, isActive);
+	ga->AddBehaviour(efBehav);
+	efBehav->UpdateActiveState();
+
+	TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::ELECTRIC_FLOOR) };
+	ga->AddBehaviour(tileBehaviour);
 
 	return ga;
 }

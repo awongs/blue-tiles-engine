@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="behaviours\ElectricFloor.cpp" />
     <ClCompile Include="behaviours\ObjectBehaviour.cpp" />
     <ClCompile Include="behaviours\PlayerItemPickup.cpp" />
     <ClCompile Include="behaviours\Rotate.cpp" />
@@ -156,6 +157,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="behaviours\ElectricFloor.h" />
     <ClInclude Include="behaviours\ObjectBehaviour.h" />
     <ClInclude Include="behaviours\PlayerItemPickup.h" />
     <ClInclude Include="behaviours\Rotate.h" />
