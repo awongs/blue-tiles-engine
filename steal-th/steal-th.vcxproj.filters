@@ -76,6 +76,9 @@
     <ClCompile Include="prefabs\WallPrefab.cpp">
       <Filter>Source Files\prefabs</Filter>
     </ClCompile>
+    <ClCompile Include="scenes\MainMenuScene.cpp">
+      <Filter>Source Files\scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobjects\Guard.h">
@@ -134,6 +137,9 @@
     </ClInclude>
     <ClInclude Include="prefabs\WallPrefab.h">
       <Filter>Source Files\prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="scenes\MainMenuScene.h">
+      <Filter>Source Files\scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,9 +1,12 @@
+#include <glm/gtc/random.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
+#include <engine/GameEngine.h>
 #include <engine/behaviours/MeshRenderer.h>
 #include <engine/behaviours/PhysicsBehaviour.h>
 #include <engine/behaviours/SpotLight.h>
-#include <engine/behaviours/PointLight.h>
 #include <engine/behaviours/DirectionalLight.h>
+#include <engine/behaviours/PointLight.h>
 #include <engine/physics/Collider.h>
 #include <engine/sound/SoundManager.h>
 #include <engine/sound/Music.h>
@@ -26,6 +29,7 @@
 #include <engine/behaviours/UIImageBehaviour.h>
 #include <engine/behaviours/UIButtonBehaviour.h>
 #include <engine/behaviours/UITextBehaviour.h>
+#include <engine/graphics/Camera.h>
 
 #include <engine/animation/AnimatedMesh.h>
 #include <engine/animation/Animation.h>
@@ -46,16 +50,25 @@ const float LevelScene::TILE_SIZE{ 9.f };
 
 namespace
 {
+	// Window size settings.
+	constexpr int WINDOW_WIDTH = 800;
+	constexpr int WINDOW_HEIGHT = 600;
 	// TODO: Need a more accurate way to determine this.
 	// Just eye-balling it for now...
 	const glm::vec2 WALL_HALF_SIZES{ 3.5f, 0.5f };
 
 	const glm::vec3 WALL_SCALE{ LevelScene::TILE_SIZE / 1.2f, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 5 };
 	const glm::vec3 DOOR_SCALE{ LevelScene::TILE_SIZE, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 20 };
+
+	// Camera settings.
+	constexpr float CAMERA_FOV = glm::radians(60.0f);
+	constexpr float CAMERA_NEAR_CLIP = 1.0f;
+	constexpr float CAMERA_FAR_CLIP = 50.0f;
+	constexpr glm::vec3 CAMERA_ORIENTATION = glm::vec3(glm::radians(75.0f), 0.0f, 0.0f);
 }
 
-LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
-	: Scene(), m_physEngine(physEngine)
+LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<GameEngine> gameEngine)
+	: Scene(), m_physEngine(physEngine), m_gameEngine(gameEngine)
 {
 	m_levelSize = glm::ivec2(level->m_sizeX, level->m_sizeZ);
 
@@ -135,22 +148,78 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	// UI for level
 	GameObject* menu = new GameObject();
 	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
+	AddScreenGameObject(menu); 
+	
 	GameObject* testString = new GameObject();
 	testString->AddBehaviour(new UITextBehaviour("Inventory"));
 	testString->SetParent(menu);
+	AddScreenGameObject(testString);
+
 	GameObject* redKey = new GameObject("redKey");
-	// redKey->isVisible = false;
+	redKey->isVisible = false;
 	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/red_key_block.png"));
 	redKey->SetParent(menu);
+	AddScreenGameObject(redKey);
+
 	GameObject* greenKey = new GameObject("greenKey");
-	// greenKey->isVisible = false;
+	greenKey->isVisible = false;
 	greenKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/green_key_block.png"));
 	greenKey->SetParent(menu);
+	AddScreenGameObject(greenKey);
+
 	GameObject* blueKey = new GameObject("blueKey");
-	// blueKey->isVisible = false;
+	blueKey->isVisible = false;
 	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
 	blueKey->SetParent(menu);
-	AddScreenGameObject(menu);
+	AddScreenGameObject(blueKey);
+
+	GameObject* objectiveItem = new GameObject("objective");
+	objectiveItem->isVisible = false;
+	objectiveItem->AddBehaviour(new UIImageBehaviour("../Assets/textures/golden_goose.png"));
+	objectiveItem->SetParent(menu);
+	AddScreenGameObject(objectiveItem);
+
+	GameObject* retryMenu = new GameObject("retryMenu");
+	retryMenu->AddBehaviour(new UIMenuBehaviour("Game Over", ImVec2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), ImVec2(75, 55), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse ));
+	retryMenu->isVisible = false;
+	AddScreenGameObject(retryMenu);
+
+	GameObject* retryButton = new GameObject();
+	retryButton->AddBehaviour(new UIButtonBehaviour("Retry", [&] {
+		m_gameEngine->SetScene("mainMenu");
+		}));
+	retryButton->SetParent(retryMenu);
+	AddScreenGameObject(retryButton);
+
+
+	// Setup the camera.
+	Camera::GetInstance().SetOrientation(CAMERA_ORIENTATION);
+	Camera::GetInstance().CalculatePerspectiveView(CAMERA_FOV, (float)WINDOW_WIDTH / WINDOW_HEIGHT, CAMERA_NEAR_CLIP, CAMERA_FAR_CLIP);
+
+	// -- Testing --
+	srand(time(0));
+
+	// Add a directional light
+	GameObject* ga = new GameObject();
+	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
+
+	AddWorldGameObject(ga);
+
+
+	// Add test lighting
+	for (int i = 0; i < 0; i++)
+	{
+		GameObject* ga = new GameObject();
+		ga->position = GetWorldGameObjectByIndex(i)->position;
+
+		glm::vec3 randomColour = glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f));
+		//glm::vec3 randomDirection = glm::vec3(glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f));
+
+		ga->AddBehaviour(new PointLight(randomColour, 1.0f, 1.0f, 1.0f, 0.2f, 0.3f, 0.5f));
+		//ga->AddBehaviour(new SpotLight(randomColour, randomDirection, 1.0, 2.0, 1.0f, 1.0f, 1.0f, 0.2f, 0.3f, 0.5f));
+
+		AddWorldGameObject(ga);
+	}
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const

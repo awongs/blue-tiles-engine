@@ -15,6 +15,13 @@ namespace MessageSystem
 	// message			- The message to be handled.
 	void SendMessageToObject(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, const std::string& message);
 
+	// Queues a message to be sent to the game object with the matching ID.
+	// senderID			- The ID of the game object that sent the message
+	// targetName		- The name of the game object that the message is for.
+	// targetBehaviour	- The behaviour that the message should be handled by in the target game object.
+	// message			- The message to be handled.
+	void SendMessageToObject(unsigned int senderID, std::string targetName, BehaviourType targetBehaviour, const std::string& message);
+
 	// Queues a message to be sent to all game objects.
 	// senderID			- The ID of the game object that sent the message
 	// targetBehaviour	- The behaviour that the message should be handled by all game objects.
@@ -43,6 +50,9 @@ namespace MessageSystem
 		// Places the message into the back of the message queue.
 		void QueueMessage(unsigned int senderID, unsigned int targetID, BehaviourType targetBehaviour, const std::string& message);
 
+		// Places the message into the back of the message queue.
+		void QueueMessage(unsigned int senderID, std::string targetName, BehaviourType targetBehaviour, const std::string& message);
+
 		// Places the broadcast message into the back of the broadcast queue.
 		void QueueBroadcastMessage(unsigned int senderID, BehaviourType targetBehaviour, const std::string& message);
 
@@ -65,6 +75,8 @@ namespace MessageSystem
 			unsigned int senderID;
 
 			unsigned int targetID;
+
+			std::string targetName;
 
 			BehaviourType targetBehaviour;
 

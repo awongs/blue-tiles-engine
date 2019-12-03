@@ -163,6 +163,7 @@ void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 			SoundManager::getInstance().getSound("win")->play();
 			inventory->RemoveItem(Inventory::ItemType::OBJECTIVE_ITEM);
 			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
+			MessageSystem::SendMessageToObject(gameObject->id, "objective", BehaviourType::NONE, "hide");
 			gameObject->currentScene->stopUpdates();
 			DebugLog::Info("Player reached exit. Game over.");
 			// Need UI!!!!!
@@ -290,6 +291,11 @@ void PlayerMovement::UnlockDoor(std::shared_ptr<Inventory> inventory,
 		SoundManager::getInstance().getSound("door-unlocked")->play();
 		m_level->SetTile(TileType::FLOOR, otherTilePos.x, otherTilePos.y);
 		MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
+    
+    // TODO: Complete this after merge conflicts
+    MessageSystem::SendMessageToObject(gameObject->id, "blueKey", BehaviourType::NONE, "hide");
+    MessageSystem::SendMessageToObject(gameObject->id, "redKey", BehaviourType::NONE, "hide");
+    MessageSystem::SendMessageToObject(gameObject->id, "greenKey", BehaviourType::NONE, "hide");
 	}
 	else
 	{
