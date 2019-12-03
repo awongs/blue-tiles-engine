@@ -242,6 +242,9 @@ void OpenCLManager::ReleasePrograms()
 		clReleaseProgram(m_programs[i]);
 		clReleaseKernel(m_kernels[i]);
 	}
+
+	m_programs.clear();
+	m_kernels.clear();
 }
 
 cl_mem OpenCLManager::CreateReadOnlyBuffer(size_t size, void *data)

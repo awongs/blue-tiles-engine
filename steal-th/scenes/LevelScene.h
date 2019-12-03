@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../blue-tiles-engine/engine/Scene.h"
+#include <engine/Scene.h>
 #include "../Level.h"
 #include "../gameobjects/Tile.h"
 
@@ -11,6 +11,10 @@ class LevelScene : public Scene
 {
 public:
 	LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<GameEngine> gameEngine);
+
+	// Loads the level.
+	// If called again (e.g. by retrying), the previous level state is deleted.
+	void LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine);
 	
 	// Get the tile at the given x, z-coordinate.
 	TileType GetTile(unsigned int x, unsigned int z) const;
@@ -52,4 +56,7 @@ private:
 	glm::ivec2 m_levelSize;
 
 	std::shared_ptr<GameEngine> m_gameEngine;
+
+	// The level object for this scene.
+	std::shared_ptr<Level> m_level;
 };

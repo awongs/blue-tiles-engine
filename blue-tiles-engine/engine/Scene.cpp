@@ -7,6 +7,9 @@
 #include <iterator>
 #include "graphics/Camera.h"
 
+#include "GameEngine.h"
+#include "physics/PhysicsEngine.h"
+
 int Scene::idCounter = 0;
 
 Scene::Scene()
@@ -226,11 +229,13 @@ GameObject* Scene::GetScreenGameObjectById(const GLuint id)
 	{
 		if (screenGameObject->id == id)
 			return screenGameObject.get();
+		/*
 		for (auto& child : screenGameObject->GetChildren())
 		{
 			if (child->id == id)
 				return child;
 		}
+		*/
 	}
 	return nullptr;
 }
@@ -241,11 +246,13 @@ GameObject* Scene::GetScreenGameObjectByName(const std::string name)
 	{
 		if (screenGameObject->name == name)
 			return screenGameObject.get();
+		/*
 		for (auto& child : screenGameObject->GetChildren())
 		{
 			if (child->name == name)
 				return child;
 		}
+		*/
 	}
 	return nullptr;
 }
@@ -305,4 +312,9 @@ void Scene::RemoveWorldGameObjects()
 void Scene::stopUpdates()
 {
 	isGameOver = true;
+}
+
+void Scene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
+{
+	// Does nothing by default.
 }
