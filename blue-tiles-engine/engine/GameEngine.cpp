@@ -135,6 +135,8 @@ void GameEngine::SetScene(std::string sceneName, bool reload)
 		}
 		*/
 		m_currentScene = m_cachedScenes.at(sceneName);
+
+		m_currentScene->LoadScene(m_physEngine.get(), this);
 		renderer->SetupLighting(*m_currentScene);
 	}
 	else
