@@ -31,7 +31,7 @@
     ],
 
     "guards": [
-        { "guardId" : 0, "position": { "x": 3, "z": 3 }, "tileViewDistance": 0, "tileViewRadius": 0,
+        { "guardId" : 0, "position": { "x": 3, "z": 3 }, "tileViewDistance": 1, "tileViewRadius": 1,
 		"angle": -90.0,
         "movement": [
 			"move:2,3",
@@ -43,7 +43,7 @@
 			"move:3,3",
 			"turncw"
 		] },
-		{ "guardId" : 1, "position": { "x": 6, "z": 1 }, "tileViewDistance": 2, "tileViewRadius": 2,
+		{ "guardId" : 1, "position": { "x": 6, "z": 1 }, "tileViewDistance": 1, "tileViewRadius": 1,
 		"angle": 0.0,
         "movement": [
 			"move:6,10",
@@ -55,7 +55,7 @@
 			"move:6,1",
 			"turncw"
 		] },
-		{ "guardId" : 2, "position": { "x": 8, "z": 1 }, "tileViewDistance": 2, "tileViewRadius": 2,
+		{ "guardId" : 2, "position": { "x": 8, "z": 1 }, "tileViewDistance": 1, "tileViewRadius": 1,
 		"angle": 90.0,
         "movement": [
 			"move:9,1",
@@ -67,7 +67,7 @@
 			"move:8,1",
 			"turncw"
 		] },
-		{ "guardId" : 3, "position": { "x": 1, "z": 10 }, "tileViewDistance": 2, "tileViewRadius": 2,
+		{ "guardId" : 3, "position": { "x": 1, "z": 10 }, "tileViewDistance": 1, "tileViewRadius": 1,
 		"angle": 90.0,
         "movement": [
 			"move:3,10",
@@ -83,7 +83,7 @@
 			"move:1,10",
 			"turnccw"
 		] },
-		{ "guardId" : 4, "position": { "x": 10, "z": 7 }, "tileViewDistance": 2, "tileViewRadius": 2,
+		{ "guardId" : 4, "position": { "x": 10, "z": 7 }, "tileViewDistance": 1, "tileViewRadius": 1,
 		"angle": 0.0,
         "movement": [
 			"move:10,9",

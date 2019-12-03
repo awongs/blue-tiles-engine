@@ -24,6 +24,7 @@
 #include "../behaviours/ObjectBehaviour.h"
 #include "../behaviours/TileBehaviour.h"
 #include "../behaviours/PlayerItemPickup.h"
+#include "../behaviours/Rotate.h"
 #include <engine/behaviours/UIMenuBehaviour.h>
 #include <engine/behaviours/UIImageBehaviour.h>
 #include <engine/behaviours/UIButtonBehaviour.h>
@@ -34,6 +35,16 @@
 #include <engine/animation/Animation.h>
 #include <engine/animation/Animator.h>
 
+#include "../prefabs/ObjectItemPrefab.h"
+#include "../prefabs/PlayerPrefab.h"
+#include "../prefabs/GuardPrefab.h"
+#include "../prefabs/WallPrefab.h"
+
+constexpr glm::vec3 RED = glm::vec3(1, 0, 0);
+constexpr glm::vec3 GREEN = glm::vec3(0, 1, 0);
+constexpr glm::vec3 BLUE = glm::vec3(0, 0, 1);
+constexpr glm::vec3 YELLOW = glm::vec3(1, 1, 0);
+constexpr glm::vec3 WHITE = glm::vec3(1, 1, 1);
 
 const float LevelScene::TILE_SIZE{ 9.f };
 
@@ -93,199 +104,46 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 	{
 		glm::vec3 position = glm::vec3(
 			(float)(obj.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
-			0, 
+			0.5, 
 			(float)(obj.tileZ) * TILE_SIZE + TILE_SIZE / 2.f
 		);
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("object", position, glm::vec3(0, glm::radians(obj.rotation), 0));
 
-		glm::vec3 scale;
-		MeshRenderer *meshRenderer{ nullptr };
-		PhysicsBehaviour *physBehaviour{ nullptr };
-		ObjectBehaviour *objBehaviour{ nullptr };
+		glm::vec3 rotation = glm::vec3(0, glm::radians(obj.rotation), 0);
+
 		switch (obj.type)
 		{
 			case ObjectType::RED_KEY:
 			case ObjectType::BLUE_KEY:
 			case ObjectType::GREEN_KEY:
-			{
-				meshRenderer = new MeshRenderer("../Assets/models/key.obj");
-				scale = glm::vec3(0.5, 0.5, 0.5);
-
-				Collider *col{ new Collider(glm::vec3(2.f)) };
-				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, col, [this](GLuint other) {});
+				AddWorldGameObject(Prefab::CreateKeyGameObject(m_physEngine, position, rotation, obj.type));
 				break;
-			}
 
 			case ObjectType::OBJECTIVE_ITEM:
-			{
-				meshRenderer = new MeshRenderer("../Assets/models/golden_goose.obj");
-				meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
-				scale = glm::vec3(0.5, 0.5, 0.5);
-
-				Collider *col{ new Collider(glm::vec3(2.f)) };
-				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, col, [this](GLuint other) {});
-				objBehaviour = new ObjectBehaviour(ObjectType::OBJECTIVE_ITEM);
-				break;
-			}
-		}
-
-		switch (obj.type)
-		{
-			case ObjectType::RED_KEY:
-				objBehaviour = new ObjectBehaviour(ObjectType::RED_KEY);
-				meshRenderer->SetTexture("../Assets/textures/red_key.png");
-				break;
-
-			case ObjectType::BLUE_KEY:
-				objBehaviour = new ObjectBehaviour(ObjectType::BLUE_KEY);
-				meshRenderer->SetTexture("../Assets/textures/blue_key.png");
-				break;
-
-			case ObjectType::GREEN_KEY:
-				objBehaviour = new ObjectBehaviour(ObjectType::GREEN_KEY);
-				meshRenderer->SetTexture("../Assets/textures/green_key.png");
+				AddWorldGameObject(Prefab::CreateObjectiveGooseGameObject(m_physEngine, position, rotation));
 				break;
 		}
-
-		ga->scale = scale;
-		ga->AddBehaviour(meshRenderer);
-		ga->AddBehaviour(physBehaviour);
-		ga->AddBehaviour(objBehaviour);
-
-		ga->currentScene = this;
-		m_worldGameObjects.push_back(std::move(ga));
 	}
 
 	// Create player
-	AnimatedMesh* meshRenderer = new AnimatedMesh("../Assets/models/alex.obj", "../Assets/animations/alex/AlexRunning.dae");
-	meshRenderer->SetTexture("../Assets/textures/alex.png");
-
 	glm::vec3 position = glm::vec3(
 		(float)(level->m_playerSpawnX) * TILE_SIZE + TILE_SIZE / 2.f,
 		0, 
 		(float)(level->m_playerSpawnZ) * TILE_SIZE + TILE_SIZE / 2.f
 	);
 
-	GameObject* playerObj = new GameObject("player", position, glm::vec3(0, 0, 0), glm::vec3(4, 4, 4));
-
-	playerObj->AddBehaviour(meshRenderer);
-	playerObj->AddBehaviour(new PlayerMovement(10));
-	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
-	playerObj->AddBehaviour(new Inventory());
-
-	Animator* animator = new Animator(playerObj->GetBehaviour<AnimatedMesh>());
-	playerObj->AddBehaviour(animator);
-
-	// Animations for player.
-	std::shared_ptr<Animation> run = FileManager::LoadAnimation("../Assets/animations/alex/AlexRunning.dae");
-	std::shared_ptr<Animation> idle = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleIdle.dae");
-	animator->AddAnimation(run);
-	animator->AddAnimation(idle);
-
-	// item pickup behaviour for player
-	playerObj->AddBehaviour(new PlayerItemPickup());
-
-	// physics collider using player gameobject's on collision callback
-	Collider* playerCol{ new Collider(glm::vec3(1.5f)) };
-	playerObj->AddBehaviour(new PhysicsBehaviour(m_physEngine, playerObj->id, playerCol));
-
-	// Add to world
+	GameObject* playerObj = Prefab::CreatePlayerGameObject(m_physEngine, position);
+	playerObj->AddBehaviour(new PlayerMovement(10, this));
 	AddWorldGameObject(playerObj);
+
+	// Create the guards
+	GuardDetection::InitOpenCL();
+	for (Guard &guard : level->m_guards)
+	{
+		AddWorldGameObject(Prefab::CreateGuardGameObject(m_physEngine, this, playerObj, &guard));
+	}
 
 	// Play music
 	SoundManager::getInstance().getMusic("music")->play();
-
-	// Create the guards
-	for (Guard &guard : level->m_guards)
-	{
-		AnimatedMesh* animatedMesh = new AnimatedMesh("../Assets/models/robot_kyle.obj", "../Assets/animations/robot_kyle/KyleWalking.dae");
-		animatedMesh->SetTexture("../Assets/textures/robot_kyle.png");
-
-		glm::vec3 position = glm::vec3(
-			(float)(guard.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
-			0,
-			(float)(guard.tileZ) * TILE_SIZE + TILE_SIZE / 2.f);
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("guard",
-			position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
-
-		ga->AddBehaviour(animatedMesh);
-
-		// Animations for guards.
-		std::shared_ptr<Animation> walk = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleWalking.dae");
-		std::shared_ptr<Animation> idle = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleIdle.dae");
-		std::shared_ptr<Animation> look = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleLooking.dae");
-
-		Animator* animator = new Animator(ga->GetBehaviour<AnimatedMesh>());
-		ga->AddBehaviour(animator);
-		animator->AddAnimation(walk);
-		animator->AddAnimation(idle);
-		animator->AddAnimation(look);
-
-		// Add physics behaviour.
-		Collider* guardCol{ new Collider(glm::vec3(1.5f)) };
-		ga->AddBehaviour(new PhysicsBehaviour(m_physEngine, ga->id, guardCol));
-
-		// Add guard detection behaviour
-		ga->AddBehaviour(new GuardDetection(this, playerObj,
-			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
-
-		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
-
-		/*// move to box
-		sgmaib->AddMoveTileAction(1, 2);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddMoveTileAction(1, 1);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);
-
-		// move back
-		sgmaib->AddMoveTileAction(1, 2);
-		sgmaib->AddTurnCCWAction();
-		sgmaib->AddMoveTileAction(2, 2);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);*/
-
-		// Setting guard movement
-		for (std::string move : guard.movement) {
-			if (move == "turncw") {
-				sgmaib->AddTurnCWAction();
-			}
-			else if (move == "turnccw") {
-				sgmaib->AddTurnCCWAction();
-			}
-			else if (move.find("move") != std::string::npos) {
-				std::string value1;
-				std::string value2;
-				bool split = false;
-				for (int i = 5; i < std::strlen(move.c_str()); i++) {
-					if (move[i] == ',') {
-						split = true;
-					}
-					if (move[i] != ',' && split == false) {
-						value1 += move[i];
-					}
-					else if(move[i] != ',' && split == true){
-						value2 += move[i];
-					}
-				}
-				//DebugLog::Info(value1 + " " + value2);
-				sgmaib->AddMoveTileAction(std::stoi(value1), std::stoi(value2));
-			}
-		}
-
-		ga->AddBehaviour(sgmaib);
-
-		// Add a spot light in front of the guard
-		float theta = atan2f(guard.tileViewRadius * LevelScene::TILE_SIZE, guard.tileViewDistance * LevelScene::TILE_SIZE);
-		SpotLight* guardCone = new SpotLight(glm::vec3(1), ga->forward, theta, theta * 1.25f);
-		ga->AddBehaviour(guardCone);
-
-		m_worldGameObjects.push_back(std::move(ga));
-	}
-
-
 
 	// UI for level
 	GameObject* menu = new GameObject();
@@ -396,6 +254,12 @@ void LevelScene::GetTiles(std::vector<int>& output) const
 	}
 }
 
+void LevelScene::SetTile(TileType type, unsigned int x, unsigned int z)
+{
+	unsigned int tileIndex{ GetTileIndexFromXZ(glm::ivec2(x, z)) };
+	m_tiles[tileIndex] = type;
+}
+
 void LevelScene::AddTile(TileType type, unsigned int tileIndex)
 {
 	unsigned int x{ tileIndex % static_cast<unsigned int>(m_levelSize.x) };
@@ -419,108 +283,42 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				x * TILE_SIZE + TILE_SIZE / 2.f,
 				-0.5,
 				z * TILE_SIZE + TILE_SIZE / 2.f);
-			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("floor", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(TILE_SIZE / 2.f));
+			GameObject* floorGO = new GameObject("floor", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(TILE_SIZE / 2.f));
 
-			ga->AddBehaviour(meshRenderer);
+			floorGO->AddBehaviour(meshRenderer);
 
-			m_worldGameObjects.push_back(std::move(ga));
+			AddWorldGameObject(floorGO);
 			break;
 		}
 			
 		case TileType::WALL:
+		{
+			glm::vec3 position = glm::vec3(
+				x * TILE_SIZE + TILE_SIZE / 2.f,
+				0.f,
+				z * TILE_SIZE + TILE_SIZE / 2.f);
+
+			GameObject* wallGO = Prefab::CreateWallGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE);
+			m_tiles[tileIndex] = TileType::WALL;
+			AddWorldGameObject(wallGO);
+			break;;
+		}
+
 		case TileType::RED_DOOR:
 		case TileType::BLUE_DOOR:
 		case TileType::GREEN_DOOR:
 		case TileType::EXIT:
 		{
-
 			glm::vec3 position = glm::vec3(
 				x * TILE_SIZE + TILE_SIZE / 2.f,
 				0.f,
 				z * TILE_SIZE + TILE_SIZE / 2.f);
-			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("wall", position, glm::vec3(0.f), WALL_SCALE);
 
-			Collider* collider{ new Collider(glm::vec3(TILE_SIZE / 2.f)) };
-			PhysicsBehaviour* physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, collider, [](GLuint) {}) };
-			ga->AddBehaviour(physBehaviour);
-
-			switch (type)
-			{
-
-				case TileType::WALL:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTexture("../Assets/textures/wall.jpg");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::WALL) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::WALL;
-
-					break;
-				}
-				case TileType::RED_DOOR:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/red_key_block.png");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::RED_DOOR) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::RED_DOOR;
-					break;
-				}
-				case TileType::BLUE_DOOR:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/blue_key_block.png");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::BLUE_DOOR) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::BLUE_DOOR;
-					break;
-				}
-				case TileType::GREEN_DOOR:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/green_key_block.png");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::GREEN_DOOR) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::GREEN_DOOR;
-					break;
-				}
-				case TileType::EXIT:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/exit.jpg");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::EXIT) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::EXIT;
-					break;
-				}
-			}
-
-			ga->currentScene = this;
-
-			m_worldGameObjects.push_back(std::move(ga));
-
-			break;
+			GameObject* doorGO = Prefab::CreateDoorGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE, type);
+			m_tiles[tileIndex] = type;
+			AddWorldGameObject(doorGO);
+			break;;
 		}
-
-		/*case TileType::EXIT:
-		{
-
-			break;
-		}*/
 
 	}
 }

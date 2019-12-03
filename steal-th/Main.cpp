@@ -1,8 +1,5 @@
 #define SDL_MAIN_HANDLED
 
-#include <ctime>
-#include <glm/gtc/random.hpp>
-#include <glm/ext/matrix_transform.hpp>
 #include <memory>
 
 #include <engine/GameWindow.h>

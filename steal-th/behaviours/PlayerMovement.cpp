@@ -15,12 +15,13 @@
 #include "PlayerMovement.h"
 #include "Inventory.h"
 #include "TileBehaviour.h"
+#include "../scenes/LevelScene.h"
 
 constexpr float ROTATE_SPEED = 0.05f;
 
-PlayerMovement::PlayerMovement(float speed)
+PlayerMovement::PlayerMovement(float speed, LevelScene *level)
 	: Behaviour(BehaviourType::PlayerMovement)
-	, m_speed(speed)
+	, m_speed(speed), m_level(level)
 {
 }
 
@@ -129,9 +130,8 @@ void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 
 	TileType type{ tile->GetType() };
 
-	std::shared_ptr<Inventory> inventory{ gameObject->GetBehaviour<Inventory>().lock() };
-
 	// check if this object has inventory component
+	std::shared_ptr<Inventory> inventory{ gameObject->GetBehaviour<Inventory>().lock() };
 	if (inventory == nullptr) return;
 	
 	// Handle collisions against walls and doors.
@@ -139,51 +139,19 @@ void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 	{
 	case TileType::RED_DOOR:
 	{
-		if (inventory->GetNumItem(Inventory::ItemType::RED_KEY) > 0)
-		{
-			SoundManager::getInstance().getSound("door-unlocked")->play();
-			inventory->RemoveItem(Inventory::ItemType::RED_KEY);
-			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
-			MessageSystem::SendMessageToObject(gameObject->id, "redKey", BehaviourType::NONE, "hide");
-		}
-		else
-		{
-			SoundManager::getInstance().getSound("door-locked")->play();
-		}
-
+		UnlockDoor(inventory, Inventory::ItemType::RED_KEY, otherObj);
 		break;
 	}
 
 	case TileType::BLUE_DOOR:
 	{
-		if (inventory->GetNumItem(Inventory::ItemType::BLUE_KEY) > 0)
-		{
-			SoundManager::getInstance().getSound("door-unlocked")->play();
-			inventory->RemoveItem(Inventory::ItemType::BLUE_KEY);
-			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
-			MessageSystem::SendMessageToObject(gameObject->id, "blueKey", BehaviourType::NONE, "hide");
-		}
-		else
-		{
-			SoundManager::getInstance().getSound("door-locked")->play();
-		}
+		UnlockDoor(inventory, Inventory::ItemType::BLUE_KEY, otherObj);
 		break;
 	}
 
 	case TileType::GREEN_DOOR:
 	{
-		if (inventory->GetNumItem(Inventory::ItemType::GREEN_KEY) > 0)
-		{
-			SoundManager::getInstance().getSound("door-unlocked")->play();
-			inventory->RemoveItem(Inventory::ItemType::GREEN_KEY);
-			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
-			MessageSystem::SendMessageToObject(gameObject->id, "greenKey", BehaviourType::NONE, "hide");
-		}
-		else
-		{
-			SoundManager::getInstance().getSound("door-locked")->play();
-		}
-
+		UnlockDoor(inventory, Inventory::ItemType::GREEN_KEY, otherObj);
 		break;
 	}
 
@@ -302,6 +270,36 @@ void PlayerMovement::HandleWallCollision(GameObject* otherObj)
 		// Apply the new velocity.
 		gameObject->position += newPlayerVel;
 	}
+	}
+}
+
+void PlayerMovement::UnlockDoor(std::shared_ptr<Inventory> inventory,
+	Inventory::ItemType keyType, GameObject* otherObj)
+{
+	if (m_level == nullptr)
+	{
+		DebugLog::Info("PlayerMovement: null pointer to level scene.");
+		return;
+	}
+
+	if (inventory->GetNumItem(keyType) > 0)
+	{
+		inventory->RemoveItem(keyType);
+		glm::vec2 otherPos{ otherObj->position.x, otherObj->position.z };
+		glm::ivec2 otherTilePos{ m_level->GetTileCoordFromPos(otherPos) };
+
+		SoundManager::getInstance().getSound("door-unlocked")->play();
+		m_level->SetTile(TileType::FLOOR, otherTilePos.x, otherTilePos.y);
+		MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
+    
+    // TODO: Complete this after merge conflicts
+    MessageSystem::SendMessageToObject(gameObject->id, "blueKey", BehaviourType::NONE, "hide");
+    MessageSystem::SendMessageToObject(gameObject->id, "redKey", BehaviourType::NONE, "hide");
+    MessageSystem::SendMessageToObject(gameObject->id, "greenKey", BehaviourType::NONE, "hide");
+	}
+	else
+	{
+		SoundManager::getInstance().getSound("door-locked")->play();
 	}
 }
 
