@@ -61,9 +61,6 @@
     <ClCompile Include="behaviours\PlayerItemPickup.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
-    <ClCompile Include="behaviours\Rotate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BlockStarrtAnimation.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
@@ -83,6 +80,12 @@
       <Filter>Source Files\scenes</Filter>
     </ClCompile>
     <ClCompile Include="behaviours\ElectricFloor.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="behaviours\Rotate.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
+    <ClCompile Include="behaviours\ElectricSwitch.cpp">
       <Filter>Source Files\behaviours</Filter>
     </ClCompile>
   </ItemGroup>
@@ -151,6 +154,9 @@
       <Filter>Source Files\scenes</Filter>
     </ClInclude>
     <ClInclude Include="behaviours\ElectricFloor.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="behaviours\ElectricSwitch.h">
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
   </ItemGroup>

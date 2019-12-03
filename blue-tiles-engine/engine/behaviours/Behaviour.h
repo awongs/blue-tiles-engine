@@ -33,6 +33,7 @@ enum class BehaviourType
 	Rotate,
 	BlockStartAnimation,
 	ElectricFloor,
+	ElectricSwitch,
 	NONE
 };
 

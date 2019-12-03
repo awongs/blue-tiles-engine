@@ -124,6 +124,10 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 			case ObjectType::OBJECTIVE_ITEM:
 				AddWorldGameObject(Prefab::CreateObjectiveGooseGameObject(m_physEngine, position, rotation));
 				break;
+
+			case ObjectType::ELECTRIC_SWITCH:
+				AddWorldGameObject(Prefab::CreateElectricSwitchGameObject(m_physEngine, position));
+				break;
 		}
 	}
 
