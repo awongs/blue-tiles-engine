@@ -49,7 +49,6 @@ namespace
 	// TODO: Need a more accurate way to determine this.
 	// Just eye-balling it for now...
 	const glm::vec2 WALL_HALF_SIZES{ 3.5f, 0.5f };
-	const glm::vec3 GUARD_HALF_SIZES{ 1.f };
 
 	const glm::vec3 WALL_SCALE{ LevelScene::TILE_SIZE / 1.2f, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 5 };
 	const glm::vec3 DOOR_SCALE{ LevelScene::TILE_SIZE, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 20 };
@@ -120,6 +119,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	);
 
 	GameObject* playerObj = Prefab::CreatePlayerGameObject(m_physEngine, position);
+	playerObj->AddBehaviour(new PlayerMovement(10, this));
 	AddWorldGameObject(playerObj);
 
 	// Create the guards

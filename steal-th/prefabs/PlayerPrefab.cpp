@@ -27,7 +27,6 @@ GameObject* Prefab::CreatePlayerGameObject(PhysicsEngine* phyEngine, glm::vec3 p
 	GameObject* playerObj = new GameObject("player", position, glm::vec3(0, 0, 0), glm::vec3(4, 4, 4));
 
 	playerObj->AddBehaviour(meshRenderer);
-	playerObj->AddBehaviour(new PlayerMovement(10));
 	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
 	playerObj->AddBehaviour(new Inventory());
 	playerObj->AddBehaviour(new PointLight(WHITE));

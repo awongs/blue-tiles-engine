@@ -20,6 +20,8 @@
 
 constexpr float TILE_SIZE = 9.f;
 
+constexpr glm::vec3 GUARD_HALF_SIZES{ 1.f };
+
 GameObject* Prefab::CreateGuardGameObject(PhysicsEngine* phyEngine, LevelScene* scene, GameObject* playerGO, Guard* guardInfo)
 {
 	glm::vec3 position = glm::vec3(
@@ -45,7 +47,7 @@ GameObject* Prefab::CreateGuardGameObject(PhysicsEngine* phyEngine, LevelScene* 
 	animator->AddAnimation(look);
 
 	// Add physics behaviour.
-	Collider* guardCol{ new Collider(glm::vec3(1.5f)) };
+	Collider* guardCol{ new Collider(glm::vec3(GUARD_HALF_SIZES)) };
 	go->AddBehaviour(new PhysicsBehaviour(phyEngine, go->id, guardCol));
 
 	// Add guard detection behaviour
@@ -85,7 +87,7 @@ GameObject* Prefab::CreateGuardGameObject(PhysicsEngine* phyEngine, LevelScene* 
 
 	// Add a spot light in front of the guard
 	float theta = atan2f(guardInfo->tileViewRadius * TILE_SIZE, guardInfo->tileViewDistance * TILE_SIZE);
-	SpotLight* guardCone = new SpotLight(glm::vec3(1), go->forward, theta, theta * 1.25f);
+	SpotLight* guardCone = new SpotLight(glm::vec3(1), go->forward, theta, theta * 1.1f);
 	go->AddBehaviour(guardCone);
 
 	return go;
