@@ -2,8 +2,9 @@
 
 #include <engine/GameObject.h>
 
-BlockStartAnimation::BlockStartAnimation()
+BlockStartAnimation::BlockStartAnimation(float delay)
 	: Behaviour(BehaviourType::BlockStartAnimation)
+	, m_delay(delay)
 {
 }
 
@@ -19,9 +20,9 @@ void BlockStartAnimation::Update(float deltaTime)
 	
 	float sinceDelay = m_time - m_delay;
 	
-	gameObject->position = animationPosition + ((basePosition - animationPosition) * sinceDelay * 0.5f);
+	gameObject->position = animationPosition + ((basePosition - animationPosition) * sinceDelay * 1.5f);
 
-	if (sinceDelay > 2)
+	if (sinceDelay * 1.5f > 1)
 	{
 		m_startAnimation = false;
 		gameObject->position = basePosition;
@@ -39,12 +40,10 @@ bool BlockStartAnimation::HandleMessage(unsigned int senderID, std::string& mess
 	{
 
 		m_startAnimation = true;
-
-		m_delay = (glm::length(glm::vec2(gameObject->position.x / 9, gameObject->position.y / 9))) * 0.1;
 		m_time = 0;
 
 		basePosition = gameObject->position;
-		animationPosition = glm::vec3(basePosition.x, basePosition.y + 100, basePosition.z);
+		animationPosition = glm::vec3(basePosition.x, basePosition.y + 50, basePosition.z);
 		gameObject->position = animationPosition;
 	}
 	return false;

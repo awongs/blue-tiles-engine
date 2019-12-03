@@ -5,7 +5,7 @@
 class BlockStartAnimation : public Behaviour
 {
 public:
-	BlockStartAnimation();
+	BlockStartAnimation(float delay);
 
 	// Overridden functions.
 	void Update(float deltaTime) override;

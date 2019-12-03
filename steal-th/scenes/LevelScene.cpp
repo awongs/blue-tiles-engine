@@ -375,6 +375,7 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("floor", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(TILE_SIZE / 2.f));
 
 			ga->AddBehaviour(meshRenderer);
+			ga->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f)) / 5.0f));
 
 			m_worldGameObjects.push_back(std::move(ga));
 			break;
@@ -478,7 +479,7 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 
 			ga->currentScene = this;
 
-			ga->AddBehaviour(new BlockStartAnimation());
+			ga->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f))/5.0f));
 
 			m_worldGameObjects.push_back(std::move(ga));
 
