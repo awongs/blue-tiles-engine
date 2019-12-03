@@ -44,6 +44,7 @@ namespace
 	// TODO: Need a more accurate way to determine this.
 	// Just eye-balling it for now...
 	const glm::vec2 WALL_HALF_SIZES{ 3.5f, 0.5f };
+	const glm::vec3 GUARD_HALF_SIZES{ 1.f };
 
 	const glm::vec3 WALL_SCALE{ LevelScene::TILE_SIZE / 1.2f, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 5 };
 	const glm::vec3 DOOR_SCALE{ LevelScene::TILE_SIZE, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 20 };
@@ -174,7 +175,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	GameObject* playerObj = new GameObject("player", position, glm::vec3(0, 0, 0), glm::vec3(4, 4, 4));
 
 	playerObj->AddBehaviour(meshRenderer);
-	playerObj->AddBehaviour(new PlayerMovement(10));
+	playerObj->AddBehaviour(new PlayerMovement(10, this));
 	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
 	playerObj->AddBehaviour(new Inventory());
 	playerObj->AddBehaviour(new PointLight(WHITE));
@@ -202,6 +203,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	SoundManager::getInstance().getMusic("music")->play();
 
 	// Create the guards
+	GuardDetection::InitOpenCL();
 	for (Guard &guard : level->m_guards)
 	{
 		AnimatedMesh* animatedMesh = new AnimatedMesh("../Assets/models/robot_kyle.obj", "../Assets/animations/robot_kyle/KyleWalking.dae");
@@ -228,7 +230,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 		animator->AddAnimation(look);
 
 		// Add physics behaviour.
-		Collider* guardCol{ new Collider(glm::vec3(1.5f)) };
+		Collider* guardCol{ new Collider(GUARD_HALF_SIZES) };
 		ga->AddBehaviour(new PhysicsBehaviour(m_physEngine, ga->id, guardCol));
 
 		// Add guard detection behaviour
@@ -236,22 +238,6 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
 
 		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
-
-		/*// move to box
-		sgmaib->AddMoveTileAction(1, 2);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddMoveTileAction(1, 1);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);
-
-		// move back
-		sgmaib->AddMoveTileAction(1, 2);
-		sgmaib->AddTurnCCWAction();
-		sgmaib->AddMoveTileAction(2, 2);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);*/
 
 		// Setting guard movement
 		for (std::string move : guard.movement) {
@@ -285,7 +271,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 
 		// Add a spot light in front of the guard
 		float theta = atan2f(guard.tileViewRadius * LevelScene::TILE_SIZE, guard.tileViewDistance * LevelScene::TILE_SIZE);
-		SpotLight* guardCone = new SpotLight(glm::vec3(1), ga->forward, theta, theta * 1.25f);
+		SpotLight* guardCone = new SpotLight(glm::vec3(1), ga->forward, theta, theta * 1.1f);
 		ga->AddBehaviour(guardCone);
 
 		m_worldGameObjects.push_back(std::move(ga));
@@ -342,6 +328,12 @@ void LevelScene::GetTiles(std::vector<int>& output) const
 	{
 		output.push_back(static_cast<int>(tile));
 	}
+}
+
+void LevelScene::SetTile(TileType type, unsigned int x, unsigned int z)
+{
+	unsigned int tileIndex{ GetTileIndexFromXZ(glm::ivec2(x, z)) };
+	m_tiles[tileIndex] = type;
 }
 
 void LevelScene::AddTile(TileType type, unsigned int tileIndex)

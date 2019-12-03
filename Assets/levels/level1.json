@@ -31,7 +31,7 @@
     ],
 
     "guards": [
-        { "guardId" : 0, "position": { "x": 3, "z": 3 }, "tileViewDistance": 0, "tileViewRadius": 0,
+        { "guardId" : 0, "position": { "x": 3, "z": 3 }, "tileViewDistance": 1, "tileViewRadius": 1,
 		"angle": -90.0,
         "movement": [
 			"move:2,3",
