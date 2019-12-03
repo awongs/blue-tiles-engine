@@ -134,10 +134,19 @@ namespace MessageSystem
 
 		std::vector<std::unique_ptr<GameObject>> const& objects = targetScene->GetWorldGameObjects();
 
+		if (objects.size() == 0)
+		{
+			processing = false;
+			return;
+		}
+
 		while (broadcastQueue.size() != 0)
 		{
 			ObjectMessage msg = broadcastQueue.front();
 			broadcastQueue.pop();
+
+			DebugLog::Info(msg.message);
+			DebugLog::Info(std::to_string(objects.size()));
 
 			for (auto& obj : objects)
 			{

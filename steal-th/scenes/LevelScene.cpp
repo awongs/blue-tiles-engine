@@ -25,11 +25,14 @@
 #include "../behaviours/TileBehaviour.h"
 #include "../behaviours/PlayerItemPickup.h"
 #include "../behaviours/Rotate.h"
+#include "../BlockStarrtAnimation.h"
 #include <engine/behaviours/UIMenuBehaviour.h>
 #include <engine/behaviours/UIImageBehaviour.h>
 #include <engine/behaviours/UIButtonBehaviour.h>
 #include <engine/behaviours/UITextBehaviour.h>
 #include <engine/graphics/Camera.h>
+
+#include <engine/MessageSystem.h>
 
 #include <engine/animation/AnimatedMesh.h>
 #include <engine/animation/Animation.h>
@@ -133,6 +136,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 
 	GameObject* playerObj = Prefab::CreatePlayerGameObject(m_physEngine, position);
 	playerObj->AddBehaviour(new PlayerMovement(10, this));
+
 	AddWorldGameObject(playerObj);
 
 	// Create the guards
@@ -171,6 +175,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 	blueKey->isVisible = false;
 	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
 	blueKey->SetParent(menu);
+	
 	AddScreenGameObject(blueKey);
 
 	GameObject* objectiveItem = new GameObject("objective");
@@ -220,6 +225,9 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 
 		AddWorldGameObject(ga);
 	}
+
+    MessageSystem::BroadcastMessage(0, BehaviourType::BlockStartAnimation, "StartBlockAnimation");
+    
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const
@@ -285,8 +293,9 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				z * TILE_SIZE + TILE_SIZE / 2.f);
 			GameObject* floorGO = new GameObject("floor", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(TILE_SIZE / 2.f));
 
+			floorGO->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f)) / 5.0f));
 			floorGO->AddBehaviour(meshRenderer);
-
+      
 			AddWorldGameObject(floorGO);
 			break;
 		}
