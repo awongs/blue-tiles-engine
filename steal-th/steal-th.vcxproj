@@ -143,6 +143,10 @@
     <ClCompile Include="behaviours\TileBehaviour.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="prefabs\GuardPrefab.cpp" />
+    <ClCompile Include="prefabs\ObjectItemPrefab.cpp" />
+    <ClCompile Include="prefabs\PlayerPrefab.cpp" />
+    <ClCompile Include="prefabs\WallPrefab.cpp" />
     <ClCompile Include="scenes\LevelScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,6 +168,10 @@
     <ClInclude Include="gameobjects\Object.h" />
     <ClInclude Include="gameobjects\Tile.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="prefabs\GuardPrefab.h" />
+    <ClInclude Include="prefabs\ObjectItemPrefab.h" />
+    <ClInclude Include="prefabs\PlayerPrefab.h" />
+    <ClInclude Include="prefabs\WallPrefab.h" />
     <ClInclude Include="scenes\LevelScene.h" />
   </ItemGroup>
   <ItemGroup>
