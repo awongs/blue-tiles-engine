@@ -28,7 +28,8 @@
         { "type" : "blue_key", "position": { "x": 10, "z": 10 }, "rotation": 0.0 },
         { "type" : "green_key", "position": { "x": 10, "z": 2 }, "rotation": 0.0 },
         { "type" : "objective_item", "position": { "x": 1, "z": 7 }, "rotation": 0.0 },
-		{ "type" : "electric_switch", "position": { "x": 1, "z": 5 }, "rotation": 0.0 }
+		{ "type" : "electric_switch", "position": { "x": 1, "z": 5 }, "rotation": 0.0 },
+		{ "type" : "electric_switch", "position": { "x": 5, "z": 1 }, "rotation": 0.0 }
     ],
 
     "guards": [
