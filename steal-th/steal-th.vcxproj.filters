@@ -64,6 +64,9 @@
     <ClCompile Include="behaviours\Rotate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BlockStarrtAnimation.cpp">
+      <Filter>Source Files\behaviours</Filter>
+    </ClCompile>
     <ClCompile Include="prefabs\ObjectItemPrefab.cpp">
       <Filter>Source Files\prefabs</Filter>
     </ClCompile>
@@ -124,6 +127,9 @@
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
     <ClInclude Include="behaviours\Rotate.h">
+      <Filter>Source Files\behaviours</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockStarrtAnimation.h">
       <Filter>Source Files\behaviours</Filter>
     </ClInclude>
     <ClInclude Include="prefabs\ObjectItemPrefab.h">

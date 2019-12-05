@@ -25,11 +25,14 @@
 #include "../behaviours/TileBehaviour.h"
 #include "../behaviours/PlayerItemPickup.h"
 #include "../behaviours/Rotate.h"
+#include "../BlockStarrtAnimation.h"
 #include <engine/behaviours/UIMenuBehaviour.h>
 #include <engine/behaviours/UIImageBehaviour.h>
 #include <engine/behaviours/UIButtonBehaviour.h>
 #include <engine/behaviours/UITextBehaviour.h>
 #include <engine/graphics/Camera.h>
+
+#include <engine/MessageSystem.h>
 
 #include <engine/animation/AnimatedMesh.h>
 #include <engine/animation/Animation.h>
@@ -150,6 +153,7 @@ void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
 
 	GameObject* playerObj = Prefab::CreatePlayerGameObject(m_physEngine, position);
 	playerObj->AddBehaviour(new PlayerMovement(10, this));
+
 	AddWorldGameObject(playerObj);
 
 	// Create the guards
@@ -188,6 +192,7 @@ void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
 	blueKey->isVisible = false;
 	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
 	blueKey->SetParent(menu);
+	
 	AddScreenGameObject(blueKey);
 
 	GameObject* objectiveItem = new GameObject("objective");
@@ -231,7 +236,6 @@ void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
 	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
 
 	AddWorldGameObject(ga);
-
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const
@@ -297,8 +301,9 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				z * TILE_SIZE + TILE_SIZE / 2.f);
 			GameObject* floorGO = new GameObject("floor", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(TILE_SIZE / 2.f));
 
+			floorGO->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f)) / 5.0f));
 			floorGO->AddBehaviour(meshRenderer);
-
+      
 			AddWorldGameObject(floorGO);
 			break;
 		}
