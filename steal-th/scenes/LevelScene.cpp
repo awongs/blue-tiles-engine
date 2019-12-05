@@ -182,26 +182,26 @@ void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
 
 	GameObject* redKey = new GameObject("redKey");
 	redKey->isVisible = false;
-	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/red_key_block.png"));
+	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/key-card-red.png"));
 	redKey->SetParent(menu);
 	AddScreenGameObject(redKey);
 
 	GameObject* greenKey = new GameObject("greenKey");
 	greenKey->isVisible = false;
-	greenKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/green_key_block.png"));
+	greenKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/key-card-green.png"));
 	greenKey->SetParent(menu);
 	AddScreenGameObject(greenKey);
 
 	GameObject* blueKey = new GameObject("blueKey");
 	blueKey->isVisible = false;
-	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
+	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/key-card-blue.png"));
 	blueKey->SetParent(menu);
 	
 	AddScreenGameObject(blueKey);
 
 	GameObject* objectiveItem = new GameObject("objective");
 	objectiveItem->isVisible = false;
-	objectiveItem->AddBehaviour(new UIImageBehaviour("../Assets/textures/golden_goose.png"));
+	objectiveItem->AddBehaviour(new UIImageBehaviour("../Assets/textures/key-card-yellow.png"));
 	objectiveItem->SetParent(menu);
 	AddScreenGameObject(objectiveItem);
 
