@@ -208,6 +208,19 @@ void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
 		}));
 	retryButton->SetParent(retryMenu);
 	AddScreenGameObject(retryButton);
+
+	GameObject* winMenu = new GameObject("winMenu");
+	winMenu->AddBehaviour(new UIMenuBehaviour("You win!", ImVec2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), ImVec2(85, 55), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse));
+	winMenu->isVisible = false;
+	AddScreenGameObject(winMenu);
+
+	GameObject* winButton = new GameObject();
+	winButton->AddBehaviour(new UIButtonBehaviour("Main Menu", [&]
+		{
+			m_gameEngine->SetScene("mainMenu");
+		}));
+	winButton->SetParent(winMenu);
+	AddScreenGameObject(winButton);
 	
 	// Setup the camera.
 	Camera::GetInstance().SetOrientation(CAMERA_ORIENTATION);

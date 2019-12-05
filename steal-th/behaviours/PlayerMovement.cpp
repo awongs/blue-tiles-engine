@@ -164,6 +164,7 @@ void PlayerMovement::HandleInteractableCollision(GameObject* otherObj)
 			inventory->RemoveItem(Inventory::ItemType::OBJECTIVE_ITEM);
 			MessageSystem::SendMessageToObject(gameObject->id, otherObj->id, BehaviourType::NONE, "die");
 			MessageSystem::SendMessageToObject(gameObject->id, "objective", BehaviourType::NONE, "hide");
+			MessageSystem::SendMessageToObject(gameObject->id, "winMenu", BehaviourType::NONE, "show");
 			gameObject->currentScene->stopUpdates();
 			DebugLog::Info("Player reached exit. Game over.");
 			// Need UI!!!!!

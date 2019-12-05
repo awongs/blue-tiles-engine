@@ -31,8 +31,7 @@ constexpr int WINDOW_HEIGHT = 600;
 
 int main()
 {
-	std::shared_ptr<bool> keepRunning = std::make_shared<bool>();
-	(*keepRunning) = true;
+	bool keepRunning = true;
 	GameWindow gameWin(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	int windowSetupStatus = gameWin.SetupSDLWindow();
