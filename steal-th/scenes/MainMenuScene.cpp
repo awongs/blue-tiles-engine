@@ -14,9 +14,9 @@ namespace
 	const std::string levelName = "level1";
 }
 
-MainMenuScene::MainMenuScene(std::shared_ptr<bool> keepRunning, std::shared_ptr<GameEngine> gameEngine)
+MainMenuScene::MainMenuScene(bool& keepRunning, std::shared_ptr<GameEngine> gameEngine)
 	: Scene()
-	, m_keepRunning(keepRunning)
+	, m_keepRunning(&keepRunning)
 	, m_gameEngine(gameEngine)
 {
 	// UI for main menu
