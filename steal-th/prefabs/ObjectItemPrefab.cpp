@@ -12,6 +12,7 @@
 #include <engine/behaviours/PointLight.h>
 #include "../behaviours/ObjectBehaviour.h"
 #include "../behaviours/Rotate.h"
+#include "../behaviours/ElectricSwitch.h"
 
 constexpr glm::vec3 RED = glm::vec3(1, 0, 0);
 constexpr glm::vec3 GREEN = glm::vec3(0, 1, 0);
@@ -81,6 +82,28 @@ GameObject* Prefab::CreateObjectiveGooseGameObject(PhysicsEngine* phyEngine, glm
 
 	// add light
 	go->AddBehaviour(new PointLight(YELLOW));
+
+	return go;
+}
+
+GameObject* Prefab::CreateElectricSwitchGameObject(PhysicsEngine* phyEngine, glm::vec3 position)
+{
+	// Create base gameobject
+	GameObject* go = new GameObject("Key", position, glm::vec3(0.f), glm::vec3(1.f));
+
+	// add mesh
+	MeshRenderer* mesh = new MeshRenderer("../Assets/models/prism.obj");
+	mesh->SetTexture("../Assets/textures/prism.jpg");
+	go->AddBehaviour(mesh);
+
+	// add collider
+	Collider* col{ new Collider(glm::vec3(2.f)) };
+	go->AddBehaviour(new PhysicsBehaviour(phyEngine, go->id, col));
+
+	// add rotation behaviour
+	go->AddBehaviour(new Rotate(glm::vec3(0, glm::half_pi<float>(), 0)));
+
+	go->AddBehaviour(new ElectricSwitch(go->position));
 
 	return go;
 }

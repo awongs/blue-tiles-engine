@@ -7,7 +7,8 @@ enum class ObjectType
 	RED_KEY,
 	BLUE_KEY,
 	GREEN_KEY,
-	OBJECTIVE_ITEM
+	OBJECTIVE_ITEM,
+	ELECTRIC_SWITCH
 };
 
 struct Object

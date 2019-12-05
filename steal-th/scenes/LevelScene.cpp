@@ -141,6 +141,10 @@ void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
 			case ObjectType::OBJECTIVE_ITEM:
 				AddWorldGameObject(Prefab::CreateObjectiveGooseGameObject(m_physEngine, position, rotation));
 				break;
+
+			case ObjectType::ELECTRIC_SWITCH:
+				AddWorldGameObject(Prefab::CreateElectricSwitchGameObject(m_physEngine, position));
+				break;
 		}
 	}
 
@@ -317,6 +321,7 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 
 			GameObject* wallGO = Prefab::CreateWallGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE);
 			m_tiles[tileIndex] = TileType::WALL;
+			wallGO->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f)) / 5.0f));
 			AddWorldGameObject(wallGO);
 			break;;
 		}
@@ -332,9 +337,27 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				z * TILE_SIZE + TILE_SIZE / 2.f);
 
 			GameObject* doorGO = Prefab::CreateDoorGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE, type);
+			doorGO->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f)) / 5.0f));
 			m_tiles[tileIndex] = type;
 			AddWorldGameObject(doorGO);
 			break;;
+		}
+
+		case TileType::ELECTRIC_FLOOR:
+		case TileType::ELECTRIC_FLOOR_OFF:
+		{
+			glm::vec3 position = glm::vec3(
+				x * TILE_SIZE + TILE_SIZE / 2.f,
+				0.f,
+				z * TILE_SIZE + TILE_SIZE / 2.f);
+
+			//GameObject* electricFloor = Prefab::CreateWallGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE);
+			GameObject* electricFloor = Prefab::CreateElectricFloorGameObject(m_physEngine, position, TILE_SIZE, type == TileType::ELECTRIC_FLOOR);
+			m_tiles[tileIndex] = TileType::ELECTRIC_FLOOR;
+			electricFloor->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f)) / 5.0f));
+			AddWorldGameObject(electricFloor);
+
+			break;
 		}
 
 	}

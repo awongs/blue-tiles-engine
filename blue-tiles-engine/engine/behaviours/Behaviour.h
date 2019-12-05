@@ -32,6 +32,8 @@ enum class BehaviourType
 	Animator,
 	Rotate,
 	BlockStartAnimation,
+	ElectricFloor,
+	ElectricSwitch,
 	NONE
 };
 

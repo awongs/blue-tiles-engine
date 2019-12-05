@@ -52,9 +52,9 @@ int main()
 		});
 
 	// Create the level
-	Level* l = new Level("level1");
+	Level* l = new Level("level2");
 	std::shared_ptr<LevelScene> level = std::make_shared<LevelScene>(l, physEngine, engine);
-	engine->AddScene("level1", level, [&] {
+	engine->AddScene("level2", level, [&] {
 		level = std::make_shared<LevelScene>(l, physEngine, engine);
 		});
 

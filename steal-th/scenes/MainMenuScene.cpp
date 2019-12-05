@@ -40,7 +40,7 @@ MainMenuScene::MainMenuScene(bool& keepRunning, std::shared_ptr<GameEngine> game
 
 	GameObject* playButtonGO = new GameObject();
 	playButtonGO->AddBehaviour(new UIButtonBehaviour("Play", [&] {
-		m_gameEngine->SetScene("level1");
+		m_gameEngine->SetScene("level2");
 		}, ImVec2(75, 50)));
 	playButtonGO->SetParent(mainLayoutGO);
 	AddScreenGameObject(playButtonGO);
