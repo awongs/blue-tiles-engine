@@ -37,11 +37,13 @@
 #include <engine/animation/AnimatedMesh.h>
 #include <engine/animation/Animation.h>
 #include <engine/animation/Animator.h>
+#include <engine/MessageSystem.h>
 
 #include "../prefabs/ObjectItemPrefab.h"
 #include "../prefabs/PlayerPrefab.h"
 #include "../prefabs/GuardPrefab.h"
 #include "../prefabs/WallPrefab.h"
+
 
 constexpr glm::vec3 RED = glm::vec3(1, 0, 0);
 constexpr glm::vec3 GREEN = glm::vec3(0, 1, 0);
@@ -73,19 +75,34 @@ namespace
 LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<GameEngine> gameEngine)
 	: Scene(), m_physEngine(physEngine), m_gameEngine(gameEngine)
 {
-	m_levelSize = glm::ivec2(level->m_sizeX, level->m_sizeZ);
+	m_level = std::shared_ptr<Level>(level);
+}
+
+void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
+{
+	// Clear previous level state.
+	for (auto& gameObject : m_worldGameObjects)
+	{
+		physEngine->RemovePhysicsObject(gameObject->id);
+	}
+	m_worldGameObjects.clear();
+	m_screenGameObjects.clear();
+	m_worldGameObjectsToRemove.clear();
+	isGameOver = false;
+
+	m_levelSize = glm::ivec2(m_level->m_sizeX, m_level->m_sizeZ);
 
 	//std::vector<int> gridsUsed;
 
 	// Initialize tiles
-	unsigned int numTiles{ level->m_sizeX * level->m_sizeZ };
+	unsigned int numTiles{ m_level->m_sizeX * m_level->m_sizeZ };
 	m_tiles.resize(numTiles);
 
 	// Generate level tiles.
 	for (unsigned int i = 0; i < numTiles; ++i)
 	{
 		// Skip floors for now, we'll create them after.
-		int tile{ level->m_layout[i] };
+		int tile{ m_level->m_layout[i] };
 		if (tile == 0) continue;
 
 		TileType type{ static_cast<TileType>(tile) };
@@ -93,21 +110,21 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 	}
 
 	// Create the world
-	for (unsigned int i = 0; i < level->m_sizeX; i++)
+	for (unsigned int i = 0; i < m_level->m_sizeX; i++)
 	{
 		// Create floors
-		for (unsigned int j = 0; j < level->m_sizeZ; j++)
+		for (unsigned int j = 0; j < m_level->m_sizeZ; j++)
 		{
 			AddTile(TileType::FLOOR, i, j);
 		}
 	}
-	
+
 	// Create the objects
-	for (Object& obj : level->m_objects)
+	for (Object& obj : m_level->m_objects)
 	{
 		glm::vec3 position = glm::vec3(
 			(float)(obj.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
-			0.5, 
+			0.5,
 			(float)(obj.tileZ) * TILE_SIZE + TILE_SIZE / 2.f
 		);
 
@@ -129,9 +146,9 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 
 	// Create player
 	glm::vec3 position = glm::vec3(
-		(float)(level->m_playerSpawnX) * TILE_SIZE + TILE_SIZE / 2.f,
-		0, 
-		(float)(level->m_playerSpawnZ) * TILE_SIZE + TILE_SIZE / 2.f
+		(float)(m_level->m_playerSpawnX) * TILE_SIZE + TILE_SIZE / 2.f,
+		0,
+		(float)(m_level->m_playerSpawnZ) * TILE_SIZE + TILE_SIZE / 2.f
 	);
 
 	GameObject* playerObj = Prefab::CreatePlayerGameObject(m_physEngine, position);
@@ -141,7 +158,7 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 
 	// Create the guards
 	GuardDetection::InitOpenCL();
-	for (Guard &guard : level->m_guards)
+	for (Guard& guard : m_level->m_guards)
 	{
 		AddWorldGameObject(Prefab::CreateGuardGameObject(m_physEngine, this, playerObj, &guard));
 	}
@@ -152,8 +169,8 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 	// UI for level
 	GameObject* menu = new GameObject();
 	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
-	AddScreenGameObject(menu); 
-	
+	AddScreenGameObject(menu);
+
 	GameObject* testString = new GameObject();
 	testString->AddBehaviour(new UITextBehaviour("Inventory"));
 	testString->SetParent(menu);
@@ -185,49 +202,40 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 	AddScreenGameObject(objectiveItem);
 
 	GameObject* retryMenu = new GameObject("retryMenu");
-	retryMenu->AddBehaviour(new UIMenuBehaviour("Game Over", ImVec2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), ImVec2(75, 55), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse ));
+	retryMenu->AddBehaviour(new UIMenuBehaviour("Game Over", ImVec2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), ImVec2(75, 55), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse));
 	retryMenu->isVisible = false;
 	AddScreenGameObject(retryMenu);
 
 	GameObject* retryButton = new GameObject();
-	retryButton->AddBehaviour(new UIButtonBehaviour("Retry", [&] {
-		m_gameEngine->SetScene("mainMenu");
+	retryButton->AddBehaviour(new UIButtonBehaviour("Retry", [&]
+		{
+			m_gameEngine->SetScene("mainMenu");
 		}));
 	retryButton->SetParent(retryMenu);
 	AddScreenGameObject(retryButton);
 
+	GameObject* winMenu = new GameObject("winMenu");
+	winMenu->AddBehaviour(new UIMenuBehaviour("You win!", ImVec2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), ImVec2(85, 55), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse));
+	winMenu->isVisible = false;
+	AddScreenGameObject(winMenu);
 
+	GameObject* winButton = new GameObject();
+	winButton->AddBehaviour(new UIButtonBehaviour("Main Menu", [&]
+		{
+			m_gameEngine->SetScene("mainMenu");
+		}));
+	winButton->SetParent(winMenu);
+	AddScreenGameObject(winButton);
+	
 	// Setup the camera.
 	Camera::GetInstance().SetOrientation(CAMERA_ORIENTATION);
 	Camera::GetInstance().CalculatePerspectiveView(CAMERA_FOV, (float)WINDOW_WIDTH / WINDOW_HEIGHT, CAMERA_NEAR_CLIP, CAMERA_FAR_CLIP);
-
-	// -- Testing --
-	srand(time(0));
 
 	// Add a directional light
 	GameObject* ga = new GameObject();
 	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
 
 	AddWorldGameObject(ga);
-
-
-	// Add test lighting
-	for (int i = 0; i < 0; i++)
-	{
-		GameObject* ga = new GameObject();
-		ga->position = GetWorldGameObjectByIndex(i)->position;
-
-		glm::vec3 randomColour = glm::vec3(glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f), glm::linearRand<float>(0.0f, 1.0f));
-		//glm::vec3 randomDirection = glm::vec3(glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f), glm::linearRand<float>(-1.0f, 1.0f));
-
-		ga->AddBehaviour(new PointLight(randomColour, 1.0f, 1.0f, 1.0f, 0.2f, 0.3f, 0.5f));
-		//ga->AddBehaviour(new SpotLight(randomColour, randomDirection, 1.0, 2.0, 1.0f, 1.0f, 1.0f, 0.2f, 0.3f, 0.5f));
-
-		AddWorldGameObject(ga);
-	}
-
-    MessageSystem::BroadcastMessage(0, BehaviourType::BlockStartAnimation, "StartBlockAnimation");
-    
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const

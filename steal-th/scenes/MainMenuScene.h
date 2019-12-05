@@ -8,9 +8,9 @@ class GameEngine;
 class MainMenuScene : public Scene
 {
 public:
-	MainMenuScene(std::shared_ptr<bool> keepRunning, std::shared_ptr<GameEngine> gameEngine);
+	MainMenuScene(bool& keepRunning, std::shared_ptr<GameEngine> gameEngine);
 
 private:
-	std::shared_ptr<bool> m_keepRunning;
+	bool* m_keepRunning;
 	std::shared_ptr<GameEngine> m_gameEngine;
 };

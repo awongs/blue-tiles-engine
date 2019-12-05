@@ -7,6 +7,8 @@
 #include "GameObject.h"
 
 class Shader;
+class GameEngine;
+class PhysicsEngine;
 
 class Scene
 {
@@ -66,6 +68,9 @@ public:
 
 	// Stops scene from updating game objects
 	void stopUpdates();
+
+	// Loads the scene. Does nothing by default, only LevelScene needs to implement this currently.
+	virtual void LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine);
   
 protected:
 	// A unique id for each Scene

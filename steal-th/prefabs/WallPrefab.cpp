@@ -43,8 +43,8 @@ GameObject* Prefab::CreateDoorGameObject(PhysicsEngine* phyEngine, glm::vec3 pos
 	meshRenderer->SetTransparent(true);
 
 	if		(tileType == TileType::RED_DOOR)	meshRenderer->SetTexture("../Assets/textures/red_key_block.png");
-	else if (tileType == TileType::GREEN_DOOR)	meshRenderer->SetTexture("../Assets/textures/blue_key_block.png");
-	else if (tileType == TileType::BLUE_DOOR)	meshRenderer->SetTexture("../Assets/textures/green_key_block.png");
+	else if (tileType == TileType::GREEN_DOOR)	meshRenderer->SetTexture("../Assets/textures/green_key_block.png");
+	else if (tileType == TileType::BLUE_DOOR)	meshRenderer->SetTexture("../Assets/textures/blue_key_block.png");
 	else if (tileType == TileType::EXIT)		meshRenderer->SetTexture("../Assets/textures/exit.jpg");
 
 	ga->AddBehaviour(meshRenderer);
