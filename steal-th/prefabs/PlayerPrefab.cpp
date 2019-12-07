@@ -35,9 +35,9 @@ GameObject* Prefab::CreatePlayerGameObject(PhysicsEngine* phyEngine, glm::vec3 p
 	playerObj->AddBehaviour(animator);
 
 	// Animations for player.
-	std::shared_ptr<Animation> run = FileManager::LoadAnimation("../Assets/animations/alex/AlexRunning.dae");
+	std::shared_ptr<Animation> move = FileManager::LoadAnimation("../Assets/animations/alex/AlexJogging.dae");
 	std::shared_ptr<Animation> idle = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleIdle.dae");
-	animator->AddAnimation(run);
+	animator->AddAnimation(move);
 	animator->AddAnimation(idle);
 
 	// item pickup behaviour for player

@@ -69,7 +69,7 @@ void PlayerMovement::Update(float deltaTime)
 	{
 		if (isMoving)
 		{
-			animator->PlayAnimation("AlexRunning");
+			animator->PlayAnimation("AlexJogging");
 		}
 		else
 		{
