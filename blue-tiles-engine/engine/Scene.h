@@ -18,7 +18,7 @@ public:
 	virtual ~Scene();
 
 	// Updates game objects
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime);
 
 	// Draws world game objects
 	[[deprecated]]

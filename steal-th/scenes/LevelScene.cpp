@@ -76,6 +76,11 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<
 	: Scene(), m_physEngine(physEngine), m_gameEngine(gameEngine)
 {
 	m_level = std::shared_ptr<Level>(level);
+
+	// Initialize the level scene here.
+	// This causes a duplicate call to LoadScene, but it's a convenient
+	// way to dump all the load time to the menu scene.
+	LoadScene(physEngine, m_gameEngine.get());
 }
 
 void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
@@ -89,6 +94,8 @@ void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
 	m_screenGameObjects.clear();
 	m_worldGameObjectsToRemove.clear();
 	isGameOver = false;
+	m_elapsedTime = 0;
+	m_levelTimer.reset();
 
 	m_levelSize = glm::ivec2(m_level->m_sizeX, m_level->m_sizeZ);
 
@@ -167,8 +174,11 @@ void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
 		AddWorldGameObject(Prefab::CreateGuardGameObject(m_physEngine, this, playerObj, &guard));
 	}
 
-	// Play music
-	SoundManager::getInstance().getMusic("music")->play();
+	// Play music if it's not already playing.
+	if (!Mix_PlayingMusic())
+	{
+		SoundManager::getInstance().getMusic("music")->play();
+	}
 
 	// UI for level
 	GameObject* menu = new GameObject();
@@ -240,6 +250,44 @@ void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
 	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
 
 	AddWorldGameObject(ga);
+
+	// Setup the level timer.
+	// Not sure how to perfectly center this, so just eyeballing the position.
+	GameObject* timerMenu = new GameObject();
+	timerMenu->AddBehaviour(new UIMenuBehaviour("Timer", ImVec2(WINDOW_WIDTH / 2 - 70, 0), ImVec2(0, 0),
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoBackground));
+	AddScreenGameObject(timerMenu);
+
+	GameObject* timer = new GameObject();
+	timer->AddBehaviour(new UITextBehaviour("Timer Here"));
+	timer->SetParent(timerMenu);
+	AddScreenGameObject(timer);
+
+	m_levelTimer = timer->GetBehaviour<UITextBehaviour>();
+}
+
+void LevelScene::Update(float deltaTime)
+{
+	// Call base scene update.
+	Scene::Update(deltaTime);
+
+	// Update the level timer.
+	if (!isGameOver)
+	{
+		m_elapsedTime += deltaTime;
+		if (!m_levelTimer.expired())
+		{
+			int minutes = static_cast<int>(m_elapsedTime) / 60;
+			int seconds = static_cast<int>(m_elapsedTime) % 60;
+
+			m_levelTimer.lock()->SetText("Elapsed Time: " + std::to_string(minutes) + "m " +
+				std::to_string(seconds) + "s");
+		}
+	}
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const

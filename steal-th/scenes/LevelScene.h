@@ -6,6 +6,7 @@
 
 class PhysicsEngine;
 class GameEngine;
+class UITextBehaviour;
 
 class LevelScene : public Scene
 {
@@ -15,6 +16,9 @@ public:
 	// Loads the level.
 	// If called again (e.g. by retrying), the previous level state is deleted.
 	void LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine);
+
+	// Updates the level.
+	void Update(float deltaTime) override;
 	
 	// Get the tile at the given x, z-coordinate.
 	TileType GetTile(unsigned int x, unsigned int z) const;
@@ -59,4 +63,8 @@ private:
 
 	// The level object for this scene.
 	std::shared_ptr<Level> m_level;
+
+	// For displaying the elapsed time in the level.
+	std::weak_ptr<UITextBehaviour> m_levelTimer;
+	float m_elapsedTime { 0 };
 };
