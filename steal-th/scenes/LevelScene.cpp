@@ -1,9 +1,12 @@
+#include <glm/gtc/random.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
+#include <engine/GameEngine.h>
 #include <engine/behaviours/MeshRenderer.h>
 #include <engine/behaviours/PhysicsBehaviour.h>
 #include <engine/behaviours/SpotLight.h>
-#include <engine/behaviours/PointLight.h>
 #include <engine/behaviours/DirectionalLight.h>
+#include <engine/behaviours/PointLight.h>
 #include <engine/physics/Collider.h>
 #include <engine/sound/SoundManager.h>
 #include <engine/sound/Music.h>
@@ -22,14 +25,25 @@
 #include "../behaviours/TileBehaviour.h"
 #include "../behaviours/PlayerItemPickup.h"
 #include "../behaviours/Rotate.h"
+#include "../BlockStarrtAnimation.h"
 #include <engine/behaviours/UIMenuBehaviour.h>
 #include <engine/behaviours/UIImageBehaviour.h>
 #include <engine/behaviours/UIButtonBehaviour.h>
 #include <engine/behaviours/UITextBehaviour.h>
+#include <engine/graphics/Camera.h>
+
+#include <engine/MessageSystem.h>
 
 #include <engine/animation/AnimatedMesh.h>
 #include <engine/animation/Animation.h>
 #include <engine/animation/Animator.h>
+#include <engine/MessageSystem.h>
+
+#include "../prefabs/ObjectItemPrefab.h"
+#include "../prefabs/PlayerPrefab.h"
+#include "../prefabs/GuardPrefab.h"
+#include "../prefabs/WallPrefab.h"
+
 
 constexpr glm::vec3 RED = glm::vec3(1, 0, 0);
 constexpr glm::vec3 GREEN = glm::vec3(0, 1, 0);
@@ -41,30 +55,61 @@ const float LevelScene::TILE_SIZE{ 9.f };
 
 namespace
 {
+	// Window size settings.
+	constexpr int WINDOW_WIDTH = 800;
+	constexpr int WINDOW_HEIGHT = 600;
 	// TODO: Need a more accurate way to determine this.
 	// Just eye-balling it for now...
 	const glm::vec2 WALL_HALF_SIZES{ 3.5f, 0.5f };
 
 	const glm::vec3 WALL_SCALE{ LevelScene::TILE_SIZE / 1.2f, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 5 };
 	const glm::vec3 DOOR_SCALE{ LevelScene::TILE_SIZE, LevelScene::TILE_SIZE, LevelScene::TILE_SIZE * 20 };
+
+	// Camera settings.
+	constexpr float CAMERA_FOV = glm::radians(60.0f);
+	constexpr float CAMERA_NEAR_CLIP = 1.0f;
+	constexpr float CAMERA_FAR_CLIP = 50.0f;
+	constexpr glm::vec3 CAMERA_ORIENTATION = glm::vec3(glm::radians(75.0f), 0.0f, 0.0f);
 }
 
-LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
-	: Scene(), m_physEngine(physEngine)
+LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine, std::shared_ptr<GameEngine> gameEngine)
+	: Scene(), m_physEngine(physEngine), m_gameEngine(gameEngine)
 {
-	m_levelSize = glm::ivec2(level->m_sizeX, level->m_sizeZ);
+	m_level = std::shared_ptr<Level>(level);
+
+	// Initialize the level scene here.
+	// This causes a duplicate call to LoadScene, but it's a convenient
+	// way to dump all the load time to the menu scene.
+	LoadScene(physEngine, m_gameEngine.get());
+}
+
+void LevelScene::LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine)
+{
+	// Clear previous level state.
+	for (auto& gameObject : m_worldGameObjects)
+	{
+		physEngine->RemovePhysicsObject(gameObject->id);
+	}
+	m_worldGameObjects.clear();
+	m_screenGameObjects.clear();
+	m_worldGameObjectsToRemove.clear();
+	isGameOver = false;
+	m_elapsedTime = 0;
+	m_levelTimer.reset();
+
+	m_levelSize = glm::ivec2(m_level->m_sizeX, m_level->m_sizeZ);
 
 	//std::vector<int> gridsUsed;
 
 	// Initialize tiles
-	unsigned int numTiles{ level->m_sizeX * level->m_sizeZ };
+	unsigned int numTiles{ m_level->m_sizeX * m_level->m_sizeZ };
 	m_tiles.resize(numTiles);
 
 	// Generate level tiles.
 	for (unsigned int i = 0; i < numTiles; ++i)
 	{
 		// Skip floors for now, we'll create them after.
-		int tile{ level->m_layout[i] };
+		int tile{ m_level->m_layout[i] };
 		if (tile == 0) continue;
 
 		TileType type{ static_cast<TileType>(tile) };
@@ -72,244 +117,177 @@ LevelScene::LevelScene(Level* level, PhysicsEngine *physEngine)
 	}
 
 	// Create the world
-	for (unsigned int i = 0; i < level->m_sizeX; i++)
+	for (unsigned int i = 0; i < m_level->m_sizeX; i++)
 	{
 		// Create floors
-		for (unsigned int j = 0; j < level->m_sizeZ; j++)
+		for (unsigned int j = 0; j < m_level->m_sizeZ; j++)
 		{
 			AddTile(TileType::FLOOR, i, j);
 		}
 	}
-	
+
 	// Create the objects
-	for (Object& obj : level->m_objects)
+	for (Object& obj : m_level->m_objects)
 	{
 		glm::vec3 position = glm::vec3(
 			(float)(obj.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
-			0.5, 
+			0.5,
 			(float)(obj.tileZ) * TILE_SIZE + TILE_SIZE / 2.f
 		);
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("object", position, glm::vec3(0, glm::radians(obj.rotation), 0));
 
-		glm::vec3 scale;
-		MeshRenderer *meshRenderer{ nullptr };
-		PhysicsBehaviour *physBehaviour{ nullptr };
-		ObjectBehaviour *objBehaviour{ nullptr };
-		PointLight* objLight { nullptr };
+		glm::vec3 rotation = glm::vec3(0, glm::radians(obj.rotation), 0);
 
 		switch (obj.type)
 		{
 			case ObjectType::RED_KEY:
 			case ObjectType::BLUE_KEY:
 			case ObjectType::GREEN_KEY:
-			{
-				meshRenderer = new MeshRenderer("../Assets/models/key.obj");
-				scale = glm::vec3(0.5, 0.5, 0.5);
-
-				Collider *col{ new Collider(glm::vec3(2.f)) };
-				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, col, [this](GLuint other) {});
+				AddWorldGameObject(Prefab::CreateKeyGameObject(m_physEngine, position, rotation, obj.type));
 				break;
-			}
 
 			case ObjectType::OBJECTIVE_ITEM:
-			{
-				meshRenderer = new MeshRenderer("../Assets/models/golden_goose.obj");
-				meshRenderer->SetTexture("../Assets/textures/golden_goose.png");
-				scale = glm::vec3(0.5, 0.5, 0.5);
-
-				Collider *col{ new Collider(glm::vec3(2.f)) };
-				physBehaviour = new PhysicsBehaviour(m_physEngine, ga->id, col, [this](GLuint other) {});
-				objBehaviour = new ObjectBehaviour(ObjectType::OBJECTIVE_ITEM);
-
-				objLight = new PointLight(YELLOW);
-				break;
-			}
-		}
-
-		switch (obj.type)
-		{
-			case ObjectType::RED_KEY:
-				objBehaviour = new ObjectBehaviour(ObjectType::RED_KEY);
-				meshRenderer->SetTexture("../Assets/textures/red_key.png");
-
-				objLight = new PointLight(RED);
+				AddWorldGameObject(Prefab::CreateObjectiveGooseGameObject(m_physEngine, position, rotation));
 				break;
 
-			case ObjectType::BLUE_KEY:
-				objBehaviour = new ObjectBehaviour(ObjectType::BLUE_KEY);
-				meshRenderer->SetTexture("../Assets/textures/blue_key.png");
-
-				objLight = new PointLight(BLUE);
-				break;
-
-			case ObjectType::GREEN_KEY:
-				objBehaviour = new ObjectBehaviour(ObjectType::GREEN_KEY);
-				meshRenderer->SetTexture("../Assets/textures/green_key.png");
-
-				objLight = new PointLight(GREEN);
+			case ObjectType::ELECTRIC_SWITCH:
+				AddWorldGameObject(Prefab::CreateElectricSwitchGameObject(m_physEngine, position));
 				break;
 		}
-
-		ga->scale = scale;
-		ga->AddBehaviour(meshRenderer);
-		ga->AddBehaviour(physBehaviour);
-		ga->AddBehaviour(objBehaviour);
-		ga->AddBehaviour(objLight);
-		ga->AddBehaviour(new Rotate(glm::vec3(0, glm::half_pi<float>(), 0)));
-
-		ga->currentScene = this;
-		m_worldGameObjects.push_back(std::move(ga));
 	}
 
 	// Create player
-	AnimatedMesh* meshRenderer = new AnimatedMesh("../Assets/models/alex.obj", "../Assets/animations/alex/AlexRunning.dae");
-	meshRenderer->SetTexture("../Assets/textures/alex.png");
-
 	glm::vec3 position = glm::vec3(
-		(float)(level->m_playerSpawnX) * TILE_SIZE + TILE_SIZE / 2.f,
-		0, 
-		(float)(level->m_playerSpawnZ) * TILE_SIZE + TILE_SIZE / 2.f
+		(float)(m_level->m_playerSpawnX) * TILE_SIZE + TILE_SIZE / 2.f,
+		0,
+		(float)(m_level->m_playerSpawnZ) * TILE_SIZE + TILE_SIZE / 2.f
 	);
 
-	GameObject* playerObj = new GameObject("player", position, glm::vec3(0, 0, 0), glm::vec3(4, 4, 4));
+	GameObject* playerObj = Prefab::CreatePlayerGameObject(m_physEngine, position);
+	playerObj->AddBehaviour(new PlayerMovement(10, this));
 
-	playerObj->AddBehaviour(meshRenderer);
-	playerObj->AddBehaviour(new PlayerMovement(10));
-	playerObj->AddBehaviour(new FollowGameObject(glm::vec3(0.0f, 30.0f, 10.0f)));
-	playerObj->AddBehaviour(new Inventory());
-	playerObj->AddBehaviour(new PointLight(WHITE));
-
-	Animator* animator = new Animator(playerObj->GetBehaviour<AnimatedMesh>());
-	playerObj->AddBehaviour(animator);
-
-	// Animations for player.
-	std::shared_ptr<Animation> run = FileManager::LoadAnimation("../Assets/animations/alex/AlexRunning.dae");
-	std::shared_ptr<Animation> idle = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleIdle.dae");
-	animator->AddAnimation(run);
-	animator->AddAnimation(idle);
-
-	// item pickup behaviour for player
-	playerObj->AddBehaviour(new PlayerItemPickup());
-
-	// physics collider using player gameobject's on collision callback
-	Collider* playerCol{ new Collider(glm::vec3(1.5f)) };
-	playerObj->AddBehaviour(new PhysicsBehaviour(m_physEngine, playerObj->id, playerCol));
-
-	// Add to world
 	AddWorldGameObject(playerObj);
 
-	// Play music
-	SoundManager::getInstance().getMusic("music")->play();
-
 	// Create the guards
-	for (Guard &guard : level->m_guards)
+	GuardDetection::InitOpenCL();
+	for (Guard& guard : m_level->m_guards)
 	{
-		AnimatedMesh* animatedMesh = new AnimatedMesh("../Assets/models/robot_kyle.obj", "../Assets/animations/robot_kyle/KyleWalking.dae");
-		animatedMesh->SetTexture("../Assets/textures/robot_kyle.png");
+		AddWorldGameObject(Prefab::CreateGuardGameObject(m_physEngine, this, playerObj, &guard));
+	}
 
-		glm::vec3 position = glm::vec3(
-			(float)(guard.tileX) * TILE_SIZE + TILE_SIZE / 2.f,
-			0,
-			(float)(guard.tileZ) * TILE_SIZE + TILE_SIZE / 2.f);
-		std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("guard",
-			position, glm::vec3(0, glm::radians(guard.rotAngle), 0), glm::vec3(5, 5, 5));
-
-		ga->AddBehaviour(animatedMesh);
-
-		// Animations for guards.
-		std::shared_ptr<Animation> walk = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleWalking.dae");
-		std::shared_ptr<Animation> idle = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleIdle.dae");
-		std::shared_ptr<Animation> look = FileManager::LoadAnimation("../Assets/animations/robot_kyle/KyleLooking.dae");
-
-		Animator* animator = new Animator(ga->GetBehaviour<AnimatedMesh>());
-		ga->AddBehaviour(animator);
-		animator->AddAnimation(walk);
-		animator->AddAnimation(idle);
-		animator->AddAnimation(look);
-
-		// Add physics behaviour.
-		Collider* guardCol{ new Collider(glm::vec3(1.5f)) };
-		ga->AddBehaviour(new PhysicsBehaviour(m_physEngine, ga->id, guardCol));
-
-		// Add guard detection behaviour
-		ga->AddBehaviour(new GuardDetection(this, playerObj,
-			guard.tileViewDistance * LevelScene::TILE_SIZE, guard.tileViewRadius));
-
-		SimpleGuardMovementAIBehaviour* sgmaib = new SimpleGuardMovementAIBehaviour(10.0f, glm::radians(180.0f));
-
-		/*// move to box
-		sgmaib->AddMoveTileAction(1, 2);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddMoveTileAction(1, 1);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);
-
-		// move back
-		sgmaib->AddMoveTileAction(1, 2);
-		sgmaib->AddTurnCCWAction();
-		sgmaib->AddMoveTileAction(2, 2);
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddTurnCWAction();
-		sgmaib->AddWaitAction(2);*/
-
-		// Setting guard movement
-		for (std::string move : guard.movement) {
-			if (move == "turncw") {
-				sgmaib->AddTurnCWAction();
-			}
-			else if (move == "turnccw") {
-				sgmaib->AddTurnCCWAction();
-			}
-			else if (move.find("move") != std::string::npos) {
-				std::string value1;
-				std::string value2;
-				bool split = false;
-				for (int i = 5; i < std::strlen(move.c_str()); i++) {
-					if (move[i] == ',') {
-						split = true;
-					}
-					if (move[i] != ',' && split == false) {
-						value1 += move[i];
-					}
-					else if(move[i] != ',' && split == true){
-						value2 += move[i];
-					}
-				}
-				//DebugLog::Info(value1 + " " + value2);
-				sgmaib->AddMoveTileAction(std::stoi(value1), std::stoi(value2));
-			}
-		}
-
-		ga->AddBehaviour(sgmaib);
-
-		// Add a spot light in front of the guard
-		float theta = atan2f(guard.tileViewRadius * LevelScene::TILE_SIZE, guard.tileViewDistance * LevelScene::TILE_SIZE);
-		SpotLight* guardCone = new SpotLight(glm::vec3(1), ga->forward, theta, theta * 1.25f);
-		ga->AddBehaviour(guardCone);
-
-		m_worldGameObjects.push_back(std::move(ga));
+	// Play music if it's not already playing.
+	if (!Mix_PlayingMusic())
+	{
+		SoundManager::getInstance().getMusic("music")->play();
 	}
 
 	// UI for level
 	GameObject* menu = new GameObject();
 	menu->AddBehaviour(new UIMenuBehaviour("Inventory", ImVec2(0, 0), ImVec2(0, 0), ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground));
+	AddScreenGameObject(menu);
+
 	GameObject* testString = new GameObject();
 	testString->AddBehaviour(new UITextBehaviour("Inventory"));
 	testString->SetParent(menu);
+	AddScreenGameObject(testString);
+
 	GameObject* redKey = new GameObject("redKey");
-	// redKey->isVisible = false;
-	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/red_key_block.png"));
+	redKey->isVisible = false;
+	redKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/key-card-red.png"));
 	redKey->SetParent(menu);
+	AddScreenGameObject(redKey);
+
 	GameObject* greenKey = new GameObject("greenKey");
-	// greenKey->isVisible = false;
-	greenKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/green_key_block.png"));
+	greenKey->isVisible = false;
+	greenKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/key-card-green.png"));
 	greenKey->SetParent(menu);
+	AddScreenGameObject(greenKey);
+
 	GameObject* blueKey = new GameObject("blueKey");
-	// blueKey->isVisible = false;
-	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/blue_key_block.png"));
+	blueKey->isVisible = false;
+	blueKey->AddBehaviour(new UIImageBehaviour("../Assets/textures/key-card-blue.png"));
 	blueKey->SetParent(menu);
-	AddScreenGameObject(menu);
+	
+	AddScreenGameObject(blueKey);
+
+	GameObject* objectiveItem = new GameObject("objective");
+	objectiveItem->isVisible = false;
+	objectiveItem->AddBehaviour(new UIImageBehaviour("../Assets/textures/key-card-yellow.png"));
+	objectiveItem->SetParent(menu);
+	AddScreenGameObject(objectiveItem);
+
+	GameObject* retryMenu = new GameObject("retryMenu");
+	retryMenu->AddBehaviour(new UIMenuBehaviour("Game Over", ImVec2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), ImVec2(75, 55), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse));
+	retryMenu->isVisible = false;
+	AddScreenGameObject(retryMenu);
+
+	GameObject* retryButton = new GameObject();
+	retryButton->AddBehaviour(new UIButtonBehaviour("Retry", [&]
+		{
+			m_gameEngine->SetScene("mainMenu");
+		}));
+	retryButton->SetParent(retryMenu);
+	AddScreenGameObject(retryButton);
+
+	GameObject* winMenu = new GameObject("winMenu");
+	winMenu->AddBehaviour(new UIMenuBehaviour("You win!", ImVec2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), ImVec2(85, 55), ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse));
+	winMenu->isVisible = false;
+	AddScreenGameObject(winMenu);
+
+	GameObject* winButton = new GameObject();
+	winButton->AddBehaviour(new UIButtonBehaviour("Main Menu", [&]
+		{
+			m_gameEngine->SetScene("mainMenu");
+		}));
+	winButton->SetParent(winMenu);
+	AddScreenGameObject(winButton);
+	
+	// Setup the camera.
+	Camera::GetInstance().SetOrientation(CAMERA_ORIENTATION);
+	Camera::GetInstance().CalculatePerspectiveView(CAMERA_FOV, (float)WINDOW_WIDTH / WINDOW_HEIGHT, CAMERA_NEAR_CLIP, CAMERA_FAR_CLIP);
+
+	// Add a directional light
+	GameObject* ga = new GameObject();
+	ga->AddBehaviour(new DirectionalLight(glm::vec3(1.0f), glm::vec3(0.0f, -10.0f, -0.3f), 0.0f, 0.4f, 0.5f));
+
+	AddWorldGameObject(ga);
+
+	// Setup the level timer.
+	// Not sure how to perfectly center this, so just eyeballing the position.
+	GameObject* timerMenu = new GameObject();
+	timerMenu->AddBehaviour(new UIMenuBehaviour("Timer", ImVec2(WINDOW_WIDTH / 2 - 70, 0), ImVec2(0, 0),
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_AlwaysAutoResize |
+		ImGuiWindowFlags_NoBackground));
+	AddScreenGameObject(timerMenu);
+
+	GameObject* timer = new GameObject();
+	timer->AddBehaviour(new UITextBehaviour("Timer Here"));
+	timer->SetParent(timerMenu);
+	AddScreenGameObject(timer);
+
+	m_levelTimer = timer->GetBehaviour<UITextBehaviour>();
+}
+
+void LevelScene::Update(float deltaTime)
+{
+	// Call base scene update.
+	Scene::Update(deltaTime);
+
+	// Update the level timer.
+	if (!isGameOver)
+	{
+		m_elapsedTime += deltaTime;
+		if (!m_levelTimer.expired())
+		{
+			int minutes = static_cast<int>(m_elapsedTime) / 60;
+			int seconds = static_cast<int>(m_elapsedTime) % 60;
+
+			m_levelTimer.lock()->SetText("Elapsed Time: " + std::to_string(minutes) + "m " +
+				std::to_string(seconds) + "s");
+		}
+	}
 }
 
 TileType LevelScene::GetTile(unsigned int x, unsigned int z) const
@@ -344,6 +322,12 @@ void LevelScene::GetTiles(std::vector<int>& output) const
 	}
 }
 
+void LevelScene::SetTile(TileType type, unsigned int x, unsigned int z)
+{
+	unsigned int tileIndex{ GetTileIndexFromXZ(glm::ivec2(x, z)) };
+	m_tiles[tileIndex] = type;
+}
+
 void LevelScene::AddTile(TileType type, unsigned int tileIndex)
 {
 	unsigned int x{ tileIndex % static_cast<unsigned int>(m_levelSize.x) };
@@ -367,122 +351,62 @@ void LevelScene::AddTile(TileType type, unsigned int x, unsigned int z)
 				x * TILE_SIZE + TILE_SIZE / 2.f,
 				-0.5,
 				z * TILE_SIZE + TILE_SIZE / 2.f);
-			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("floor", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(TILE_SIZE / 2.f));
+			GameObject* floorGO = new GameObject("floor", position, glm::vec3(glm::half_pi<float>(), 0, 0), glm::vec3(TILE_SIZE / 2.f));
 
-			ga->AddBehaviour(meshRenderer);
-
-			m_worldGameObjects.push_back(std::move(ga));
+			floorGO->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f)) / 5.0f));
+			floorGO->AddBehaviour(meshRenderer);
+      
+			AddWorldGameObject(floorGO);
 			break;
 		}
 			
 		case TileType::WALL:
+		{
+			glm::vec3 position = glm::vec3(
+				x * TILE_SIZE + TILE_SIZE / 2.f,
+				0.f,
+				z * TILE_SIZE + TILE_SIZE / 2.f);
+
+			GameObject* wallGO = Prefab::CreateWallGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE);
+			m_tiles[tileIndex] = TileType::WALL;
+			wallGO->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f)) / 5.0f));
+			AddWorldGameObject(wallGO);
+			break;;
+		}
+
 		case TileType::RED_DOOR:
 		case TileType::BLUE_DOOR:
 		case TileType::GREEN_DOOR:
 		case TileType::EXIT:
 		{
-
 			glm::vec3 position = glm::vec3(
 				x * TILE_SIZE + TILE_SIZE / 2.f,
 				0.f,
 				z * TILE_SIZE + TILE_SIZE / 2.f);
-			std::unique_ptr<GameObject> ga = std::make_unique<GameObject>("wall", position, glm::vec3(0.f), WALL_SCALE);
 
-			Collider* collider{ new Collider(glm::vec3(TILE_SIZE / 2.f)) };
-			PhysicsBehaviour* physBehaviour{ new PhysicsBehaviour(m_physEngine, ga->id, collider, [](GLuint) {}) };
-			ga->AddBehaviour(physBehaviour);
+			GameObject* doorGO = Prefab::CreateDoorGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE, type);
+			doorGO->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f)) / 5.0f));
+			m_tiles[tileIndex] = type;
+			AddWorldGameObject(doorGO);
+			break;;
+		}
 
-			PointLight* doorLight {nullptr};
+		case TileType::ELECTRIC_FLOOR:
+		case TileType::ELECTRIC_FLOOR_OFF:
+		{
+			glm::vec3 position = glm::vec3(
+				x * TILE_SIZE + TILE_SIZE / 2.f,
+				0.f,
+				z * TILE_SIZE + TILE_SIZE / 2.f);
 
-			switch (type)
-			{
-
-				case TileType::WALL:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTexture("../Assets/textures/wall.jpg");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::WALL) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::WALL;
-
-					break;
-				}
-				case TileType::RED_DOOR:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/red_key_block.png");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::RED_DOOR) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::RED_DOOR;
-
-					doorLight = new PointLight(RED);
-					ga->AddBehaviour(doorLight);
-
-					break;
-				}
-				case TileType::BLUE_DOOR:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/blue_key_block.png");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::BLUE_DOOR) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::BLUE_DOOR;
-
-					doorLight = new PointLight(BLUE);
-					ga->AddBehaviour(doorLight);
-
-					break;
-				}
-				case TileType::GREEN_DOOR:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/green_key_block.png");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::GREEN_DOOR) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::GREEN_DOOR;
-
-					doorLight = new PointLight(GREEN);
-					ga->AddBehaviour(doorLight);
-
-					break;
-				}
-				case TileType::EXIT:
-				{
-					MeshRenderer* meshRenderer = new MeshRenderer("../Assets/models/wall.obj");
-					meshRenderer->SetTransparent(true);
-					meshRenderer->SetTexture("../Assets/textures/exit.jpg");
-					ga->AddBehaviour(meshRenderer);
-
-					TileBehaviour* tileBehaviour{ new TileBehaviour(TileType::EXIT) };
-					ga->AddBehaviour(tileBehaviour);
-					m_tiles[tileIndex] = TileType::EXIT;
-					break;
-				}
-			}
-
-			ga->currentScene = this;
-
-			m_worldGameObjects.push_back(std::move(ga));
+			//GameObject* electricFloor = Prefab::CreateWallGameObject(m_physEngine, position, WALL_SCALE, TILE_SIZE);
+			GameObject* electricFloor = Prefab::CreateElectricFloorGameObject(m_physEngine, position, TILE_SIZE, type == TileType::ELECTRIC_FLOOR);
+			m_tiles[tileIndex] = TileType::ELECTRIC_FLOOR;
+			electricFloor->AddBehaviour(new BlockStartAnimation(((int)((x + z) / 2.0f)) / 5.0f));
+			AddWorldGameObject(electricFloor);
 
 			break;
 		}
-
-		/*case TileType::EXIT:
-		{
-
-			break;
-		}*/
 
 	}
 }

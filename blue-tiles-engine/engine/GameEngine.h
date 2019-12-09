@@ -1,5 +1,7 @@
 #pragma once
+#include <unordered_map>
 #include <memory>
+#include <functional>
 #include <sdl2/SDL.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl.h>
@@ -37,8 +39,11 @@ public:
 	// Renderer thing
 	Renderer* renderer;
 
+	// Adds a scene to the cached scenes
+	void AddScene(std::string sceneName, std::shared_ptr<Scene> scene, std::function<void()> lambda);
+
 	// Setter for the current scene.
-	void SetScene(Scene* scene);
+	void SetScene(std::string sceneName, bool reload = true);
 
 	// Text Renderering thing
 	TextRenderer* textRenderer;
@@ -52,8 +57,12 @@ private:
 	// The game's physics engine.
 	std::unique_ptr<PhysicsEngine> m_physEngine{ nullptr };
 
+	// Cached scenes
+	std::unordered_map<std::string, std::shared_ptr<Scene>> m_cachedScenes;
+	std::unordered_map<std::string, std::function<void()>> m_cachedScenesLoading;
+	
 	// The current scene.
-	std::unique_ptr<Scene> m_currentScene;
+	std::shared_ptr<Scene> m_currentScene;
 
 	// Updates the FPS counter
 	void UpdateFPSCounter();

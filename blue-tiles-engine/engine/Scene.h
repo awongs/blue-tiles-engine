@@ -7,6 +7,8 @@
 #include "GameObject.h"
 
 class Shader;
+class GameEngine;
+class PhysicsEngine;
 
 class Scene
 {
@@ -16,7 +18,7 @@ public:
 	virtual ~Scene();
 
 	// Updates game objects
-	void Update(float deltaTime);
+	virtual void Update(float deltaTime);
 
 	// Draws world game objects
 	[[deprecated]]
@@ -66,8 +68,14 @@ public:
 
 	// Stops scene from updating game objects
 	void stopUpdates();
+
+	// Loads the scene. Does nothing by default, only LevelScene needs to implement this currently.
+	virtual void LoadScene(PhysicsEngine* physEngine, GameEngine* gameEngine);
   
 protected:
+	// A unique id for each Scene
+	int m_id;
+
 	std::vector<std::unique_ptr<GameObject>> m_worldGameObjects;
 	std::vector<std::unique_ptr<GameObject>> m_screenGameObjects;
 
@@ -78,4 +86,7 @@ protected:
 
 	// Hold the ids of all world GameObjects to remove in the next update.
 	std::vector<GLuint> m_worldGameObjectsToRemove;
+private:
+	// An id counter for each Scene
+	static int idCounter;
 };

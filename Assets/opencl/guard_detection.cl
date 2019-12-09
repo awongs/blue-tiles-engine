@@ -1,3 +1,8 @@
+float calculateDeterminant(float2 a, float2 b, float2 p)
+{
+    return (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x);
+}
+
 float2 rotateVec2(float2 input, float angle)
 {
 	float cosAngle = cos(angle);
@@ -115,6 +120,7 @@ __kernel void guard_detection(__global const float* endPointsX,
 	const float playerPosX,
 	const float playerPosZ,
     const int isCollidingPlayer,
+    const int tileViewRadius,
     __local int2* lineAlgOutput)
 {
     int gid = get_global_id(0);
@@ -123,8 +129,8 @@ __kernel void guard_detection(__global const float* endPointsX,
 	// the guard's rotation.
 	float2 endPoint = (float2)(endPointsX[gid], endPointsZ[gid]);
 	float2 startPoint = (float2)(startPointX, startPointZ);
-	float2 viewVector = endPoint - startPoint;
-	viewVector = rotateVec2(viewVector, -rotation);
+	float2 unrotatedViewVector = endPoint - startPoint;
+	float2 viewVector = rotateVec2(unrotatedViewVector, -rotation);
 
 	// The max tile distance point is point 2 for the line algorithm.
 	float2 maxWorldDistPoint = startPoint + viewVector;
@@ -258,6 +264,24 @@ __kernel void guard_detection(__global const float* endPointsX,
         playerTilePos.y == guardTilePos.y && !isCollidingPlayer)
     {
         result = false;
+	}
+
+    // More precise checks for boundary rays.
+	// The player's position must lie on the side of the line facing inside
+	// the vision cone.
+	int2 maxDistTilePos = getTileCoordFromPos(endPoint, tileSize);
+	bool isMinRay = (guardTilePos.x - maxDistTilePos.x) == tileViewRadius;
+	bool isMaxRay = (guardTilePos.x - maxDistTilePos.x) == -tileViewRadius;
+	if (result && (isMinRay || isMaxRay))
+	{
+		// Undo the rotation for easier comparisons with determinant.
+        float2 thisToPlayer = playerWorldPos - startPoint;
+		thisToPlayer = rotateVec2(thisToPlayer, rotation);
+		float2 playerPos = startPoint + thisToPlayer;
+		float2 maxDist = startPoint + unrotatedViewVector;
+		float det = calculateDeterminant(startPoint, maxDist, playerPos);
+
+		result = (isMinRay && det > 0) || (isMaxRay && det < 0);
 	}
 
     // Set the output.

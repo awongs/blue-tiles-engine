@@ -8,7 +8,8 @@ namespace
 		{ "red_key", ObjectType::RED_KEY },
 		{ "blue_key", ObjectType::BLUE_KEY },
 		{ "green_key", ObjectType::GREEN_KEY },
-		{ "objective_item", ObjectType::OBJECTIVE_ITEM }
+		{ "objective_item", ObjectType::OBJECTIVE_ITEM },
+		{ "electric_switch", ObjectType::ELECTRIC_SWITCH }
 	};
 }
 

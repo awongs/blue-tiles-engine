@@ -73,6 +73,10 @@
     <LibraryPath>$(SolutionDir)\$(IntDir);$(SolutionDir)\libraries\libs;$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)\blue-tiles-engine;$(SolutionDir)\libraries\includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)\blue-tiles-engine;$(SolutionDir)\libraries\includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\$(IntDir);$(SolutionDir)\libraries\libs;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -119,7 +123,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>MinSpace</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -129,9 +133,15 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>blue-tiles-engine.lib;SDL2.lib;SDL2_mixer.lib;SDL2_image.lib;freetype.lib;OpenCL.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "..\libraries\libs\*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="behaviours\ElectricFloor.cpp" />
+    <ClCompile Include="behaviours\ElectricSwitch.cpp" />
     <ClCompile Include="behaviours\ObjectBehaviour.cpp" />
     <ClCompile Include="behaviours\PlayerItemPickup.cpp" />
     <ClCompile Include="behaviours\Rotate.cpp" />
@@ -141,9 +151,15 @@
     <ClCompile Include="behaviours\Inventory.cpp" />
     <ClCompile Include="behaviours\PlayerMovement.cpp" />
     <ClCompile Include="behaviours\TileBehaviour.cpp" />
+    <ClCompile Include="BlockStarrtAnimation.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="prefabs\GuardPrefab.cpp" />
+    <ClCompile Include="prefabs\ObjectItemPrefab.cpp" />
+    <ClCompile Include="prefabs\PlayerPrefab.cpp" />
+    <ClCompile Include="prefabs\WallPrefab.cpp" />
     <ClCompile Include="scenes\LevelScene.cpp" />
+    <ClCompile Include="scenes\MainMenuScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\blue-tiles-engine\blue-tiles-engine.vcxproj">
@@ -151,6 +167,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="behaviours\ElectricFloor.h" />
+    <ClInclude Include="behaviours\ElectricSwitch.h" />
     <ClInclude Include="behaviours\ObjectBehaviour.h" />
     <ClInclude Include="behaviours\PlayerItemPickup.h" />
     <ClInclude Include="behaviours\Rotate.h" />
@@ -160,11 +178,17 @@
     <ClInclude Include="behaviours\Inventory.h" />
     <ClInclude Include="behaviours\PlayerMovement.h" />
     <ClInclude Include="behaviours\TileBehaviour.h" />
+    <ClInclude Include="BlockStarrtAnimation.h" />
     <ClInclude Include="gameobjects\Guard.h" />
     <ClInclude Include="gameobjects\Object.h" />
     <ClInclude Include="gameobjects\Tile.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="prefabs\GuardPrefab.h" />
+    <ClInclude Include="prefabs\ObjectItemPrefab.h" />
+    <ClInclude Include="prefabs\PlayerPrefab.h" />
+    <ClInclude Include="prefabs\WallPrefab.h" />
     <ClInclude Include="scenes\LevelScene.h" />
+    <ClInclude Include="scenes\MainMenuScene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
