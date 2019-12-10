@@ -3,6 +3,8 @@
 #include <engine/MessageSystem.h>
 #include <engine/GameObject.h>
 #include <engine/Scene.h>
+#include <engine/sound/SoundManager.h>
+#include <engine/sound/Sound.h>
 
 ElectricSwitch::ElectricSwitch(glm::vec3 originalPos)
 	: Behaviour(BehaviourType::ElectricSwitch)
@@ -22,6 +24,8 @@ void ElectricSwitch::ActivateSwitch()
 	gameObject->position = m_originalPos;
 
 	MessageSystem::BroadcastMessage(gameObject->id, BehaviourType::ElectricFloor, "ToggleElectricFloor");
+
+	(SoundManager::getInstance().getSound("alarm"))->play();
 }
 
 void ElectricSwitch::Update(float deltaTime)

@@ -17,7 +17,8 @@ namespace {
         {"key-pickup", "../Assets/sound-assets/Key_Pickup.wav"},
 		{"win", "../Assets/sound-assets/Win.wav"},
 		{"tech-pickup", "../Assets/sound-assets/success.wav"},
-		{"lose", "../Assets/sound-assets/Lose.wav"}
+		{"lose", "../Assets/sound-assets/Lose.wav"},
+		{"alarm", "../Assets/sound-assets/Alert.mp3"}
     };
 }
 
