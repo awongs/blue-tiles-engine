@@ -13,6 +13,10 @@ The project was developed by the following people during the 2019 Fall Term of t
 
 ## Steal-th Game
 
+<p align="center">
+  <img src="https://i.imgur.com/ipYzsza.png">
+</p>
+
 Steal-th is a top-down stealth game, where the player navigates through puzzle-based levels while avoiding enemy guards. The game’s primary target platform is Windows.
 
 The overall game is designed to support a set of levels. Within each level, the player’s objective
